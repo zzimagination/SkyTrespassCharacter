@@ -40,18 +40,18 @@ namespace SkyTrespass.Character
 
             if (playerState == PlayerState.move)
             {
-
                 Vector3 pos = _rigidbody.position + _animator.deltaPosition;
                 _rigidbody.MovePosition(pos);
-                PositionTarget = _rigidbody.position;
 
                 Vector3 moveDir = new Vector3(moveDelt.x, 0, moveDelt.y);
                 float angle = Vector3.Angle(new Vector3(0, 0, 1), moveDir);
                 angle *= Vector3.Dot(new Vector3(1, 0, 0), moveDir) > 0 ? 1 : -1;
                 Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
                 _rigidbody.MoveRotation(qua);
-                RotationTarget = _rigidbody.rotation;
             }
+
+            PositionTarget = _rigidbody.position;
+            RotationTarget = _rigidbody.rotation;
         }
         // Update is called once per frame
         void Update()
@@ -65,28 +65,32 @@ namespace SkyTrespass.Character
             _animator.SetFloat("x", moveDelt.x);
             _animator.SetFloat("y", moveDelt.y);
 
-
-            if (_rigidbody.velocity.y < 0.01f && _rigidbody.velocity.y > -0.01f)
+            if (playerState == PlayerState.pickUp)
+                return;
+            if(_rigidbody.velocity.y<-0.1f||_rigidbody.velocity.y>0.2f)
             {
-                if (moveDelt.x != 0 || moveDelt.y != 0)
+                if(playerState== PlayerState.move)
+                {
+                    _rigidbody.AddForce(transform.forward * 100);
+                }
+                playerState = PlayerState.down;
+                _rigidbody.useGravity = true;
+                _rigidbody.isKinematic = false;
+            }else
+            {
+                if(moveDelt.Equals(Vector2.zero))
+                {
+                    _rigidbody.useGravity = false;
+                    _rigidbody.isKinematic = true;
+                    playerState = PlayerState.normal;
+                }
+                else
                 {
                     _rigidbody.useGravity = true;
                     _rigidbody.isKinematic = false;
                     playerState = PlayerState.move;
                 }
-                else
-                {
-                    _rigidbody.isKinematic = true;
-                    _rigidbody.useGravity = false;
-                    playerState = PlayerState.normal;
 
-                }
-            }
-            else
-            {
-                _rigidbody.useGravity = true;
-                _rigidbody.isKinematic = false;
-                playerState = PlayerState.down;
             }
         }
 
