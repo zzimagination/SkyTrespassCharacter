@@ -14,7 +14,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Shoot",
+                    "name": "Aim",
                     "type": "Button",
                     "id": "3d56e672-fce5-4f67-af27-c0dd018be424",
                     "expectedControlType": "Button",
@@ -109,7 +109,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "Aim",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -129,6 +129,17 @@
                     "id": "1c04da3f-be62-4781-92a6-17620a24a57a",
                     "path": "<Mouse>/leftButton",
                     "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MainButtonPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f2f3116d-91b0-474c-9c9e-54d861ee9a40",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "MainButtonPress",
@@ -159,6 +170,17 @@
                 },
                 {
                     "name": "",
+                    "id": "0e471dc9-fea3-4994-9248-345fbf43af17",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MainButtonHold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "b06e6ebd-a418-4dc5-b80e-01bf54d7e6d6",
                     "path": "<Keyboard>/j",
                     "interactions": "Press(behavior=1)",
@@ -173,6 +195,17 @@
                     "id": "e177a161-9ca3-4c91-8711-74f55ae9ff97",
                     "path": "<Mouse>/leftButton",
                     "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MainButtonUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "97aa3994-f916-4422-99ff-9c2d958fc52d",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "MainButtonUp",

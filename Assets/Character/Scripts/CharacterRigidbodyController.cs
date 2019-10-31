@@ -7,6 +7,19 @@ namespace SkyTrespass.Character
 {
     public class CharacterRigidbodyController : MonoBehaviour
     {
+        public STCharacterController characterController;
 
+
+
+
+        public void EnterPickUp(PickUp pickUp)
+        {
+            characterController.currentPickUp = pickUp;
+        }
+
+        public void ExitPickUp()
+        {
+            characterController.currentPickUp = null;
+        }
     }
 }
