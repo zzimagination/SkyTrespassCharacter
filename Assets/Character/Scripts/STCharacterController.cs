@@ -37,10 +37,10 @@ namespace SkyTrespass.Character
 
         private void OnAnimatorMove()
         {
-
-            if (playerState == PlayerState.move)
+            if (playerState== PlayerState.move)
             {
-                Vector3 pos = _rigidbody.position + _animator.deltaPosition;
+                Vector3 deltPos = _animator.deltaPosition;
+                Vector3 pos = _rigidbody.position + new Vector3(deltPos.x, 0, deltPos.z);
                 _rigidbody.MovePosition(pos);
 
                 Vector3 moveDir = new Vector3(moveDelt.x, 0, moveDelt.y);
@@ -49,7 +49,6 @@ namespace SkyTrespass.Character
                 Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
                 _rigidbody.MoveRotation(qua);
             }
-
             PositionTarget = _rigidbody.position;
             RotationTarget = _rigidbody.rotation;
         }
@@ -62,36 +61,47 @@ namespace SkyTrespass.Character
             if (!transform.localRotation.Equals(RotationTarget))
                 transform.localRotation = Quaternion.Slerp(transform.localRotation, RotationTarget, _internalRotateSpeed * Time.deltaTime);
 
-            _animator.SetFloat("x", moveDelt.x);
-            _animator.SetFloat("y", moveDelt.y);
+            bool isDown = _rigidbody.velocity.y < -0.5f || _rigidbody.velocity.y > 0.5f;
+            if (!(playerState == PlayerState.pickUp))
+            {
 
-            if (playerState == PlayerState.pickUp)
-                return;
-            if(_rigidbody.velocity.y<-0.1f||_rigidbody.velocity.y>0.2f)
-            {
-                if(playerState== PlayerState.move)
+                if (isDown)
                 {
-                    _rigidbody.AddForce(transform.forward * 100);
-                }
-                playerState = PlayerState.down;
-                _rigidbody.useGravity = true;
-                _rigidbody.isKinematic = false;
-            }else
-            {
-                if(moveDelt.Equals(Vector2.zero))
-                {
-                    _rigidbody.useGravity = false;
-                    _rigidbody.isKinematic = true;
-                    playerState = PlayerState.normal;
+                    if (playerState == PlayerState.move)
+                    {
+                        _rigidbody.AddForce(transform.forward * 100);
+                    }
+                    playerState = PlayerState.down;
+                    _rigidbody.useGravity = true;
+                    _rigidbody.isKinematic = false;
+
                 }
                 else
                 {
-                    _rigidbody.useGravity = true;
-                    _rigidbody.isKinematic = false;
-                    playerState = PlayerState.move;
+                    if (moveDelt.Equals(Vector2.zero))
+                    {
+                        _rigidbody.useGravity = false;
+                        _rigidbody.isKinematic = true;
+                        playerState = PlayerState.normal;
+                    }
+                    else
+                    {
+                        _rigidbody.useGravity = true;
+                        _rigidbody.isKinematic = false;
+                        playerState = PlayerState.move;
+                    }
                 }
-
             }
+
+            _animator.SetFloat("x", moveDelt.x);
+            _animator.SetFloat("y", moveDelt.y);
+            _animator.SetBool("down", isDown);
+        }
+
+
+        void MoveAddDelt(Vector3 delt)
+        {
+
         }
 
         IEnumerator WaitForAnimationEnd(System.Action Complete)
@@ -105,9 +115,8 @@ namespace SkyTrespass.Character
             Complete?.Invoke();
         }
 
-        public void PickUp()
+        void PickUp()
         {
-            _animator.Play("PickUp");
 
             StartCoroutine(WaitForAnimationEnd(() => playerState = PlayerState.normal));
 
@@ -119,12 +128,13 @@ namespace SkyTrespass.Character
             currentPickUp = null;
 
             playerState = PlayerState.pickUp;
+
+            _animator.Play("PickUp");
         }
 
         public void Death()
         {
             _animator.Play("Death");
-
         }
 
         public void OnMove(InputValue value)
@@ -134,16 +144,18 @@ namespace SkyTrespass.Character
 
         public void OnAim()
         {
-            if (shootState == PlayerShootState.aim || shootState == PlayerShootState.aimshoot)
+            bool isAim = shootState == PlayerShootState.aim || shootState == PlayerShootState.aimshoot;
+            if (isAim)
             {
-                _animator.SetFloat("shoot", 0);
+
                 shootState = PlayerShootState.none;
             }
             else
             {
-                _animator.SetFloat("shoot", 1);
                 shootState = PlayerShootState.aim;
             }
+
+            _animator.SetFloat("shoot", isAim ? 1 : 0);
         }
 
         public void OnMainButtonPress()
