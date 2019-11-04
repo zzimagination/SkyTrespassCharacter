@@ -16,7 +16,9 @@ namespace SkyTrespass.Character
 
         Vector2 moveDelt;
 
-        bool isMove;
+        bool isPickUp;
+        float DisToGround;
+        RaycastHit[] raycastResult = new RaycastHit[1];
 
         Vector3 PositionTarget;
         Quaternion RotationTarget;
@@ -26,7 +28,7 @@ namespace SkyTrespass.Character
         // Start is called before the first frame update
         void Start()
         {
-            isMove = true;
+
         }
         private void FixedUpdate()
         {
@@ -37,61 +39,119 @@ namespace SkyTrespass.Character
 
         private void OnAnimatorMove()
         {
-            if (playerState== PlayerState.move)
+            if (playerState != PlayerState.pickUp)
             {
                 Vector3 deltPos = _animator.deltaPosition;
-                Vector3 pos = _rigidbody.position + new Vector3(deltPos.x, 0, deltPos.z);
-                _rigidbody.MovePosition(pos);
+                Vector3 pos = _rigidbody.position + new Vector3(deltPos.x, deltPos.y, deltPos.z);
+                Vector3 nextPos = pos;
+                nextPos.y += 0.3f;
+                if(Physics.Raycast(nextPos,Vector3.down,out RaycastHit s, 0.4f,1))
+                {
+                    pos = s.point;
+                }
 
+                _rigidbody.MovePosition(pos);
+                //_rigidbody.velocity = Vector3.zero;
+                
                 Vector3 moveDir = new Vector3(moveDelt.x, 0, moveDelt.y);
-                float angle = Vector3.Angle(new Vector3(0, 0, 1), moveDir);
-                angle *= Vector3.Dot(new Vector3(1, 0, 0), moveDir) > 0 ? 1 : -1;
-                Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
-                _rigidbody.MoveRotation(qua);
+                if (!moveDelt.Equals(Vector3.zero))
+                {
+                    float angle = Vector3.Angle(new Vector3(0, 0, 1), moveDir);
+                    angle *= Vector3.Dot(new Vector3(1, 0, 0), moveDir) > 0 ? 1 : -1;
+                    Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
+                    _rigidbody.MoveRotation(qua);
+                }
             }
-            PositionTarget = _rigidbody.position;
-            RotationTarget = _rigidbody.rotation;
         }
         // Update is called once per frame
         void Update()
         {
+            Debug.Log(_rigidbody.position);
+            if (!transform.localPosition.Equals(_rigidbody.position))
+                transform.localPosition = _rigidbody.position;
+            if (!transform.localRotation.Equals(_rigidbody.rotation))
+                transform.localRotation = Quaternion.Slerp(transform.localRotation, _rigidbody.rotation, _internalRotateSpeed * Time.deltaTime);
 
-            if (!transform.localPosition.Equals(PositionTarget))
-                transform.localPosition = PositionTarget;
-            if (!transform.localRotation.Equals(RotationTarget))
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, RotationTarget, _internalRotateSpeed * Time.deltaTime);
 
-            bool isDown = _rigidbody.velocity.y < -0.5f || _rigidbody.velocity.y > 0.5f;
-            if (!(playerState == PlayerState.pickUp))
+
+
+            //bool isDown = _rigidbody.velocity.y < -5f;
+            //if (!(playerState == PlayerState.pickUp))
+            //{
+
+            //    if (isDown || DisToGround > 1f)
+            //    {
+            //        if (playerState == PlayerState.move)
+            //        {
+            //            _rigidbody.AddForce(transform.forward * 100);
+            //        }
+            //        playerState = PlayerState.down;
+            //        _rigidbody.useGravity = true;
+            //        _rigidbody.isKinematic = false;
+
+            //    }
+            //    else
+            //    {
+            //        if (moveDelt.Equals(Vector2.zero))
+            //        {
+            //            _rigidbody.useGravity = false;
+            //            _rigidbody.isKinematic = true;
+            //            playerState = PlayerState.normal;
+            //        }
+            //        else
+            //        {
+            //            _rigidbody.useGravity = true;
+            //            _rigidbody.isKinematic = false;
+            //            playerState = PlayerState.move;
+            //        }
+            //    }
+            //}
+
+            bool isDown = _rigidbody.velocity.y < -1f;
+            Debug.Log(_rigidbody.velocity.y);
+            if (isDown)
             {
-
-                if (isDown)
-                {
-                    if (playerState == PlayerState.move)
-                    {
-                        _rigidbody.AddForce(transform.forward * 100);
-                    }
-                    playerState = PlayerState.down;
-                    _rigidbody.useGravity = true;
-                    _rigidbody.isKinematic = false;
-
-                }
-                else
-                {
-                    if (moveDelt.Equals(Vector2.zero))
-                    {
-                        _rigidbody.useGravity = false;
-                        _rigidbody.isKinematic = true;
-                        playerState = PlayerState.normal;
-                    }
-                    else
-                    {
-                        _rigidbody.useGravity = true;
-                        _rigidbody.isKinematic = false;
-                        playerState = PlayerState.move;
-                    }
-                }
+                playerState = PlayerState.down;
             }
+            else if (moveDelt.x != 0 || moveDelt.y != 0)
+            {
+                playerState = PlayerState.move;
+            }
+            else
+            {
+                playerState = PlayerState.normal;
+            }
+
+
+            if (isPickUp)
+            {
+                playerState = PlayerState.pickUp;
+            }
+
+            if (playerState == PlayerState.move)
+            {
+                _rigidbody.useGravity = true;
+                _rigidbody.isKinematic = false;
+            }
+            else if (playerState == PlayerState.normal)
+            {
+                _rigidbody.useGravity = false;
+                _rigidbody.isKinematic = true;
+            }
+            else if (playerState == PlayerState.pickUp)
+            {
+                _rigidbody.useGravity = false;
+                _rigidbody.isKinematic = true;
+            }
+            else if (playerState == PlayerState.down)
+            {
+                _rigidbody.useGravity = true;
+                _rigidbody.isKinematic = false;
+            }
+
+
+
+
 
             _animator.SetFloat("x", moveDelt.x);
             _animator.SetFloat("y", moveDelt.y);
@@ -106,13 +166,13 @@ namespace SkyTrespass.Character
 
         IEnumerator WaitForAnimationEnd(System.Action Complete)
         {
-            isMove = false;
+            isPickUp = true;
             yield return null;
             var stateinfo = _animator.GetCurrentAnimatorStateInfo(0);
             float time = stateinfo.length;
             yield return new WaitForSeconds(time);
-            isMove = true;
             Complete?.Invoke();
+            isPickUp = false;
         }
 
         void PickUp()
