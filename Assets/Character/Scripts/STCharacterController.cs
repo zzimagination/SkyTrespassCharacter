@@ -18,7 +18,7 @@ namespace SkyTrespass.Character
 
         bool isPickUp;
         float DisToGround;
-        RaycastHit[] raycastResult = new RaycastHit[1];
+        RaycastHit[] raycastResult = new RaycastHit[4];
 
         Vector3 PositionTarget;
         Quaternion RotationTarget;
@@ -39,76 +39,27 @@ namespace SkyTrespass.Character
 
         private void OnAnimatorMove()
         {
-            if (playerState != PlayerState.pickUp)
+            if (playerState == PlayerState.move)
             {
                 Vector3 deltPos = _animator.deltaPosition;
-                Vector3 pos = _rigidbody.position + new Vector3(deltPos.x, deltPos.y, deltPos.z);
-                Vector3 nextPos = pos;
-                nextPos.y += 0.3f;
-                if(Physics.Raycast(nextPos,Vector3.down,out RaycastHit s, 0.4f,1))
-                {
-                    pos = s.point;
-                }
+                MoveAddDelt(deltPos);
+                RotateDelt(moveDelt);
+            }
+            if (playerState == PlayerState.down)
+            {
 
-                _rigidbody.MovePosition(pos);
-                //_rigidbody.velocity = Vector3.zero;
-                
-                Vector3 moveDir = new Vector3(moveDelt.x, 0, moveDelt.y);
-                if (!moveDelt.Equals(Vector3.zero))
-                {
-                    float angle = Vector3.Angle(new Vector3(0, 0, 1), moveDir);
-                    angle *= Vector3.Dot(new Vector3(1, 0, 0), moveDir) > 0 ? 1 : -1;
-                    Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
-                    _rigidbody.MoveRotation(qua);
-                }
+                RotateDelt(moveDelt);
             }
         }
         // Update is called once per frame
         void Update()
         {
-            Debug.Log(_rigidbody.position);
             if (!transform.localPosition.Equals(_rigidbody.position))
                 transform.localPosition = _rigidbody.position;
             if (!transform.localRotation.Equals(_rigidbody.rotation))
                 transform.localRotation = Quaternion.Slerp(transform.localRotation, _rigidbody.rotation, _internalRotateSpeed * Time.deltaTime);
+            bool isDown = _rigidbody.velocity.y < -2f;
 
-
-
-
-            //bool isDown = _rigidbody.velocity.y < -5f;
-            //if (!(playerState == PlayerState.pickUp))
-            //{
-
-            //    if (isDown || DisToGround > 1f)
-            //    {
-            //        if (playerState == PlayerState.move)
-            //        {
-            //            _rigidbody.AddForce(transform.forward * 100);
-            //        }
-            //        playerState = PlayerState.down;
-            //        _rigidbody.useGravity = true;
-            //        _rigidbody.isKinematic = false;
-
-            //    }
-            //    else
-            //    {
-            //        if (moveDelt.Equals(Vector2.zero))
-            //        {
-            //            _rigidbody.useGravity = false;
-            //            _rigidbody.isKinematic = true;
-            //            playerState = PlayerState.normal;
-            //        }
-            //        else
-            //        {
-            //            _rigidbody.useGravity = true;
-            //            _rigidbody.isKinematic = false;
-            //            playerState = PlayerState.move;
-            //        }
-            //    }
-            //}
-
-            bool isDown = _rigidbody.velocity.y < -1f;
-            Debug.Log(_rigidbody.velocity.y);
             if (isDown)
             {
                 playerState = PlayerState.down;
@@ -121,8 +72,6 @@ namespace SkyTrespass.Character
             {
                 playerState = PlayerState.normal;
             }
-
-
             if (isPickUp)
             {
                 playerState = PlayerState.pickUp;
@@ -159,11 +108,55 @@ namespace SkyTrespass.Character
         }
 
 
-        void MoveAddDelt(Vector3 delt)
-        {
 
+        Vector3 nextGizmosPos;
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.gray;
+            Gizmos.DrawSphere(_rigidbody.position, 0.05f);
+            Gizmos.color = Color.red;
+
+            Gizmos.DrawSphere(nextGizmosPos, 0.05f);
         }
 
+        void MoveAddDelt(Vector3 delt)
+        {
+            if (delt.Equals(Vector3.zero))
+                return;
+
+            Vector3 pos = _rigidbody.position + new Vector3(delt.x, delt.y, delt.z);
+            Vector3 next = pos;
+            next.y += 0.3f;
+
+            int c = Physics.RaycastNonAlloc(next, Vector3.down, raycastResult, 0.6f, -1);
+            if (c > 0)
+            {
+                Vector3 tall;
+                tall = raycastResult[0].point;
+                for (int i = 1; i < c; i++)
+                {
+                    if (raycastResult[i].point.y > tall.y)
+                    {
+                        tall = raycastResult[i].point;
+                    }
+                }
+                pos = tall;
+
+                nextGizmosPos = pos;
+            }
+
+            _rigidbody.MovePosition(pos);
+        }
+        void RotateDelt(Vector3 delt)
+        {
+            if (delt.Equals(Vector3.zero))
+                return;
+            Vector3 moveDir = new Vector3(delt.x, 0, delt.y);
+            float angle = Vector3.Angle(new Vector3(0, 0, 1), moveDir);
+            angle *= Vector3.Dot(new Vector3(1, 0, 0), moveDir) > 0 ? 1 : -1;
+            Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
+            _rigidbody.MoveRotation(qua);
+        }
         IEnumerator WaitForAnimationEnd(System.Action Complete)
         {
             isPickUp = true;
