@@ -182,7 +182,7 @@ namespace SkyTrespass.Character
 
             playerState = PlayerState.pickUp;
 
-            _animator.Play("PickUp");
+            _animator.SetTrigger("Pick");
         }
 
         public void Death()
