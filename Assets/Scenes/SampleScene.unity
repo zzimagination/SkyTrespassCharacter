@@ -1416,6 +1416,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 95747097181074508, guid: 7726852b74327584980d2b8f88a12239,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7726852b74327584980d2b8f88a12239, type: 3}
 --- !u!1 &1268113833 stripped
@@ -1437,10 +1442,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 172554072}
-  _animator: {fileID: 1268113836}
-  playerState: 0
-  shootState: 0
-  currentPickUp: {fileID: 0}
+  moveSpeed: 5
+  isAim: 0
 --- !u!114 &1268113835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1467,18 +1470,42 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.InputSystem.PlayerInput+DeviceRegainedEvent, Unity.InputSystem,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_ActionEvents: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.InputSystem.PlayerInput+ActionEvent, Unity.InputSystem,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ActionId: 67660cc1-b2cf-48e3-b044-fffcc1120cec
+    m_ActionName: Player/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.InputSystem.PlayerInput+ActionEvent, Unity.InputSystem,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ActionId: 3d56e672-fce5-4f67-af27-c0dd018be424
+    m_ActionName: Player/Aim[/Keyboard/q]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.InputSystem.PlayerInput+ActionEvent, Unity.InputSystem,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ActionId: 9cc0e515-d562-4f8b-b495-70da2db4e82c
+    m_ActionName: Player/MainButtonPress[/Keyboard/j,/Mouse/leftButton,/Keyboard/e]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.InputSystem.PlayerInput+ActionEvent, Unity.InputSystem,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ActionId: 96beabfc-c602-4f27-ba94-c2fedf794e78
+    m_ActionName: Player/MainButtonHold[/Keyboard/j,/Mouse/leftButton,/Keyboard/e]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.InputSystem.PlayerInput+ActionEvent, Unity.InputSystem,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ActionId: 7005fde0-bbfd-430b-b663-397edef72fe8
+    m_ActionName: Player/MainButtonUp[/Keyboard/j,/Mouse/leftButton,/Keyboard/e]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: aacf1584-57ff-4d87-a84d-9d3f00d82166
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!95 &1268113836 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 95747097181074508, guid: 7726852b74327584980d2b8f88a12239,
-    type: 3}
-  m_PrefabInstance: {fileID: 1268113832}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1268113837 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4972655278935194, guid: 7726852b74327584980d2b8f88a12239,

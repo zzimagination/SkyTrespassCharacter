@@ -5,40 +5,40 @@ namespace SkyTrespass {
     using Character;
     public class PickUp : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
+        bool open;
+        private void Start()
         {
-
+            open = true;
         }
 
-        // Update is called once per frame
-        void Update()
+        private void OnTriggerStay(Collider other)
         {
-
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.CompareTag("Player"))
+            if (open == false)
+                return;
+            if(other.CompareTag("Player"))
             {
-                var c= other.GetComponent<CharacterRigidbodyController>();
-                c.EnterPickUp(this);
+                other.GetComponent<CharacterRigidbodyController>().SetPickUp(this);
             }
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.CompareTag("Player"))
+            var t= GetComponentsInChildren<Renderer>();
+            foreach (var item in t)
             {
-                var c = other.GetComponent<CharacterRigidbodyController>();
-                c.ExitPickUp();
-
-                var r = GetComponentsInChildren<Renderer>();
-                foreach (var item in r)
-                {
-                    item.enabled = true;
-                }
+                item.enabled = true;
             }
+            open = true;
+        }
+
+        public void Pick()
+        {
+            var rs= GetComponentsInChildren<Renderer>();
+            foreach (var item in rs)
+            {
+                item.enabled = false;
+            }
+            open = false;
         }
     }
 }
