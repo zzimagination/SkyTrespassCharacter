@@ -9,7 +9,7 @@ namespace SkyTrespass.Character {
         {
             var controller= animator.GetComponent<STCharacterController>();
             controller.RotateDelt();
-            controller.StopRigidbody(true);
+            controller.StopRigidbody(false);
         }
     }
 }

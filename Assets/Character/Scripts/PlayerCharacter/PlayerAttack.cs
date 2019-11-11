@@ -6,29 +6,7 @@ namespace SkyTrespass.Character
 {
     public class PlayerAttack : StateMachineBehaviour
     {
-        bool loop;
-        STCharacterController controller;
-        public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
-        {
-            controller = animator.GetComponent<STCharacterController>();
-            loop = controller.attackLoop;
-        }
-        public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        {
-        
-        }
-        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        {
-            loop = controller.attackLoop;
-            if (!loop&&stateInfo.normalizedTime>0.5f)
-            {
-                animator.SetBool("attack", false);
-            }
-        }
-        public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        {
-            controller.EndAttack();
-        }
+       
 
     }
 }

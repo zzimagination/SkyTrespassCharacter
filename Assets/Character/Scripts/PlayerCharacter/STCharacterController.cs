@@ -11,10 +11,12 @@ namespace SkyTrespass.Character
         public Rigidbody _rigidbody;
         public float moveSpeed;
 
-        public bool  isAim;
+        public bool isAim;
         [HideInInspector]
 
-        bool input;
+
+        bool keepAttack;
+
         Vector2 moveDelt;
         Vector2 rotateDelt;
         PickUp currentPick;
@@ -25,12 +27,12 @@ namespace SkyTrespass.Character
         Vector3 PositionTarget;
         Quaternion RotationTarget;
         const float _internalRotateSpeed = 8;
-        const float _internalRunSpeed = 4.15f;
-        const float _InternalWalkSpeed = 1.85f;
+        const float _internalRunSpeed = 4.2f;
+        const float _InternalWalkSpeed = 2f;
 
         Animator _animator;
 
-        WeaponsType myWeapons; 
+        WeaponsType myWeapons;
 
         public PickUp CurrentPick
         {
@@ -41,6 +43,18 @@ namespace SkyTrespass.Character
             set
             {
                 currentPick = value;
+            }
+        }
+        public WeaponsType MyWeapons
+        {
+            get
+            {
+                return myWeapons;
+            }
+            set
+            {
+                myWeapons = value;
+                SetAimState(false);
             }
         }
         // Start is called before the first frame update
@@ -58,27 +72,32 @@ namespace SkyTrespass.Character
                 transform.localRotation = Quaternion.Slerp(transform.localRotation, _rigidbody.rotation, _internalRotateSpeed * Time.deltaTime);
             bool isDown = _rigidbody.velocity.y < -2f;
 
-         
+
+
+
 
             if (Input.GetKeyDown(KeyCode.Alpha0))
             {
-                _animator.SetFloat("state", 0);
-                myWeapons = WeaponsType.none;
+                _animator.SetInteger("weapons", 0);
+                MyWeapons = WeaponsType.none;
             }
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                _animator.SetFloat("state", 1);
-                myWeapons = WeaponsType.shoot;
+                _animator.SetInteger("weapons", 1);
+                MyWeapons = WeaponsType.shoot;
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                _animator.SetFloat("state", 2);
-                myWeapons = WeaponsType.pisol;
+                _animator.SetInteger("weapons", 2);
+                MyWeapons = WeaponsType.pisol;
             }
 
+            bool isMove = moveDelt.x != 0 || moveDelt.y != 0;
+            _animator.SetBool("isMove", isMove);
+            Vector3 move = transform.worldToLocalMatrix.MultiplyVector(new Vector3(moveDelt.x, 0, moveDelt.y));
 
-            _animator.SetFloat("x", moveDelt.x);
-            _animator.SetFloat("y", moveDelt.y);
+            _animator.SetFloat("moveX", move.x);
+            _animator.SetFloat("moveY", move.z);
             _animator.SetBool("down", isDown);
         }
 
@@ -94,8 +113,14 @@ namespace SkyTrespass.Character
             Gizmos.DrawSphere(nextGizmosPos, 0.05f);
         }
 
+
+        private void OnGUI()
+        {
+            GUILayout.Label("瞄准" + isAim.ToString());
+        }
+
 #endif
-   
+
         IEnumerator WaitForAnimationEnd()
         {
             GetComponent<PlayerInput>().PassivateInput();
@@ -113,20 +138,36 @@ namespace SkyTrespass.Character
             CurrentPick = null;
             _animator.SetTrigger("pick");
         }
-        public bool attackLoop;
-        public void Attack(bool attackLoop)
+
+        void SetAimState(bool aim)
         {
-            this.attackLoop = attackLoop;
+            isAim = aim;
+            moveSpeed = isAim ? _InternalWalkSpeed : _internalRunSpeed;
+            _animator.SetFloat("speed", isAim ? 0 : 1);
+        }
+
+
+        public void Attack()
+        {
+
             _animator.SetBool("attack", true);
             _animator.SetLayerWeight(1, 1);
+            keepAttack = true;
         }
+        public void AttackOnce()
+        {
 
+            _animator.SetTrigger("attackOnce");
+            _animator.SetLayerWeight(1, 1);
+        }
         public void EndAttack()
         {
-            _animator.SetBool("attack", false);
-            _animator.SetLayerWeight(1, 0);
+            if (keepAttack)
+            {
+                _animator.SetBool("attack", false);
+                _animator.SetLayerWeight(1, 0);
+            }
         }
-
 
         public void StopRigidbody(bool s)
         {
@@ -164,9 +205,13 @@ namespace SkyTrespass.Character
         }
         public void RotateDelt()
         {
-            if (moveDelt.Equals(Vector2.zero))
+            Vector2 v2 = rotateDelt;
+            if (v2.x == 0 && v2.y == 0)
+                v2 = moveDelt;
+            if (v2.x == 0 && v2.y == 0)
                 return;
-            Vector3 moveDir = new Vector3(moveDelt.x, 0, moveDelt.y);
+
+            Vector3 moveDir = new Vector3(v2.x, 0, v2.y);
             float angle = Vector3.Angle(new Vector3(0, 0, 1), moveDir);
             angle *= Vector3.Dot(new Vector3(1, 0, 0), moveDir) > 0 ? 1 : -1;
             Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
@@ -176,6 +221,12 @@ namespace SkyTrespass.Character
         public void SetPickUp(PickUp obj)
         {
             CurrentPick = obj;
+        }
+
+
+        public void HasGuns()
+        {
+            isAim = false;
         }
 
 
@@ -193,12 +244,17 @@ namespace SkyTrespass.Character
         {
             rotateDelt = value.Get<Vector2>();
         }
+
         public void OnAim()
         {
-            isAim = !isAim;
-            moveSpeed = isAim ?_InternalWalkSpeed : _internalRunSpeed;
-
-            _animator.SetFloat("aim", isAim ? 1 : 0);
+            if (myWeapons == WeaponsType.pisol || myWeapons == WeaponsType.shoot)
+            {
+                SetAimState(!isAim);
+            }
+            else
+            {
+                isAim = false;
+            }
         }
 
         public void OnMainButtonPress()
@@ -206,26 +262,24 @@ namespace SkyTrespass.Character
             if (CurrentPick)
             {
                 PickUp();
-                StartCoroutine(WaitForAnimationEnd());
-            }else
+
+            }
+            else
             {
-                if(myWeapons!= WeaponsType.none)
-                    Attack(false);
+                AttackOnce();
             }
 
         }
         public void OnMainButtonHold()
         {
-            if(myWeapons!= WeaponsType.none)
-                Attack(true);
+            Attack();
         }
         public void OnMainButtonUp()
         {
-            if (myWeapons != WeaponsType.none)
-            {
-                if (attackLoop)
-                    EndAttack();
-            }
+
+            EndAttack();
+
         }
+
     }
 }

@@ -12,5 +12,6 @@ namespace SkyTrespass.Character {
             controller.RotateDelt();
             controller.StopRigidbody(true);
         }
+
     }
 }
