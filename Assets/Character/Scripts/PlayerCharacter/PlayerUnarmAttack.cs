@@ -19,7 +19,7 @@ namespace SkyTrespass.Character
             if(stateInfo.normalizedTime-i>0.9)
             {
                 i++;
-                Random.InitState((int)stateInfo.normalizedTime);
+                Random.InitState(i);
                 int t= Random.Range(0, 3);
                 animator.SetFloat("unarmAttackType", 0.5f * t);
             }
@@ -27,7 +27,7 @@ namespace SkyTrespass.Character
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)
         {
-            
+            animator.SetLayerWeight(1, 0);
         }
     }
 }

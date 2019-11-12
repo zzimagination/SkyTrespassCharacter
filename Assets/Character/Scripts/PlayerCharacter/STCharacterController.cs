@@ -154,19 +154,12 @@ namespace SkyTrespass.Character
             _animator.SetLayerWeight(1, 1);
             keepAttack = true;
         }
-        public void AttackOnce()
-        {
 
-            _animator.SetTrigger("attackOnce");
-            _animator.SetLayerWeight(1, 1);
-        }
         public void EndAttack()
         {
-            if (keepAttack)
-            {
-                _animator.SetBool("attack", false);
-                _animator.SetLayerWeight(1, 0);
-            }
+
+            _animator.SetBool("attack", false);
+
         }
 
         public void StopRigidbody(bool s)
@@ -266,13 +259,13 @@ namespace SkyTrespass.Character
             }
             else
             {
-                AttackOnce();
+                Attack();
             }
 
         }
         public void OnMainButtonHold()
         {
-            Attack();
+
         }
         public void OnMainButtonUp()
         {
