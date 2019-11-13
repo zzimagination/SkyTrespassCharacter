@@ -6,6 +6,11 @@ namespace SkyTrespass.Character
 {
     public class PlayerPistol : StateMachineBehaviour
     {
+        public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
+        {
+            animator.SetLayerWeight(1, 1);
+        }
+
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             animator.SetLayerWeight(1, 0);

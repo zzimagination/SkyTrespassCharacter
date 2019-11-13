@@ -7,15 +7,16 @@ namespace SkyTrespass.Character
 {
     public class STCharacterController : MonoBehaviour
     {
-
+        public Animator _animator;
         public Rigidbody _rigidbody;
         public float moveSpeed;
 
         public bool isAim;
-        [HideInInspector]
 
-
-        bool keepAttack;
+        public Transform pistolRoot;
+        public Transform rifleRoot;
+        
+        public bool keepAttack;
 
         Vector2 moveDelt;
         Vector2 rotateDelt;
@@ -30,7 +31,7 @@ namespace SkyTrespass.Character
         const float _internalRunSpeed = 4.2f;
         const float _InternalWalkSpeed = 2f;
 
-        Animator _animator;
+
 
         WeaponsType myWeapons;
 
@@ -57,11 +58,6 @@ namespace SkyTrespass.Character
                 SetAimState(false);
             }
         }
-        // Start is called before the first frame update
-        void Start()
-        {
-            _animator = GetComponent<Animator>();
-        }
 
         // Update is called once per frame
         void Update()
@@ -72,25 +68,6 @@ namespace SkyTrespass.Character
                 transform.localRotation = Quaternion.Slerp(transform.localRotation, _rigidbody.rotation, _internalRotateSpeed * Time.deltaTime);
             bool isDown = _rigidbody.velocity.y < -2f;
 
-
-
-
-
-            if (Input.GetKeyDown(KeyCode.Alpha0))
-            {
-                _animator.SetInteger("weapons", 0);
-                MyWeapons = WeaponsType.none;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                _animator.SetInteger("weapons", 1);
-                MyWeapons = WeaponsType.shoot;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                _animator.SetInteger("weapons", 2);
-                MyWeapons = WeaponsType.pisol;
-            }
 
             bool isMove = moveDelt.x != 0 || moveDelt.y != 0;
             _animator.SetBool("isMove", isMove);
@@ -144,14 +121,22 @@ namespace SkyTrespass.Character
             isAim = aim;
             moveSpeed = isAim ? _InternalWalkSpeed : _internalRunSpeed;
             _animator.SetFloat("speed", isAim ? 0 : 1);
+            _animator.SetBool("isAim", isAim);
         }
 
+
+        public void ChangeWaepons(WeaponsType weapons)
+        {
+            _animator.SetInteger("weapons", (int)weapons);
+            MyWeapons = weapons;
+            GetComponent<EquipmentManager>().ChangeWeapons(weapons);
+        }
 
         public void Attack()
         {
 
             _animator.SetBool("attack", true);
-            _animator.SetLayerWeight(1, 1);
+            //_animator.SetLayerWeight(1, 1);
             keepAttack = true;
         }
 
@@ -159,7 +144,7 @@ namespace SkyTrespass.Character
         {
 
             _animator.SetBool("attack", false);
-
+            keepAttack = false;
         }
 
         public void StopRigidbody(bool s)
@@ -167,7 +152,6 @@ namespace SkyTrespass.Character
             _rigidbody.useGravity = !s;
             _rigidbody.isKinematic = s;
         }
-
         public void MoveAddDelt()
         {
             if (moveDelt.Equals(Vector2.zero))
@@ -240,14 +224,17 @@ namespace SkyTrespass.Character
 
         public void OnAim()
         {
-            if (myWeapons == WeaponsType.pisol || myWeapons == WeaponsType.shoot)
+            if (myWeapons == WeaponsType.shoot)
             {
                 SetAimState(!isAim);
             }
             else
             {
                 isAim = false;
+                SetAimState(false);
             }
+
+           
         }
 
         public void OnMainButtonPress()
@@ -272,6 +259,20 @@ namespace SkyTrespass.Character
 
             EndAttack();
 
+        }
+
+
+        public void OnButton1()
+        {
+            ChangeWaepons(WeaponsType.none);
+        }
+        public void OnButton2()
+        {
+            ChangeWaepons(WeaponsType.shoot);
+        }
+        public void OnButton3()
+        {
+            ChangeWaepons(WeaponsType.pisol);
         }
 
     }

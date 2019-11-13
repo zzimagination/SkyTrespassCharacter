@@ -12,6 +12,7 @@ namespace SkyTrespass.Character
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             i = 0;
+            animator.SetLayerWeight(1, 1);
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
