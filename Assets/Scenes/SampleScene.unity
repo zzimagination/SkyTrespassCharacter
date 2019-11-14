@@ -1443,7 +1443,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _animator: {fileID: 1268113836}
   _rigidbody: {fileID: 172554072}
-  equipmentManager: {fileID: 1268113838}
   moveSpeed: 5
   isAim: 0
   pistolRoot: {fileID: 1991573138}
@@ -1535,11 +1534,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fdc37ef9ae364945b94cea3be92a007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rifle1: {fileID: 1929945856427694, guid: 3e934b6e646fe8c42bacd74c289658f6, type: 3}
+  rifle1: {fileID: 6946684046442630651, guid: 1f587a8cbab548540867fc36c8cbbdf4, type: 3}
   rifle2: {fileID: 1885697736387182, guid: 358a1c79df7b3a74b814f7d567fcd80a, type: 3}
   pistol1: {fileID: 1933859980447990, guid: 4a98c18100209d9408306fcf0240b268, type: 3}
   pistol2: {fileID: 1306635022288864, guid: 484dc341396335f458d85c68df5cb481, type: 3}
   current: {fileID: 0}
+  currentWeapons: {fileID: 0}
   rifleRoot: {fileID: 1614743861}
   pistolRoot: {fileID: 1991573138}
 --- !u!1 &1282770020

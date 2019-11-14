@@ -78,6 +78,14 @@ namespace SkyTrespass.Character
             _animator.SetBool("down", isDown);
         }
 
+        private void OnAnimatorIK(int layerIndex)
+        {
+            if(layerIndex==0)
+            {
+
+            }
+        }
+
 
 #if UNITY_EDITOR
         Vector3 nextGizmosPos;

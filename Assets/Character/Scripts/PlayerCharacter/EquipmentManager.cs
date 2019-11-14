@@ -15,7 +15,7 @@ namespace SkyTrespass.Character
         public GameObject pistol2;
 
         public GameObject current;
-
+        public Weaponsbase currentWeapons;
         public Transform rifleRoot;
         public Transform pistolRoot;
 
@@ -25,28 +25,33 @@ namespace SkyTrespass.Character
         // Start is called before the first frame update
         void Start()
         {
-           
+
         }
 
         // Update is called once per frame
         void Update()
         {
-           
+
         }
 
         public void ChangeWeapons(WeaponsType weapons)
         {
             if (current != null)
                 Destroy(current);
-            if (weapons== WeaponsType.none)
+            if (weapons == WeaponsType.none)
             {
                 current = null;
-            }else if(weapons== WeaponsType.shoot)
+                currentWeapons = null;
+            }
+            else if (weapons == WeaponsType.shoot)
             {
                 current = Instantiate(rifle1, rifleRoot);
-            }else if(weapons== WeaponsType.pisol)
+                currentWeapons = current.GetComponent<Weaponsbase>();
+            }
+            else if (weapons == WeaponsType.pisol)
             {
                 current = Instantiate(pistol1, pistolRoot);
+                currentWeapons = current.GetComponent<Weaponsbase>();
 
             }
 

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1123968840738412
+--- !u!1 &6944919044103685718
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,69 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4894873160982382}
-  - component: {fileID: 33947398903134644}
-  - component: {fileID: 23512579588403882}
+  - component: {fileID: 6944919044103685717}
+  m_Layer: 0
+  m_Name: Left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6944919044103685717
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6944919044103685718}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.11, y: 0.0272, z: 0.34}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6948836648786096843}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6944919044231783285
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6944919044231783284}
+  m_Layer: 0
+  m_Name: Right
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6944919044231783284
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6944919044231783285}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: -0.02, z: -0.0098}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6948836648786096843}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6945308382750240057
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6949103493505897531}
+  - component: {fileID: 6924801103033283297}
+  - component: {fileID: 6931822138848311807}
   m_Layer: 0
   m_Name: SM_Wep_Rifle_Gold_Mag_01
   m_TagString: Untagged
@@ -18,35 +78,35 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4894873160982382
+--- !u!4 &6949103493505897531
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1123968840738412}
+  m_GameObject: {fileID: 6945308382750240057}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.011572051, y: -0.007476381, z: -0.0047711874}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 4069356275186078}
+  m_Father: {fileID: 6948836648786096843}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &33947398903134644
+--- !u!33 &6924801103033283297
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1123968840738412}
+  m_GameObject: {fileID: 6945308382750240057}
   m_Mesh: {fileID: 4300006, guid: 986d4564c1f3aef418545660f6a7b68c, type: 3}
---- !u!23 &23512579588403882
+--- !u!23 &6931822138848311807
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1123968840738412}
+  m_GameObject: {fileID: 6945308382750240057}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -78,7 +138,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!1 &1248621770298344
+--- !u!1 &6945993795270908093
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,9 +146,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4748927351698122}
-  - component: {fileID: 33011972628545416}
-  - component: {fileID: 23214607407781984}
+  - component: {fileID: 6949494083605756319}
+  - component: {fileID: 6923166385220138205}
+  - component: {fileID: 6931944298284274485}
   m_Layer: 0
   m_Name: SM_Wep_Rifle_Gold_Trigger_01
   m_TagString: Untagged
@@ -96,35 +156,35 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4748927351698122
+--- !u!4 &6949494083605756319
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1248621770298344}
+  m_GameObject: {fileID: 6945993795270908093}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.011572055, y: 0.028833406, z: 0.050247148}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 4069356275186078}
+  m_Father: {fileID: 6948836648786096843}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &33011972628545416
+--- !u!33 &6923166385220138205
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1248621770298344}
+  m_GameObject: {fileID: 6945993795270908093}
   m_Mesh: {fileID: 4300002, guid: 986d4564c1f3aef418545660f6a7b68c, type: 3}
---- !u!23 &23214607407781984
+--- !u!23 &6931944298284274485
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1248621770298344}
+  m_GameObject: {fileID: 6945993795270908093}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -156,7 +216,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!1 &1252474975400304
+--- !u!1 &6946024030308465189
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -164,9 +224,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4535791884310440}
-  - component: {fileID: 33770710142043436}
-  - component: {fileID: 23481540818364152}
+  - component: {fileID: 6949426221179034877}
+  - component: {fileID: 6923920881453829753}
+  - component: {fileID: 6931641555759574445}
   m_Layer: 0
   m_Name: SM_Wep_Rifle_Gold_Slide_01
   m_TagString: Untagged
@@ -174,35 +234,35 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4535791884310440
+--- !u!4 &6949426221179034877
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252474975400304}
+  m_GameObject: {fileID: 6946024030308465189}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.0075210375, y: 0.09792409, z: 0.18002445}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 4069356275186078}
+  m_Father: {fileID: 6948836648786096843}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &33770710142043436
+--- !u!33 &6923920881453829753
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252474975400304}
+  m_GameObject: {fileID: 6946024030308465189}
   m_Mesh: {fileID: 4300004, guid: 986d4564c1f3aef418545660f6a7b68c, type: 3}
---- !u!23 &23481540818364152
+--- !u!23 &6931641555759574445
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252474975400304}
+  m_GameObject: {fileID: 6946024030308465189}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -234,7 +294,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!1 &1929945856427694
+--- !u!1 &6946684046442630651
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -242,9 +302,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4069356275186078}
-  - component: {fileID: 33999286348878712}
-  - component: {fileID: 23302603311792456}
+  - component: {fileID: 6948836648786096843}
+  - component: {fileID: 6924712381839988781}
+  - component: {fileID: 6932032184666458653}
+  - component: {fileID: 3022463336263880396}
   m_Layer: 0
   m_Name: SM_Wep_Rifle_Gold_01
   m_TagString: Untagged
@@ -252,38 +313,40 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4069356275186078
+--- !u!4 &6948836648786096843
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1929945856427694}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_GameObject: {fileID: 6946684046442630651}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4894873160982382}
-  - {fileID: 4535791884310440}
-  - {fileID: 4748927351698122}
+  - {fileID: 6949103493505897531}
+  - {fileID: 6949426221179034877}
+  - {fileID: 6949494083605756319}
+  - {fileID: 6944919044231783284}
+  - {fileID: 6944919044103685717}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &33999286348878712
+--- !u!33 &6924712381839988781
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1929945856427694}
+  m_GameObject: {fileID: 6946684046442630651}
   m_Mesh: {fileID: 4300000, guid: 986d4564c1f3aef418545660f6a7b68c, type: 3}
---- !u!23 &23302603311792456
+--- !u!23 &6932032184666458653
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1929945856427694}
+  m_GameObject: {fileID: 6946684046442630651}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -315,3 +378,17 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &3022463336263880396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6946684046442630651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d7e88266d521b64391ba91e246df967, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftIK: {fileID: 6944919044103685717}
+  rightIK: {fileID: 6944919044231783284}

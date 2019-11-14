@@ -13,5 +13,14 @@ namespace SkyTrespass.Character {
             controller.StopRigidbody(true);
         }
 
+
+        public override void OnStateIK(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
+        {
+            var eq= animator.GetComponent<EquipmentManager>();
+            if(eq)
+            {
+              
+            }
+        }
     }
 }
