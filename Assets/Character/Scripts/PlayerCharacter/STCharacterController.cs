@@ -18,6 +18,9 @@ namespace SkyTrespass.Character
         
         public bool keepAttack;
 
+        public float attackTimeDistance;
+        float attackTimer;
+
         Vector2 moveDelt;
         Vector2 rotateDelt;
         PickUp currentPick;
@@ -78,14 +81,6 @@ namespace SkyTrespass.Character
             _animator.SetBool("down", isDown);
         }
 
-        private void OnAnimatorIK(int layerIndex)
-        {
-            if(layerIndex==0)
-            {
-
-            }
-        }
-
 
 #if UNITY_EDITOR
         Vector3 nextGizmosPos;
@@ -132,7 +127,6 @@ namespace SkyTrespass.Character
             _animator.SetBool("isAim", isAim);
         }
 
-
         public void ChangeWaepons(WeaponsType weapons)
         {
             _animator.SetInteger("weapons", (int)weapons);
@@ -146,7 +140,10 @@ namespace SkyTrespass.Character
             _animator.SetBool("attack", true);
             //_animator.SetLayerWeight(1, 1);
             keepAttack = true;
+
         }
+
+
 
         public void EndAttack()
         {

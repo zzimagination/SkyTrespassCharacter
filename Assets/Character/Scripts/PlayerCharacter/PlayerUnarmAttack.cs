@@ -8,11 +8,13 @@ namespace SkyTrespass.Character
     public class PlayerUnarmAttack : StateMachineBehaviour
     {
         int i;
+        float attackTimer;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             i = 0;
             animator.SetLayerWeight(1, 1);
+            attackTimer = 0;
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -23,7 +25,17 @@ namespace SkyTrespass.Character
                 Random.InitState(i);
                 int t= Random.Range(0, 3);
                 animator.SetFloat("unarmAttackType", 0.5f * t);
+
+                
             }
+
+            if(stateInfo.normalizedTime-attackTimer>0.5f)
+            {
+                attackTimer++;
+                animator.GetComponent<AttackMachine>().RaycastAttackRange();
+            }
+
+
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)

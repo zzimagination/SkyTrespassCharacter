@@ -20,7 +20,7 @@ namespace SkyTrespass.Character
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if(!animator.GetComponent<STCharacterController>().keepAttack)
+            //if(!animator.GetComponent<STCharacterController>().keepAttack)
                 animator.SetLayerWeight(1, 0);
         }
 
