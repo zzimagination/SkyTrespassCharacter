@@ -6,13 +6,16 @@ namespace SkyTrespass.Character
 {
     public class PlayerMove : StateMachineBehaviour
     {
+        STCharacterController controller;
+        public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
+        {
+            controller = animator.GetComponent<STCharacterController>();
+            controller.StopRigidbody(false);
+        }
         public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-         
-            var controller= animator.GetComponent<STCharacterController>();
             controller.MoveAddDelt();
             controller.RotateDelt();
-            controller.StopRigidbody(false);
         }
     }
 }

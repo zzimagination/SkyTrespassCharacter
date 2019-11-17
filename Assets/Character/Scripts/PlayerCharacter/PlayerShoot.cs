@@ -7,34 +7,64 @@ namespace SkyTrespass.Character
     public class PlayerShoot : StateMachineBehaviour
     {
         bool isChangeArm;
+
+        float attackTimer;
+        bool attackOnce;
+        AttackMachine attackMachine;
+        EquipmentManager equipmentManager;
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
+            equipmentManager = animator.GetComponent<EquipmentManager>();
+            attackMachine = animator.GetComponent<AttackMachine>();
             animator.SetLayerWeight(1, 1);
-
+            attackTimer = attackMachine.attackCD;
+            attackOnce = false;
+            attackMachine = animator.GetComponent<AttackMachine>();
+            equipmentManager = animator.GetComponent<EquipmentManager>();
         }
         
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            
+            bool attack= animator.GetBool("attack");
+            if (attack)
+            {
+                if (attackTimer > attackMachine.attackCD)
+                {
+                    attackTimer = 0;
+                    attackMachine.ShootAttack();
+                    attackOnce = true;
+                }
+                else
+                {
+                    attackTimer += Time.deltaTime;
+                }
+            }else
+            {
+                if(attackOnce==false)
+                {
+                    attackMachine.ShootAttack();
+                    attackOnce = true;
+                }
+            }
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            //if(!animator.GetComponent<STCharacterController>().keepAttack)
                 animator.SetLayerWeight(1, 0);
         }
 
         public override void OnStateIK(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-            var eq = animator.GetComponent<EquipmentManager>();
-            if (eq)
-            {
-                var leftPos = eq.currentWeapons.leftIK.position;
-                var rightPos = eq.currentWeapons.rightIK.position;
 
-                animator.SetIKPosition(AvatarIKGoal.LeftHand, leftPos);
-                animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
-               
+            if (equipmentManager && equipmentManager.currentWeapons)
+            {
+                if (equipmentManager.currentWeapons.HasIK())
+                {
+                    var leftPos = equipmentManager.currentWeapons.leftIK.position;
+
+                    animator.SetIKPosition(AvatarIKGoal.LeftHand, leftPos);
+                    animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+                }
             }
         }
     }

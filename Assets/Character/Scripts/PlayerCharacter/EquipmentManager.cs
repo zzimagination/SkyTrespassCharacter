@@ -13,14 +13,18 @@ namespace SkyTrespass.Character
 
         public GameObject pistol1;
         public GameObject pistol2;
-
+        public STCharacterController controller;
+        public AttackMachine attackMachine;
         public GameObject current;
-        public Weaponsbase currentWeapons;
         public Transform rifleRoot;
         public Transform pistolRoot;
 
         WeaponsType myWeaponsType;
 
+
+        public Weaponsbase currentWeapons;
+        public Weaponsbase currentWeapons_1;
+        public Weaponsbase currentWeapons_2;
 
         // Start is called before the first frame update
         void Start()
@@ -34,27 +38,32 @@ namespace SkyTrespass.Character
 
         }
 
-        public void ChangeWeapons(WeaponsType weapons)
+        public WeaponsType ChangeWeapons(int id)
         {
             if (current != null)
                 Destroy(current);
-            if (weapons == WeaponsType.none)
+            if (id == 000)
             {
                 current = null;
                 currentWeapons = null;
+                attackMachine.SetWeapons(null);
+                return WeaponsType.none;
             }
-            else if (weapons == WeaponsType.shoot)
+            else if (id == 001)
             {
                 current = Instantiate(rifle1, rifleRoot);
                 currentWeapons = current.GetComponent<Weaponsbase>();
+                attackMachine.SetWeapons(currentWeapons);
+                return currentWeapons.weaponsType;
             }
-            else if (weapons == WeaponsType.pisol)
+            else if (id == 002)
             {
                 current = Instantiate(pistol1, pistolRoot);
                 currentWeapons = current.GetComponent<Weaponsbase>();
-
+                attackMachine.SetWeapons(currentWeapons);
+                return currentWeapons.weaponsType;
             }
-
+            return WeaponsType.none;
         }
 
     }

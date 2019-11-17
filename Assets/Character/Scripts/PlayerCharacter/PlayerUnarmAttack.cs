@@ -9,9 +9,11 @@ namespace SkyTrespass.Character
     {
         int i;
         float attackTimer;
+        AttackMachine attackMachine;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
+            attackMachine = animator.GetComponent<AttackMachine>();
             i = 0;
             animator.SetLayerWeight(1, 1);
             attackTimer = 0;
@@ -25,14 +27,12 @@ namespace SkyTrespass.Character
                 Random.InitState(i);
                 int t= Random.Range(0, 3);
                 animator.SetFloat("unarmAttackType", 0.5f * t);
-
-                
             }
 
-            if(stateInfo.normalizedTime-attackTimer>0.5f)
+            if(stateInfo.normalizedTime-attackTimer>attackMachine.fistAttackCD)
             {
                 attackTimer++;
-                animator.GetComponent<AttackMachine>().RaycastAttackRange();
+                attackMachine.FistAttack();
             }
 
 
