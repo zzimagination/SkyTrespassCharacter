@@ -10,7 +10,11 @@ namespace SkyTrespass.Character {
         {
             controller = animator.GetComponent<STCharacterController>();
             controller.StopRigidbody(false);
-            controller.BeginFall();
+
+            controller.MainButtonPress = null;
+            controller.MainButtonUp = null;
+            controller.AimButton = null;
+            controller.isFall = true;
         }
 
         public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -20,7 +24,10 @@ namespace SkyTrespass.Character {
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-            controller.EndFall();
+            controller.MainButtonPress = controller.PickOrAttack;
+            controller.AimButton = controller.ChangeAimState;
+            controller.MainButtonUp = controller.EndAttack;
+            controller.isFall = false;
         }
     }
 }

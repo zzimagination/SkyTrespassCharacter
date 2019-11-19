@@ -13,12 +13,15 @@ namespace SkyTrespass.Character
         public EquipmentManager equipment;
         public float moveSpeed;
 
+        [HideInInspector]
         public bool isAim;
+        [HideInInspector]
         public bool isFall;
-
+        [HideInInspector]
         public bool keepAttack;
+        [HideInInspector]
+        public bool prepareIdle;
 
-        public float attackTimeDistance;
         float attackTimer;
 
         Vector2 moveDelt;
@@ -26,7 +29,7 @@ namespace SkyTrespass.Character
         PickUp currentPick;
 
         float DisToGround;
-        RaycastHit[] raycastResult = new RaycastHit[4];
+        RaycastHit[] raycastResult = new RaycastHit[8];
 
         Vector3 PositionTarget;
         Quaternion RotationTarget;
@@ -36,10 +39,10 @@ namespace SkyTrespass.Character
         const float _internalRunSpeed = 4.2f;
         const float _InternalWalkSpeed = 2f;
 
-        buttonAction AimButton;
-        buttonAction MainButtonPress;
-        buttonAction MainButtonUp;
-        delegate void buttonAction();
+        public buttonAction AimButton;
+        public buttonAction MainButtonPress;
+        public buttonAction MainButtonUp;
+        public delegate void buttonAction();
 
 
         public PickUp CurrentPick
@@ -109,6 +112,7 @@ namespace SkyTrespass.Character
 
 #endif
 
+
         IEnumerator WaitForAnimationEnd()
         {
             GetComponent<PlayerInput>().PassivateInput();
@@ -119,7 +123,7 @@ namespace SkyTrespass.Character
             GetComponent<PlayerInput>().ActivateInput();
         }
 
-        void ChangeAimState()
+        public void ChangeAimState()
         {
             if (myWeapons != WeaponsType.shoot)
             {
@@ -129,9 +133,10 @@ namespace SkyTrespass.Character
             moveSpeed = isAim ? _InternalWalkSpeed : _internalRunSpeed;
             _animator.SetFloat("speed", isAim ? 0 : 1);
             _animator.SetBool("isAim", isAim);
+            _animator.SetBool("attack", false);
         }
 
-        void PickOrAttack()
+        public void PickOrAttack()
         {
             if (CurrentPick)
             {
@@ -144,7 +149,7 @@ namespace SkyTrespass.Character
             }
         }
 
-        void PickUp()
+        public void PickUp()
         {
             CurrentPick.Pick();
 
@@ -180,21 +185,6 @@ namespace SkyTrespass.Character
             keepAttack = false;
         }
 
-        public void BeginFall()
-        {
-            MainButtonPress = null;
-            MainButtonUp = null;
-            AimButton = null;
-            isFall = true;
-        }
-        public void EndFall()
-        {
-            MainButtonPress = PickOrAttack;
-            AimButton = ChangeAimState;
-            MainButtonUp = EndAttack;
-            isFall = false;
-        }
-
         public void InputSwitch(bool open)
         {
             if (open)
@@ -212,7 +202,33 @@ namespace SkyTrespass.Character
             _rigidbody.useGravity = !s;
             _rigidbody.isKinematic = s;
         }
+        public void Idle()
+        {
+            if (prepareIdle)
+            {
+                int c = Physics.RaycastNonAlloc(_rigidbody.position, Vector3.down, raycastResult);
+                if (c > 0)
+                {
+                    Vector3 tall = raycastResult[0].point;
+                    for (int i = 1; i < c; i++)
+                    {
+                        if(raycastResult[i].point.y>tall.y)
+                        {
+                            tall = raycastResult[i].point;
+                        }
+                    }
+                    if(_rigidbody.position.y-tall.y>0)
+                    {
+                        StopRigidbody(false);
+                    }
+                }
 
+            }else
+            {
+                StopRigidbody(true);
+            }
+
+        }
         public void MoveAddDelt()
         {
             if (moveDelt.Equals(Vector2.zero))
@@ -221,12 +237,10 @@ namespace SkyTrespass.Character
             Vector3 pos = _rigidbody.position + new Vector3(moveDelt.x, 0, moveDelt.y) * moveSpeed * Time.fixedDeltaTime;
             Vector3 next = pos;
             next.y += 0.3f;
-
             int c = Physics.RaycastNonAlloc(next, Vector3.down, raycastResult, 0.6f, -1);
             if (c > 0)
             {
-                Vector3 tall;
-                tall = raycastResult[0].point;
+                Vector3 tall= raycastResult[0].point;
                 for (int i = 1; i < c; i++)
                 {
                     if (raycastResult[i].point.y > tall.y)
@@ -235,8 +249,6 @@ namespace SkyTrespass.Character
                     }
                 }
                 pos = tall;
-
-                nextGizmosPos = pos;
             }
 
             _rigidbody.MovePosition(pos);
