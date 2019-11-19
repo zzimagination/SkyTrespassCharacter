@@ -7,6 +7,7 @@ namespace SkyTrespass.Character
     public class BulletLiner : MonoBehaviour
     {
         public LineRenderer lineRenderer;
+        public float timeDispear;
         // Start is called before the first frame update
         void Start()
         {
@@ -16,7 +17,7 @@ namespace SkyTrespass.Character
 
         IEnumerator DestoryMyself()
         {
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(timeDispear);
             Destroy(gameObject);
         }
 

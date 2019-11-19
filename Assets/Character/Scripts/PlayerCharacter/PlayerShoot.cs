@@ -31,7 +31,7 @@ namespace SkyTrespass.Character
                 if (attackTimer > attackMachine.attackCD)
                 {
                     attackTimer = 0;
-                    attackMachine.ShootAttack();
+                    attackMachine.GunAttack();
                     attackOnce = true;
                 }
                 else
@@ -42,7 +42,7 @@ namespace SkyTrespass.Character
             {
                 if(attackOnce==false)
                 {
-                    attackMachine.ShootAttack();
+                    attackMachine.GunAttack();
                     attackOnce = true;
                 }
             }

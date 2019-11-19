@@ -54,16 +54,16 @@ namespace SkyTrespass.Character
         public void FistAttack()
         {
 
-            var number = Physics.OverlapSphereNonAlloc(r_hand.position, _interlfistAttackRange, colliders,~(1<<8));
+            var number = Physics.OverlapSphereNonAlloc(r_hand.position, _interlfistAttackRange, colliders, (1 << 9 | 1 << 10));
             if (number>0)
             {
                 Debug.Log(colliders[0].name);
             }
         }
 
-        public void ShootAttack()
+        public void GunAttack()
         {
-            bool isHit = Physics.Raycast(shootPoint.position, transform.forward, out shootResult, attackMaxDistance, ~(1 << 8));
+            bool isHit = Physics.Raycast(shootPoint.position, transform.forward, out shootResult, attackMaxDistance, (1 << 9|1<<10));
             GameObject obj = Instantiate(shootLinerObj);
             obj.transform.SetParent(currentWeapons.transform);
             obj.transform.position = new Vector3(0, 0, 0);

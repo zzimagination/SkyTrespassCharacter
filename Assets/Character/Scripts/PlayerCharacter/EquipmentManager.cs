@@ -15,16 +15,20 @@ namespace SkyTrespass.Character
         public GameObject pistol2;
         public STCharacterController controller;
         public AttackMachine attackMachine;
-        public GameObject current;
         public Transform rifleRoot;
         public Transform pistolRoot;
+        [HideInInspector]
+        public GameObject current;
+
+
+        [HideInInspector]
+        public Weaponsbase currentWeapons;
+        [HideInInspector]
+        public Weaponsbase currentWeapons_1;
+        [HideInInspector]
+        public Weaponsbase currentWeapons_2;
 
         WeaponsType myWeaponsType;
-
-
-        public Weaponsbase currentWeapons;
-        public Weaponsbase currentWeapons_1;
-        public Weaponsbase currentWeapons_2;
 
         // Start is called before the first frame update
         void Start()
