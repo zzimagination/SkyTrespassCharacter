@@ -1839,9 +1839,9 @@ MonoBehaviour:
   pistol2: {fileID: 6537660892618991361, guid: 7a78bf7c39f8f5a4eb1df98b8bb68592, type: 3}
   controller: {fileID: 1268113834}
   attackMachine: {fileID: 1268113839}
-  current: {fileID: 0}
   rifleRoot: {fileID: 1614743861}
   pistolRoot: {fileID: 1991573138}
+  current: {fileID: 0}
   currentWeapons: {fileID: 0}
   currentWeapons_1: {fileID: 0}
   currentWeapons_2: {fileID: 0}
@@ -1857,10 +1857,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a133a49eb375c34c8aea763a335aa9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  center: {fileID: 1450953211}
+  shootPoint: {fileID: 1450953211}
   r_hand: {fileID: 2033165330}
   currentWeapons: {fileID: 0}
-  shootPoint: {fileID: 0}
   shootLinerObj: {fileID: 0}
   weaponsType: 0
   attackCD: 0
@@ -2060,7 +2059,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1450953211}
   m_Layer: 8
-  m_Name: GameObject
+  m_Name: ShootPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

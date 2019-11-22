@@ -7,13 +7,12 @@ namespace SkyTrespass.Character
     public class AttackMachine : MonoBehaviour
     {
 
-        public Transform center;
+        public Transform shootPoint;
         public Transform r_hand;
 
         [HideInInspector]
         public Weaponsbase currentWeapons;
-        [HideInInspector]
-        public Transform shootPoint;
+
         [HideInInspector]
         public GameObject shootLinerObj;
         [HideInInspector]
@@ -38,16 +37,16 @@ namespace SkyTrespass.Character
             {
                 weaponsType = WeaponsType.none;
                 shootLinerObj = null;
-                shootPoint = null;
                 attackCD = 0;
                 attackMaxDistance = 0;
                 return;
             }
             weaponsType = w.weaponsType;
-            shootPoint = w.shootPoint;
             shootLinerObj = w.bulletLinerObj;
             attackCD = w.attackCD;
             attackMaxDistance = w.attackDistance;
+
+            shootPoint.localPosition = w.shootPoint;
         }
 
 
@@ -65,11 +64,10 @@ namespace SkyTrespass.Character
         {
             bool isHit = Physics.Raycast(shootPoint.position, transform.forward, out shootResult, attackMaxDistance, (1 << 9|1<<10));
             GameObject obj = Instantiate(shootLinerObj);
-            obj.transform.SetParent(currentWeapons.transform);
+            obj.transform.SetParent(shootPoint);
             obj.transform.position = new Vector3(0, 0, 0);
             if (isHit)
             {
-               
                 obj.GetComponent<BulletLiner>().SetPoint(shootPoint.position, shootResult.point);
             }else
             {

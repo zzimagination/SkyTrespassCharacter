@@ -424,7 +424,7 @@ MonoBehaviour:
   weaponsType: 1
   leftIK: {fileID: 6944919044103685717}
   rightIK: {fileID: 6944919044231783284}
-  shootPoint: {fileID: 2186911750601757303}
+  shootPoint: {x: 0.08, y: 1, z: 0.9}
   attackCD: 0.1
   attackDistance: 20
   bulletLinerObj: {fileID: 6903977335012489328, guid: 2fbdc81ecad492d42890fc67a3a939e8,

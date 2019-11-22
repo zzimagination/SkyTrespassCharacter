@@ -11,7 +11,7 @@ namespace SkyTrespass.Character
         public Transform leftIK;
         public Transform rightIK;
 
-        public Transform shootPoint;
+        public Vector3 shootPoint;
 
         public float attackCD;
         public float attackDistance;
