@@ -9,27 +9,25 @@ namespace SkyTrespass.Character
         public WeaponsType weaponsType;
 
         public Transform leftIK;
-        public Transform rightIK;
 
         public Vector3 shootPoint;
+
+
 
         public float attackCD;
         public float attackDistance;
 
 
         public GameObject bulletLinerObj;
-        // Start is called before the first frame update
-        void Start()
+
+        public void Hidden()
         {
-
+            gameObject.SetActive(false);
         }
-
-        // Update is called once per frame
-        void Update()
+        public void Open()
         {
-
+            gameObject.SetActive(true);
         }
-
 
         public bool HasIK()
         {

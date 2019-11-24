@@ -15,6 +15,10 @@ namespace SkyTrespass.Character {
             controller.MainButtonUp = null;
             controller.AimButton = null;
             controller.isFall = true;
+
+            controller.StopAttack();
+
+
         }
 
         public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -26,7 +30,7 @@ namespace SkyTrespass.Character {
         {
             controller.MainButtonPress = controller.PickOrAttack;
             controller.AimButton = controller.ChangeAimState;
-            controller.MainButtonUp = controller.EndAttack;
+            controller.MainButtonUp = controller.StopAttack;
             controller.isFall = false;
         }
     }

@@ -56,7 +56,7 @@ namespace SkyTrespass.Character
             var number = Physics.OverlapSphereNonAlloc(r_hand.position, _interlfistAttackRange, colliders, (1 << 9 | 1 << 10));
             if (number>0)
             {
-                Debug.Log(colliders[0].name);
+
             }
         }
 
@@ -78,29 +78,8 @@ namespace SkyTrespass.Character
 
 #if UNITY_EDITOR
 
-        bool isDraw;
-
         private void OnDrawGizmos()
         {
-            Gizmos.color = Color.red;
-
-            ////Check if there has been a hit yet
-            //if (hitDetect)
-            //{
-            //    //Draw a Ray forward from GameObject toward the hit
-            //    Gizmos.DrawRay(transform.position, transform.forward * hitResult.distance);
-            //    //Draw a cube that extends to where the hit exists
-            //    Gizmos.DrawWireCube(transform.position + transform.forward * hitResult.distance, boxSize);
-            //}
-            ////If there hasn't been a hit yet, draw the ray at the maximum distance
-            //else
-            //{
-            //    //Draw a Ray forward from GameObject toward the maximum distance
-            //Gizmos.DrawRay(shootPoint.position, transform.forward, );
-            //    //Draw a cube at the maximum distance
-            //    Gizmos.DrawWireCube(transform.position + transform.forward , boxSize);
-            //}
-
         }
 #endif
     }

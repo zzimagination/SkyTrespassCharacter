@@ -9,14 +9,13 @@ namespace SkyTrespass.Character
     {
         public STCharacterController characterController;
 
-        public void SetPickUp(PickUp pickUp)
+        public void RegisterPickUp(PickUp pickUp)
         {
-            characterController.SetPickUp(pickUp);
+            characterController.RegisterPickUp(pickUp);
         }
-
-        private void OnTriggerExit(Collider other)
+        public void RemovePickUp(PickUp pickUp)
         {
-            characterController.SetPickUp(null);
+            characterController.RemovePickUp(pickUp);
         }
 
     }

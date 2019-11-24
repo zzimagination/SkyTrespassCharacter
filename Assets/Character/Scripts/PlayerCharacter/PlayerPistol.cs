@@ -4,17 +4,21 @@ using UnityEngine;
 
 namespace SkyTrespass.Character
 {
-    public class PlayerPistol : StateMachineBehaviour
+    public class PlayerPistol : PlayerWpAttack
     {
+
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-            animator.SetLayerWeight(1, 1);
+            PrepareAttack(animator);
         }
-
+        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        {
+            UpdataAttack(animator);
+        }
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            animator.SetLayerWeight(1, 0);
-
+            ExitAttack(animator);
+            characterController.ChangeWeaponsEnd();
         }
 
     }

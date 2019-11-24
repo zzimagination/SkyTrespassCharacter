@@ -9,65 +9,86 @@ namespace SkyTrespass.Character
     public class EquipmentManager : MonoBehaviour
     {
         public GameObject rifle1;
-        public GameObject rifle2;
-
         public GameObject pistol1;
-        public GameObject pistol2;
+
         public STCharacterController controller;
         public AttackMachine attackMachine;
         public Transform rifleRoot;
         public Transform pistolRoot;
-        [HideInInspector]
-        public GameObject current;
 
+        public WeaponsType myWeaponsType;
 
         [HideInInspector]
         public Weaponsbase currentWeapons;
         [HideInInspector]
-        public Weaponsbase currentWeapons_1;
+        public Weaponsbase weapons_1;
         [HideInInspector]
-        public Weaponsbase currentWeapons_2;
+        public Weaponsbase weapons_2;
 
-        WeaponsType myWeaponsType;
+        int weaponsNumber;
 
         // Start is called before the first frame update
         void Start()
         {
-
+            InitWeapons();
         }
 
-        // Update is called once per frame
-        void Update()
-        {
 
-        }
-
-        public WeaponsType ChangeWeapons(int id)
+        Weaponsbase GenerateWeapons(int id)
         {
-            if (current != null)
-                Destroy(current);
-            if (id == 000)
+            if (id == 001)
             {
-                current = null;
-                currentWeapons = null;
-                attackMachine.SetWeapons(null);
-                return WeaponsType.none;
-            }
-            else if (id == 001)
-            {
-                current = Instantiate(rifle1, rifleRoot);
-                currentWeapons = current.GetComponent<Weaponsbase>();
-                attackMachine.SetWeapons(currentWeapons);
-                return currentWeapons.weaponsType;
+                GameObject obj = Instantiate(rifle1, rifleRoot);
+                var w = obj.GetComponent<Weaponsbase>();
+                w.Hidden();
+                return w;
             }
             else if (id == 002)
             {
-                current = Instantiate(pistol1, pistolRoot);
-                currentWeapons = current.GetComponent<Weaponsbase>();
-                attackMachine.SetWeapons(currentWeapons);
-                return currentWeapons.weaponsType;
+                GameObject obj = Instantiate(pistol1, pistolRoot);
+                var w = obj.GetComponent<Weaponsbase>();
+                w.Hidden();
+                return w;
             }
-            return WeaponsType.none;
+            else
+                return null;
+        }
+
+        public void InitWeapons()
+        {
+            weapons_1 = GenerateWeapons(001);
+            weapons_2 = GenerateWeapons(002);
+            currentWeapons = weapons_1;
+            currentWeapons.Open();
+            attackMachine.SetWeapons(currentWeapons);
+            weaponsNumber = 1;
+
+            controller.InitWeapons(currentWeapons.weaponsType);
+        }
+
+        public void ChangeWeapons()
+        {
+            if(currentWeapons)
+                currentWeapons.Hidden();
+            if (weaponsNumber == 1)
+            {
+                weaponsNumber = 2;
+                currentWeapons = weapons_2;
+            }
+            else
+            {
+                weaponsNumber = 1;
+                currentWeapons = weapons_1;
+            }
+            if (currentWeapons)
+            {
+                myWeaponsType = currentWeapons.weaponsType;
+                currentWeapons.Open();
+            }
+            else
+                myWeaponsType = WeaponsType.none;
+            attackMachine.SetWeapons(currentWeapons);
+
         }
 
     }

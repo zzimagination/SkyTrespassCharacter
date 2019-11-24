@@ -11,6 +11,7 @@ namespace SkyTrespass.Character
         public Rigidbody _rigidbody;
         public PlayerInput playerInput;
         public EquipmentManager equipment;
+        public AttackMachine attackMachine;
         public float moveSpeed;
 
         [HideInInspector]
@@ -22,18 +23,18 @@ namespace SkyTrespass.Character
         [HideInInspector]
         public bool prepareIdle;
 
-        float attackTimer;
+        bool isChangeWeapons;
 
         Vector2 moveDelt;
         Vector2 rotateDelt;
-        PickUp currentPick;
+
+        List<PickUp> pickUps;
 
         float DisToGround;
         RaycastHit[] raycastResult = new RaycastHit[8];
 
         Vector3 PositionTarget;
         Quaternion RotationTarget;
-        WeaponsType myWeapons;
 
         const float _internalRotateSpeed = 8;
         const float _internalRunSpeed = 4.2f;
@@ -42,40 +43,19 @@ namespace SkyTrespass.Character
         public buttonAction AimButton;
         public buttonAction MainButtonPress;
         public buttonAction MainButtonUp;
+
         public delegate void buttonAction();
 
-
-        public PickUp CurrentPick
-        {
-            get
-            {
-                return currentPick;
-            }
-            set
-            {
-                currentPick = value;
-            }
-        }
-        public WeaponsType MyWeapons
-        {
-            get
-            {
-                return myWeapons;
-            }
-            set
-            {
-                myWeapons = value;
-            }
-        }
 
         private void Start()
         {
             MainButtonPress = PickOrAttack;
             AimButton = ChangeAimState;
-            MainButtonUp = EndAttack;
+            MainButtonUp = StopAttack;
+
+            pickUps = new List<PickUp>();
         }
 
-        // Update is called once per frame
         void Update()
         {
             if (!transform.localPosition.Equals(_rigidbody.position))
@@ -95,40 +75,18 @@ namespace SkyTrespass.Character
 
 
 #if UNITY_EDITOR
-        Vector3 nextGizmosPos;
         private void OnDrawGizmos()
         {
-            Gizmos.color = Color.gray;
-            Gizmos.DrawSphere(_rigidbody.position, 0.05f);
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(nextGizmosPos, 0.05f);
+
         }
-
-
         private void OnGUI()
         {
-            GUILayout.Label("瞄准" + isAim.ToString());
+          
         }
-
 #endif
-
-
-        IEnumerator WaitForAnimationEnd()
-        {
-            GetComponent<PlayerInput>().PassivateInput();
-            yield return null;
-            var stateinfo = _animator.GetCurrentAnimatorStateInfo(0);
-            float time = stateinfo.length;
-            yield return new WaitForSeconds(time);
-            GetComponent<PlayerInput>().ActivateInput();
-        }
 
         public void ChangeAimState()
         {
-            if (myWeapons != WeaponsType.shoot)
-            {
-                return;
-            }
             isAim = !isAim;
             moveSpeed = isAim ? _InternalWalkSpeed : _internalRunSpeed;
             _animator.SetFloat("speed", isAim ? 0 : 1);
@@ -138,51 +96,55 @@ namespace SkyTrespass.Character
 
         public void PickOrAttack()
         {
-            if (CurrentPick)
+            if (pickUps.Count > 0)
             {
-                PickUp();
-
+                pickUps[0].Pick();
+                pickUps.RemoveAt(0);
+                _animator.SetTrigger("pick");
             }
             else
             {
-                Attack();
+                if(!keepAttack)
+                    _animator.SetBool("attack", true);
             }
         }
 
-        public void PickUp()
+        public void InitWeapons(WeaponsType type)
         {
-            CurrentPick.Pick();
-
-            CurrentPick = null;
-            _animator.SetTrigger("pick");
+            _animator.SetInteger("weapons", (int)type);
+        }
+        public void ChangeWeapons()
+        {
+            isChangeWeapons = true;
+            StopAttack();
+            if (!keepAttack)
+                ChangeWeaponsEnd();
+        }
+        public void ChangeWeaponsEnd()
+        {
+            if (!isChangeWeapons)
+                return;
+            isAim = false;
+            moveSpeed = _internalRunSpeed;
+            equipment.ChangeWeapons();
+            _animator.SetInteger("weapons", (int)equipment.myWeaponsType);
+            _animator.SetFloat("speed", 1);
+            _animator.SetBool("isAim", false);
+            isChangeWeapons = false;
         }
 
-        public void ChangeWaepons(WeaponsType weapons)
+
+        public void EnterAttack()
         {
-            MyWeapons = weapons;
-            if (weapons == WeaponsType.shoot)
-            {
-                isAim = false;
-                moveSpeed = isAim ? _InternalWalkSpeed : _internalRunSpeed;
-                _animator.SetFloat("speed", isAim ? 0 : 1);
-                _animator.SetBool("isAim", isAim);
-            }
-
-            _animator.SetInteger("weapons", (int)weapons);
-        }
-
-        public void Attack()
-        {
-
-            _animator.SetBool("attack", true);
-            //_animator.SetLayerWeight(1, 1);
             keepAttack = true;
-
         }
-        public void EndAttack()
+        public void ExitAttack()
+        {
+            keepAttack = false;
+        }
+        public void StopAttack()
         {
             _animator.SetBool("attack", false);
-            keepAttack = false;
         }
 
         public void InputSwitch(bool open)
@@ -197,11 +159,13 @@ namespace SkyTrespass.Character
 
             }
         }
+
         public void StopRigidbody(bool s)
         {
             _rigidbody.useGravity = !s;
             _rigidbody.isKinematic = s;
         }
+
         public void Idle()
         {
             if (prepareIdle)
@@ -212,18 +176,19 @@ namespace SkyTrespass.Character
                     Vector3 tall = raycastResult[0].point;
                     for (int i = 1; i < c; i++)
                     {
-                        if(raycastResult[i].point.y>tall.y)
+                        if (raycastResult[i].point.y > tall.y)
                         {
                             tall = raycastResult[i].point;
                         }
                     }
-                    if(_rigidbody.position.y-tall.y>0)
+                    if (_rigidbody.position.y - tall.y > 0)
                     {
                         StopRigidbody(false);
                     }
                 }
 
-            }else
+            }
+            else
             {
                 StopRigidbody(true);
             }
@@ -240,7 +205,7 @@ namespace SkyTrespass.Character
             int c = Physics.RaycastNonAlloc(next, Vector3.down, raycastResult, 0.6f, -1);
             if (c > 0)
             {
-                Vector3 tall= raycastResult[0].point;
+                Vector3 tall = raycastResult[0].point;
                 for (int i = 1; i < c; i++)
                 {
                     if (raycastResult[i].point.y > tall.y)
@@ -268,9 +233,16 @@ namespace SkyTrespass.Character
             _rigidbody.MoveRotation(qua);
         }
 
-        public void SetPickUp(PickUp obj)
+        public void RegisterPickUp(PickUp obj)
         {
-            CurrentPick = obj;
+            pickUps.Add(obj);
+        }
+        public void RemovePickUp(PickUp obj)
+        {
+            if (pickUps.Count == 0)
+                return;
+            if (pickUps.Contains(obj))
+                pickUps.Remove(obj);
         }
 
         public void HasGuns()
@@ -278,11 +250,15 @@ namespace SkyTrespass.Character
             isAim = false;
         }
 
+
+
+
         public void OnMove(InputValue value)
         {
 
             moveDelt = value.Get<Vector2>();
         }
+
         public void OnRotate(InputValue value)
         {
             rotateDelt = value.Get<Vector2>();
@@ -304,18 +280,11 @@ namespace SkyTrespass.Character
         }
 
 
-        public void OnButton1()
+        public void OnChangeWeapons()
         {
-            ChangeWaepons(equipment.ChangeWeapons(000));
+            ChangeWeapons();
         }
-        public void OnButton2()
-        {
-            ChangeWaepons(equipment.ChangeWeapons(001));
-        }
-        public void OnButton3()
-        {
-            ChangeWaepons(equipment.ChangeWeapons(002));
-        }
+
 
     }
 }

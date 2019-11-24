@@ -718,7 +718,7 @@ Light:
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
-    m_Bias: 0.05
+    m_Bias: 0.01
     m_NormalBias: 0.4
     m_NearPlane: 0.2
     m_CullingMatrixOverride:
@@ -742,7 +742,7 @@ Light:
   m_Cookie: {fileID: 0}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -1439,6 +1439,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c8efefe260382c49bf9efe083198fd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  open: 1
 --- !u!1001 &1268113832
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1742,6 +1743,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 172554072}
   playerInput: {fileID: 1268113835}
   equipment: {fileID: 1268113838}
+  attackMachine: {fileID: 0}
   moveSpeed: 5
   isAim: 0
   isFall: 0
@@ -1834,17 +1836,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rifle1: {fileID: 6946684046442630651, guid: 1f587a8cbab548540867fc36c8cbbdf4, type: 3}
-  rifle2: {fileID: 6946684046442630651, guid: 1f587a8cbab548540867fc36c8cbbdf4, type: 3}
   pistol1: {fileID: 6537660892618991361, guid: 7a78bf7c39f8f5a4eb1df98b8bb68592, type: 3}
-  pistol2: {fileID: 6537660892618991361, guid: 7a78bf7c39f8f5a4eb1df98b8bb68592, type: 3}
   controller: {fileID: 1268113834}
   attackMachine: {fileID: 1268113839}
   rifleRoot: {fileID: 1614743861}
   pistolRoot: {fileID: 1991573138}
-  current: {fileID: 0}
+  myWeaponsType: 0
   currentWeapons: {fileID: 0}
-  currentWeapons_1: {fileID: 0}
-  currentWeapons_2: {fileID: 0}
+  weapons_1: {fileID: 0}
+  weapons_2: {fileID: 0}
 --- !u!114 &1268113839
 MonoBehaviour:
   m_ObjectHideFlags: 0
