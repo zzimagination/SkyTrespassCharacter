@@ -15,14 +15,14 @@ namespace SkyTrespass.Character
         public float moveSpeed;
 
         [HideInInspector]
-        public bool isAim;
-        [HideInInspector]
         public bool isFall;
         [HideInInspector]
         public bool keepAttack;
         [HideInInspector]
         public bool prepareIdle;
 
+
+        bool isAim;
         bool isChangeWeapons;
 
         Vector2 moveDelt;
@@ -45,6 +45,22 @@ namespace SkyTrespass.Character
         public buttonAction MainButtonUp;
 
         public delegate void buttonAction();
+
+        public bool IsAim
+        {
+            get
+            {
+                return isAim;
+            }
+            set
+            {
+                isAim = value;
+                attackMachine.isAim = isAim;
+                _animator.SetFloat("attackSpeedMul",isAim?attackMachine.gunAttackInfo.aimAttackCD:attackMachine.gunAttackInfo.attackCD);
+                _animator.SetFloat("speed",isAim?0:1);
+                _animator.SetBool("isAim", isAim);
+            }
+        }
 
 
         private void Start()
@@ -87,11 +103,9 @@ namespace SkyTrespass.Character
 
         public void ChangeAimState()
         {
-            isAim = !isAim;
-            moveSpeed = isAim ? _InternalWalkSpeed : _internalRunSpeed;
-            _animator.SetFloat("speed", isAim ? 0 : 1);
-            _animator.SetBool("isAim", isAim);
-            _animator.SetBool("attack", false);
+            IsAim = !IsAim;
+            moveSpeed = IsAim ? _InternalWalkSpeed : _internalRunSpeed;
+            _animator.SetBool("changeAim", true);
         }
 
         public void PickOrAttack()
@@ -111,6 +125,7 @@ namespace SkyTrespass.Character
 
         public void InitWeapons(WeaponsType type)
         {
+            IsAim = false;
             _animator.SetInteger("weapons", (int)type);
         }
         public void ChangeWeapons()
@@ -124,12 +139,11 @@ namespace SkyTrespass.Character
         {
             if (!isChangeWeapons)
                 return;
-            isAim = false;
+            IsAim = false;
             moveSpeed = _internalRunSpeed;
             equipment.ChangeWeapons();
             _animator.SetInteger("weapons", (int)equipment.myWeaponsType);
-            _animator.SetFloat("speed", 1);
-            _animator.SetBool("isAim", false);
+
             isChangeWeapons = false;
         }
 
@@ -247,7 +261,7 @@ namespace SkyTrespass.Character
 
         public void HasGuns()
         {
-            isAim = false;
+            IsAim = false;
         }
 
 

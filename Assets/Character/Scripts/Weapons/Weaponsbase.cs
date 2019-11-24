@@ -7,18 +7,11 @@ namespace SkyTrespass.Character
     public class Weaponsbase : MonoBehaviour
     {
         public WeaponsType weaponsType;
-
         public Transform leftIK;
-
         public Vector3 shootPoint;
-
-
-
-        public float attackCD;
-        public float attackDistance;
-
-
         public GameObject bulletLinerObj;
+
+        public WeaponsInfo weaponsInfo;
 
         public void Hidden()
         {

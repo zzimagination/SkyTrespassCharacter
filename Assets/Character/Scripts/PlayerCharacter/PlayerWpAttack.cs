@@ -7,6 +7,7 @@ namespace SkyTrespass.Character
 
     public class PlayerWpAttack : StateMachineBehaviour
     {
+        public float attackTiming;
         protected bool isChangeArm;
 
         protected float attackTimer;
@@ -18,45 +19,32 @@ namespace SkyTrespass.Character
         protected void PrepareAttack(Animator animator)
         {
             characterController = animator.GetComponent<STCharacterController>();
-            equipmentManager = animator.GetComponent<EquipmentManager>();
-            attackMachine = animator.GetComponent<AttackMachine>();
+            equipmentManager = characterController.equipment;
+            attackMachine = characterController.attackMachine;
 
             characterController.EnterAttack();
             animator.SetLayerWeight(1, 1);
-            attackTimer = attackMachine.attackCD;
-            attackOnce = false;
+            attackTimer = 0;
         }
 
-        protected void UpdataAttack(Animator animator)
+        protected void UpdataAttack(Animator animator, AnimatorStateInfo state)
         {
-            bool attack = animator.GetBool("attack");
-            if (attack)
+            if (state.normalizedTime - attackTimer > attackTiming)
             {
-                if (attackTimer > attackMachine.attackCD)
-                {
-                    attackTimer = 0;
-                    attackMachine.GunAttack();
-                    attackOnce = true;
-                }
-                else
-                {
-                    attackTimer += Time.deltaTime;
-                }
+                attackTimer++;
+                attackMachine.GunAttack();
             }
-            else
-            {
-                if (attackOnce == false)
-                {
-                    attackMachine.GunAttack();
-                    attackOnce = true;
-                }
-            }
+           
         }
 
         protected void ExitAttack(Animator animator)
         {
             characterController.ExitAttack();
-            animator.SetLayerWeight(1, 0);
+            if (animator.GetBool("changeAim"))
+                animator.SetBool("changeAim", false);
+            else
+                animator.SetLayerWeight(1, 0);
+
         }
     }
 }

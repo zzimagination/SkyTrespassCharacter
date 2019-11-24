@@ -13,20 +13,19 @@ namespace SkyTrespass.Character
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             characterController = animator.GetComponent<STCharacterController>();
-            attackMachine = animator.GetComponent<AttackMachine>();
+            attackMachine = characterController.attackMachine;
             animator.SetLayerWeight(1, 1);
             characterController.EnterAttack();
+            attackTimer = 0;
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if(stateInfo.normalizedTime-attackTimer>attackMachine.fistAttackCD)
+            if(stateInfo.normalizedTime-attackTimer>0.4f)
             {
                 attackTimer++;
                 attackMachine.FistAttack();
             }
-
-
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)

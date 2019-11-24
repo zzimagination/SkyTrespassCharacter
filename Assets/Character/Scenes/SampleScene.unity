@@ -1743,7 +1743,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 172554072}
   playerInput: {fileID: 1268113835}
   equipment: {fileID: 1268113838}
-  attackMachine: {fileID: 0}
+  attackMachine: {fileID: 1268113839}
   moveSpeed: 5
   isAim: 0
   isFall: 0
@@ -1862,8 +1862,9 @@ MonoBehaviour:
   currentWeapons: {fileID: 0}
   shootLinerObj: {fileID: 0}
   weaponsType: 0
+  attackDamage: 0
   attackCD: 0
-  attackMaxDistance: 0
+  attackDistance: 0
 --- !u!1 &1282770020
 GameObject:
   m_ObjectHideFlags: 0

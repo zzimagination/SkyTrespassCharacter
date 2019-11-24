@@ -254,10 +254,9 @@ MonoBehaviour:
   weaponsType: 2
   leftIK: {fileID: 0}
   shootPoint: {x: 0.07, y: 1.17, z: 1.24}
-  attackCD: 1
-  attackDistance: 20
   bulletLinerObj: {fileID: 6903977335012489328, guid: 2fbdc81ecad492d42890fc67a3a939e8,
     type: 3}
+  weaponsInfo: {fileID: 11400000, guid: d98b9b6ed5ee93f439b423042723e059, type: 2}
 --- !u!1 &6537671399183390133
 GameObject:
   m_ObjectHideFlags: 0

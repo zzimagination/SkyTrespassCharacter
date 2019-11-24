@@ -16,7 +16,9 @@ namespace SkyTrespass.Character
         public Transform rifleRoot;
         public Transform pistolRoot;
 
+      
         public WeaponsType myWeaponsType;
+        public CharacterInfo characterInfo;
 
         [HideInInspector]
         public Weaponsbase currentWeapons;
@@ -25,12 +27,20 @@ namespace SkyTrespass.Character
         [HideInInspector]
         public Weaponsbase weapons_2;
 
+
+
         int weaponsNumber;
+        CharacterInfo defaultInfo;
 
         // Start is called before the first frame update
         void Start()
         {
+            defaultInfo = Resources.Load<CharacterInfo>("DefaultCharacterInfo");
+            characterInfo = ScriptableObject.CreateInstance<CharacterInfo>();
+            characterInfo.CopyValue(defaultInfo);
+
             InitWeapons();
+
         }
 
 
@@ -54,21 +64,72 @@ namespace SkyTrespass.Character
                 return null;
         }
 
+        void SetAttackState()
+        {
+            attackMachine.SetWeapons(currentWeapons);
+            attackMachine.gunAttackInfo = characterInfo.gunAttackInfo;
+            attackMachine.unArmAttackInfo = characterInfo.unArmAttackInfo;
+            //attackMachine.attackInfo.attackDamage = characterInfo.attackDamage;
+            //attackMachine.attackDistance = characterInfo.attackDistance;
+            //attackMachine.attackOffset = characterInfo.attackOffset;
+            //attackMachine.fistAttackRange = characterInfo.fistAttackCheckRange;
+
+            //attackMachine.aimAttackDamage = characterInfo.aimAttackDamage;
+            //attackMachine.aimAttackDistance = characterInfo.aimAttackDistance;
+            //attackMachine.aimAttackOffset = characterInfo.aimAttackOffset;
+
+            controller.InitWeapons(myWeaponsType);
+        }
+        void SetWeaponsAttack()
+        {
+            if(currentWeapons)
+            {
+                myWeaponsType = currentWeapons.weaponsType;
+                currentWeapons.Open();
+                characterInfo.gunAttackInfo = currentWeapons.weaponsInfo.attackInfo;               
+                //characterInfo.attackDamage = currentWeapons.weaponsInfo.attackDamage;
+                //characterInfo.attackCD = currentWeapons.weaponsInfo.attackCD;
+                //characterInfo.attackDistance = currentWeapons.weaponsInfo.attackDistance;
+                //characterInfo.attackOffset = currentWeapons.weaponsInfo.attackOffset;
+
+                //characterInfo.hasAim = currentWeapons.weaponsInfo.hasAim;
+                //characterInfo.aimAttackDamage = currentWeapons.weaponsInfo.aimAttackDamage;
+                //characterInfo.aimAttackCD = currentWeapons.weaponsInfo.aimAttackCD;
+                //characterInfo.aimAttackDistance = currentWeapons.weaponsInfo.aimAttackDistance;
+                //characterInfo.aimAttackOffset = currentWeapons.weaponsInfo.aimAttackOffset;
+               
+            }else
+            {
+                myWeaponsType = WeaponsType.none;
+                characterInfo.gunAttackInfo = new GunAttackInfo();
+
+                //characterInfo.attackDamage = characterInfo.fistAttackDamage;
+                //characterInfo.attackCD = characterInfo.fistAttackCD;
+                //characterInfo.attackDistance = 0;
+                //characterInfo.attackOffset = 0;
+                //characterInfo.aimAttackDamage = 0;
+                //characterInfo.aimAttackCD = 0;
+                //characterInfo.aimAttackDistance = 0;
+                //characterInfo.aimAttackOffset = 0;
+            }
+        }
         public void InitWeapons()
         {
             weapons_1 = GenerateWeapons(001);
             weapons_2 = GenerateWeapons(002);
             currentWeapons = weapons_1;
-            currentWeapons.Open();
-            attackMachine.SetWeapons(currentWeapons);
             weaponsNumber = 1;
-
-            controller.InitWeapons(currentWeapons.weaponsType);
+            if (currentWeapons)
+            {
+                currentWeapons.Open();
+            }
+            SetWeaponsAttack();
+            SetAttackState();
         }
 
         public void ChangeWeapons()
         {
-            if(currentWeapons)
+            if (currentWeapons)
                 currentWeapons.Hidden();
             if (weaponsNumber == 1)
             {
@@ -82,13 +143,10 @@ namespace SkyTrespass.Character
             }
             if (currentWeapons)
             {
-                myWeaponsType = currentWeapons.weaponsType;
                 currentWeapons.Open();
             }
-            else
-                myWeaponsType = WeaponsType.none;
-            attackMachine.SetWeapons(currentWeapons);
-
+            SetWeaponsAttack();
+            SetAttackState();
         }
 
     }
