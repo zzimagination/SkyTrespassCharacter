@@ -101,6 +101,8 @@ namespace SkyTrespass.Character
         }
 #endif
 
+
+
         public void ChangeAimState()
         {
             IsAim = !IsAim;
@@ -127,6 +129,12 @@ namespace SkyTrespass.Character
         {
             IsAim = false;
             _animator.SetInteger("weapons", (int)type);
+            if(type== WeaponsType.none)
+            {
+                _animator.SetFloat("attackSpeedMul", attackMachine.unArmAttackInfo.fistAttackCD);
+                _animator.SetFloat("speed", 1);
+                _animator.SetBool("isAim", false);
+            }
         }
         public void ChangeWeapons()
         {
@@ -263,7 +271,10 @@ namespace SkyTrespass.Character
         {
             IsAim = false;
         }
+        public void Death()
+        {
 
+        }
 
 
 

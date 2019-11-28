@@ -226,6 +226,7 @@ GameObject:
   - component: {fileID: 172554072}
   - component: {fileID: 172554071}
   - component: {fileID: 172554073}
+  - component: {fileID: 172554074}
   m_Layer: 8
   m_Name: CharacterCapsule
   m_TagString: Player
@@ -290,6 +291,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 1268113834}
+--- !u!114 &172554074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 172554069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326c1b3dbc01be4e87e80175c518d0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 10
+  attackAction:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  deathAction:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1268113833}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &328215640
 GameObject:
   m_ObjectHideFlags: 0
@@ -1251,6 +1297,7 @@ GameObject:
   - component: {fileID: 1080504734}
   - component: {fileID: 1080504733}
   - component: {fileID: 1080504732}
+  - component: {fileID: 1080504736}
   m_Layer: 10
   m_Name: Capsule
   m_TagString: Untagged
@@ -1332,6 +1379,29 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1080504736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080504731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326c1b3dbc01be4e87e80175c518d0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  attackAction:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  deathAction:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &1108018497
 GameObject:
   m_ObjectHideFlags: 0
@@ -1745,7 +1815,6 @@ MonoBehaviour:
   equipment: {fileID: 1268113838}
   attackMachine: {fileID: 1268113839}
   moveSpeed: 5
-  isAim: 0
   isFall: 0
   keepAttack: 0
   prepareIdle: 0
@@ -1842,6 +1911,7 @@ MonoBehaviour:
   rifleRoot: {fileID: 1614743861}
   pistolRoot: {fileID: 1991573138}
   myWeaponsType: 0
+  characterInfo: {fileID: 0}
   currentWeapons: {fileID: 0}
   weapons_1: {fileID: 0}
   weapons_2: {fileID: 0}
@@ -1862,9 +1932,20 @@ MonoBehaviour:
   currentWeapons: {fileID: 0}
   shootLinerObj: {fileID: 0}
   weaponsType: 0
-  attackDamage: 0
-  attackCD: 0
-  attackDistance: 0
+  isAim: 0
+  unArmAttackInfo:
+    fistAttackDamage: 0
+    fistAttackCD: 0
+    fistAttackCheckRange: 0
+  gunAttackInfo:
+    attackDamage: 0
+    attackCD: 0
+    attackDistance: 0
+    attackOffset: 0
+    hasAim: 0
+    aimAttackCD: 0
+    aimAttackDistance: 0
+    aimAttackOffset: 0
 --- !u!1 &1282770020
 GameObject:
   m_ObjectHideFlags: 0

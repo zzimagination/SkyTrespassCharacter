@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+using Sirenix.OdinInspector;
 
 namespace SkyTrespass.Character
 {
@@ -16,8 +16,9 @@ namespace SkyTrespass.Character
         public Transform rifleRoot;
         public Transform pistolRoot;
 
-      
         public WeaponsType myWeaponsType;
+      
+        [ReadOnly]
         public CharacterInfo characterInfo;
 
         [HideInInspector]
@@ -64,55 +65,53 @@ namespace SkyTrespass.Character
                 return null;
         }
 
-        void SetAttackState()
-        {
-            attackMachine.SetWeapons(currentWeapons);
-            attackMachine.gunAttackInfo = characterInfo.gunAttackInfo;
-            attackMachine.unArmAttackInfo = characterInfo.unArmAttackInfo;
-            //attackMachine.attackInfo.attackDamage = characterInfo.attackDamage;
-            //attackMachine.attackDistance = characterInfo.attackDistance;
-            //attackMachine.attackOffset = characterInfo.attackOffset;
-            //attackMachine.fistAttackRange = characterInfo.fistAttackCheckRange;
 
-            //attackMachine.aimAttackDamage = characterInfo.aimAttackDamage;
-            //attackMachine.aimAttackDistance = characterInfo.aimAttackDistance;
-            //attackMachine.aimAttackOffset = characterInfo.aimAttackOffset;
-
-            controller.InitWeapons(myWeaponsType);
-        }
         void SetWeaponsAttack()
         {
             if(currentWeapons)
             {
                 myWeaponsType = currentWeapons.weaponsType;
                 currentWeapons.Open();
-                characterInfo.gunAttackInfo = currentWeapons.weaponsInfo.attackInfo;               
-                //characterInfo.attackDamage = currentWeapons.weaponsInfo.attackDamage;
-                //characterInfo.attackCD = currentWeapons.weaponsInfo.attackCD;
-                //characterInfo.attackDistance = currentWeapons.weaponsInfo.attackDistance;
-                //characterInfo.attackOffset = currentWeapons.weaponsInfo.attackOffset;
-
-                //characterInfo.hasAim = currentWeapons.weaponsInfo.hasAim;
-                //characterInfo.aimAttackDamage = currentWeapons.weaponsInfo.aimAttackDamage;
-                //characterInfo.aimAttackCD = currentWeapons.weaponsInfo.aimAttackCD;
-                //characterInfo.aimAttackDistance = currentWeapons.weaponsInfo.aimAttackDistance;
-                //characterInfo.aimAttackOffset = currentWeapons.weaponsInfo.aimAttackOffset;
+                SetWeaponsInfoToCharacterInfo(currentWeapons);               
                
             }else
             {
                 myWeaponsType = WeaponsType.none;
                 characterInfo.gunAttackInfo = new GunAttackInfo();
-
-                //characterInfo.attackDamage = characterInfo.fistAttackDamage;
-                //characterInfo.attackCD = characterInfo.fistAttackCD;
-                //characterInfo.attackDistance = 0;
-                //characterInfo.attackOffset = 0;
-                //characterInfo.aimAttackDamage = 0;
-                //characterInfo.aimAttackCD = 0;
-                //characterInfo.aimAttackDistance = 0;
-                //characterInfo.aimAttackOffset = 0;
             }
         }
+        void SetWeaponsInfoToCharacterInfo<T>(T weaponsbase) where T : Weaponsbase
+        {
+            if (typeof(T) == typeof(Weaponsbase))
+            {
+                Weaponsbase w = weaponsbase as Weaponsbase;
+                GunAttackInfo gunAttackInfo = new GunAttackInfo();
+                gunAttackInfo.attackCD = weaponsbase.attackCD;
+                gunAttackInfo.attackDamage = weaponsbase.attackDamage;
+                gunAttackInfo.attackDistance = weaponsbase.attackDistance;
+                gunAttackInfo.attackOffset = weaponsbase.attackOffset;
+                if (weaponsbase.hasAim)
+                {
+                    gunAttackInfo.hasAim = weaponsbase.hasAim;
+                    gunAttackInfo.aimAttackCD = weaponsbase.aimAttackCD;
+                    gunAttackInfo.aimAttackDistance = weaponsbase.aimAttackDistance;
+                    gunAttackInfo.aimAttackOffset = weaponsbase.aimAttackOffset;
+                }
+                characterInfo.gunAttackInfo = gunAttackInfo;
+            }
+        }
+        void SetAttackState()
+        {
+            attackMachine.SetWeapons(currentWeapons);
+            attackMachine.gunAttackInfo = characterInfo.gunAttackInfo;
+            attackMachine.unArmAttackInfo = characterInfo.unArmAttackInfo;
+
+            controller.InitWeapons(myWeaponsType);
+        }
+
+
+
+
         public void InitWeapons()
         {
             weapons_1 = GenerateWeapons(001);
@@ -150,4 +149,6 @@ namespace SkyTrespass.Character
         }
 
     }
+
+
 }

@@ -24,46 +24,29 @@ namespace SkyTrespass.Character
         public UnArmAttackInfo unArmAttackInfo;
         [ReadOnly]
         public GunAttackInfo gunAttackInfo;
-        //[ReadOnly]
-        //[BoxGroup("Attack Info")]
-        //public float attackDamage;
-        //[ReadOnly]
-        //[BoxGroup("Attack Info")]
-        //public float attackDistance;
-        //[ReadOnly]
-        //[BoxGroup("Attack Info")]
-        //public float attackOffset;
-        //[ReadOnly]
-        //[BoxGroup("Attack Info")]
-        //public float fistAttackRange;
-        //[ReadOnly]
-        //[ShowIfGroup("isAim")]
-        //[BoxGroup("isAim/Aim")]
-        //public float aimAttackDamage;
-        //[ReadOnly]
-        //[BoxGroup("isAim/Aim")]
-        //public float aimAttackDistance;
-        //[ReadOnly]
-        //[BoxGroup("isAim/Aim")]
-        //public float aimAttackOffset;
 
-        Collider[] colliders=new Collider[1];
+        Collider[] hitColliders=new Collider[1];
         RaycastHit shootResult;
         CharacterInfo defaultCharacterInfo;
 
 
-        public void SetWeapons(Weaponsbase w)
+        public void SetWeapons<T>(T obj) where T:Weaponsbase
         {
-            currentWeapons = w;
-            if (w == null)
+            currentWeapons = obj;
+            if (currentWeapons == null)
             {
                 weaponsType = WeaponsType.none;
                 shootLinerObj = null;
                 return;
             }
-            weaponsType = w.weaponsType;
-            shootLinerObj = w.bulletLinerObj;
-            shootPoint.localPosition = w.shootPoint;
+            if(typeof(T)==typeof(Weaponsbase))
+            {
+                var t = obj as Weaponsbase;
+                weaponsType = t.weaponsType;
+                shootLinerObj = t.bulletLinerObj;
+                shootPoint.localPosition = t.shootPoint;
+            }
+
         }
         public void AddAttack()
         {
@@ -73,10 +56,16 @@ namespace SkyTrespass.Character
         public void FistAttack()
         {
         
-            var number = Physics.OverlapSphereNonAlloc(r_hand.position, unArmAttackInfo.fistAttackCheckRange, colliders, (1 << 9 | 1 << 10));
+            var number = Physics.OverlapSphereNonAlloc(r_hand.position, unArmAttackInfo.fistAttackCheckRange, hitColliders, (1 << 9 | 1 << 10));
             if (number>0)
             {
-
+                var t= hitColliders[0].GetComponent<IDestructible>();
+                if(t!=null)
+                {
+                    AttackInfo attackInfo = new AttackInfo();
+                    attackInfo.damage = unArmAttackInfo.fistAttackDamage;
+                    t.Attack(attackInfo);
+                }
             }
         }
 
@@ -97,6 +86,14 @@ namespace SkyTrespass.Character
             if (isHit)
             {
                 obj.GetComponent<BulletLiner>().SetPoint(shootPoint.position, shootResult.point);
+
+                var t= shootResult.transform.GetComponent<IDestructible>();
+                if(t!=null)
+                {
+                    AttackInfo attackInfo = new AttackInfo();
+                    attackInfo.damage = gunAttackInfo.attackDamage;
+                    t.Attack(attackInfo);
+                }
             }else
             {
                 Vector3 end = shootPoint.position + shootDir * dis;
@@ -113,38 +110,5 @@ namespace SkyTrespass.Character
 #endif
     }
 
-    [System.Serializable]
-    public struct GunAttackInfo
-    {
-        [BoxGroup("Attack Info")]
-        public float attackDamage;
-        [BoxGroup("Attack Info")]
-        public float attackCD;
-        [BoxGroup("Attack Info")]
-        public float attackDistance;
-        [BoxGroup("Attack Info")]
-        public float attackOffset;
-
-        public bool hasAim;
-
-        [ShowIfGroup("hasAim")]
-        [BoxGroup("hasAim/AimAttack")]
-        public float aimAttackDamage;
-        [BoxGroup("hasAim/AimAttack")]
-        public float aimAttackCD;
-        [BoxGroup("hasAim/AimAttack")]
-        public float aimAttackDistance;
-        [BoxGroup("hasAim/AimAttack")]
-        public float aimAttackOffset;
-    }
-    [System.Serializable]
-    public struct UnArmAttackInfo
-    {
-        [BoxGroup("Fist")]
-        public float fistAttackDamage;
-        [BoxGroup("Fist")]
-        public float fistAttackCD;
-        [BoxGroup("Fist")]
-        public float fistAttackCheckRange;
-    }
+   
 }

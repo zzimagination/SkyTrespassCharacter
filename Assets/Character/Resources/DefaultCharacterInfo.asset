@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unArmAttackInfo:
     fistAttackDamage: 5
-    fistAttackCD: 1
+    fistAttackCD: 2
     fistAttackCheckRange: 0.3
   gunAttackInfo:
     attackDamage: 0

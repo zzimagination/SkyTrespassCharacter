@@ -364,7 +364,12 @@ MonoBehaviour:
   shootPoint: {x: 0.08, y: 1, z: 0.9}
   bulletLinerObj: {fileID: 6903977335012489328, guid: 2fbdc81ecad492d42890fc67a3a939e8,
     type: 3}
-  attackDamage: 5
-  attackCD: 1
+  attackDamage: 10
+  attackCD: 2.5
   attackDistance: 10
-  weaponsInfo: {fileID: 11400000, guid: 04e9da377b31a9441b6c18b14ad63240, type: 2}
+  attackOffset: 10
+  hasAim: 1
+  aimAttackDamage: 10
+  aimAttackCD: 1
+  aimAttackDistance: 10
+  aimAttackOffset: 3
