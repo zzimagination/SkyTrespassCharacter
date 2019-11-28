@@ -15,17 +15,7 @@ namespace SkyTrespass.Character
         public Vector3 shootPoint;
         public GameObject bulletLinerObj;
 
-        //public WeaponsInfo weaponsInfo;
-        public float attackDamage;
-        [Tooltip("武器动画片段的速度，1为默认速度")]
-        public float attackCD;
-        public float attackDistance;
-        public float attackOffset;
-        public bool hasAim;
-        [Tooltip("武器动画片段的速度，1为默认速度")]
-        public float aimAttackCD;
-        public float aimAttackDistance;
-        public float aimAttackOffset;
+        public WeaponsInfo weaponsInfo;
 
         public void Hidden()
         {

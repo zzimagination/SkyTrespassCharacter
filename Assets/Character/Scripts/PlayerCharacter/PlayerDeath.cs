@@ -4,19 +4,17 @@ using UnityEngine;
 
 namespace SkyTrespass.Character
 {
-    public class PlayerMove : StateMachineBehaviour
+    public class PlayerDeath : StateMachineBehaviour
     {
+
         STCharacterController controller;
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             controller = animator.GetComponent<STCharacterController>();
-           
-        }
-        public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        {
-            controller.StopRigidbody(false);
-            controller.MoveAddDelt();
-            controller.RotateDelt();
+            controller.InputSwitch(false);
+
+            animator.SetBool("isDeath", true);
+            animator.SetBool("attack", false);
         }
     }
 }

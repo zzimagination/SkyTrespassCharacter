@@ -40,6 +40,8 @@ namespace SkyTrespass.Character
         public bool hasAim;
 
         [ShowIfGroup("hasAim")]
+        [BoxGroup("hasAim/AimAttack")]
+        public float aimAttackDamage;
         [Tooltip("武器动画片段的速度，1为默认速度")]
         [BoxGroup("hasAim/AimAttack")]
         public float aimAttackCD;

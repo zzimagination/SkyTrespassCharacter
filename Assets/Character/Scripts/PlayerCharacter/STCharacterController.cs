@@ -56,8 +56,8 @@ namespace SkyTrespass.Character
             {
                 isAim = value;
                 attackMachine.isAim = isAim;
-                _animator.SetFloat("attackSpeedMul",isAim?attackMachine.gunAttackInfo.aimAttackCD:attackMachine.gunAttackInfo.attackCD);
-                _animator.SetFloat("speed",isAim?0:1);
+                _animator.SetFloat("attackSpeedMul", isAim ? attackMachine.gunAttackInfo.aimAttackCD : attackMachine.gunAttackInfo.attackCD);
+                _animator.SetFloat("speed", isAim ? 0 : 1);
                 _animator.SetBool("isAim", isAim);
             }
         }
@@ -97,7 +97,15 @@ namespace SkyTrespass.Character
         }
         private void OnGUI()
         {
-          
+            if (GUILayout.Button("Death"))
+            {
+                Death();
+            }
+            else if (GUILayout.Button("Relife"))
+            {
+                Relife();
+            }
+
         }
 #endif
 
@@ -120,7 +128,7 @@ namespace SkyTrespass.Character
             }
             else
             {
-                if(!keepAttack)
+                if (!keepAttack)
                     _animator.SetBool("attack", true);
             }
         }
@@ -129,7 +137,7 @@ namespace SkyTrespass.Character
         {
             IsAim = false;
             _animator.SetInteger("weapons", (int)type);
-            if(type== WeaponsType.none)
+            if (type == WeaponsType.none)
             {
                 _animator.SetFloat("attackSpeedMul", attackMachine.unArmAttackInfo.fistAttackCD);
                 _animator.SetFloat("speed", 1);
@@ -190,31 +198,27 @@ namespace SkyTrespass.Character
 
         public void Idle()
         {
-            if (prepareIdle)
-            {
-                int c = Physics.RaycastNonAlloc(_rigidbody.position, Vector3.down, raycastResult);
-                if (c > 0)
-                {
-                    Vector3 tall = raycastResult[0].point;
-                    for (int i = 1; i < c; i++)
-                    {
-                        if (raycastResult[i].point.y > tall.y)
-                        {
-                            tall = raycastResult[i].point;
-                        }
-                    }
-                    if (_rigidbody.position.y - tall.y > 0)
-                    {
-                        StopRigidbody(false);
-                    }
-                }
-
-            }
-            else
-            {
-                StopRigidbody(true);
-            }
-
+            //Vector3 checkPoint = _rigidbody.position;
+            //int c = Physics.RaycastNonAlloc(checkPoint, Vector3.down, raycastResult);
+            //if (c > 0)
+            //{
+            //    Vector3 tall = raycastResult[0].point;
+            //    for (int i = 1; i < c; i++)
+            //    {
+            //        if (raycastResult[i].point.y > tall.y)
+            //        {
+            //            tall = raycastResult[i].point;
+            //        }
+            //    }
+            //    if (_rigidbody.position.y - tall.y > 0.01f)
+            //    {
+            //        StopRigidbody(false);
+            //    }
+            //    else
+            //    {
+            //        StopRigidbody(true);
+            //    }
+            //}
         }
         public void MoveAddDelt()
         {
@@ -271,8 +275,24 @@ namespace SkyTrespass.Character
         {
             IsAim = false;
         }
+        public void Relife()
+        {
+            //    _animator.Play("UnArmed");
+
+            //    _animator.SetFloat("moveX", 0);
+            //    _animator.SetFloat("moveY", 0);
+            //    _animator.SetBool("down", false);
+            //    _animator.SetBool("isDeath", false);
+            //    _animator.SetBool("attack", false);
+            //    _animator.SetBool("changeAim", false);
+            //    _animator.SetBool("isAim", false);
+
+            //    equipment.InitWeapons();
+            //    InputSwitch(true);
+        }
         public void Death()
         {
+            _animator.SetTrigger("death");
 
         }
 

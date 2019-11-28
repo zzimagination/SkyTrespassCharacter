@@ -86,16 +86,17 @@ namespace SkyTrespass.Character
             {
                 Weaponsbase w = weaponsbase as Weaponsbase;
                 GunAttackInfo gunAttackInfo = new GunAttackInfo();
-                gunAttackInfo.attackCD = weaponsbase.attackCD;
-                gunAttackInfo.attackDamage = weaponsbase.attackDamage;
-                gunAttackInfo.attackDistance = weaponsbase.attackDistance;
-                gunAttackInfo.attackOffset = weaponsbase.attackOffset;
-                if (weaponsbase.hasAim)
+                gunAttackInfo.attackCD = weaponsbase.weaponsInfo.CD;
+                gunAttackInfo.attackDamage = weaponsbase.weaponsInfo.damage;
+                gunAttackInfo.attackDistance = weaponsbase.weaponsInfo.Distance;
+                gunAttackInfo.attackOffset = weaponsbase.weaponsInfo.offset;
+                if (weaponsbase.weaponsInfo.hasAim)
                 {
-                    gunAttackInfo.hasAim = weaponsbase.hasAim;
-                    gunAttackInfo.aimAttackCD = weaponsbase.aimAttackCD;
-                    gunAttackInfo.aimAttackDistance = weaponsbase.aimAttackDistance;
-                    gunAttackInfo.aimAttackOffset = weaponsbase.aimAttackOffset;
+                    gunAttackInfo.hasAim = weaponsbase.weaponsInfo.hasAim;
+                    gunAttackInfo.aimAttackDamage = weaponsbase.weaponsInfo.aimDamage;
+                    gunAttackInfo.aimAttackCD = weaponsbase.weaponsInfo.aimCD;
+                    gunAttackInfo.aimAttackDistance = weaponsbase.weaponsInfo.aimDistance;
+                    gunAttackInfo.aimAttackOffset = weaponsbase.weaponsInfo.aimOffset;
                 }
                 characterInfo.gunAttackInfo = gunAttackInfo;
             }

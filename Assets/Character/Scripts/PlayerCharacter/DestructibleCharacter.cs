@@ -26,7 +26,7 @@ namespace SkyTrespass.Character
         public void Attack(AttackInfo attackInfo)
         {
             health = health - attackInfo.damage;
-            if (health < 0)
+            if (health <= 0)
             {
                 health = 0;
                 Death();
