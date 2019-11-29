@@ -9,6 +9,7 @@ namespace SkyTrespass.Character
     {
         public STCharacterController characterController;
 
+
         public void RegisterPickUp(PickUp pickUp)
         {
             characterController.RegisterPickUp(pickUp);
@@ -17,6 +18,8 @@ namespace SkyTrespass.Character
         {
             characterController.RemovePickUp(pickUp);
         }
+
+
 
     }
 }

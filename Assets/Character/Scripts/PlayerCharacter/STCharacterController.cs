@@ -15,6 +15,8 @@ namespace SkyTrespass.Character
         public float moveSpeed;
 
         [HideInInspector]
+        public bool isGround;
+        [HideInInspector]
         public bool isFall;
         [HideInInspector]
         public bool keepAttack;
@@ -198,27 +200,27 @@ namespace SkyTrespass.Character
 
         public void Idle()
         {
-            //Vector3 checkPoint = _rigidbody.position;
-            //int c = Physics.RaycastNonAlloc(checkPoint, Vector3.down, raycastResult);
-            //if (c > 0)
-            //{
-            //    Vector3 tall = raycastResult[0].point;
-            //    for (int i = 1; i < c; i++)
-            //    {
-            //        if (raycastResult[i].point.y > tall.y)
-            //        {
-            //            tall = raycastResult[i].point;
-            //        }
-            //    }
-            //    if (_rigidbody.position.y - tall.y > 0.01f)
-            //    {
-            //        StopRigidbody(false);
-            //    }
-            //    else
-            //    {
-            //        StopRigidbody(true);
-            //    }
-            //}
+            Vector3 checkPoint = _rigidbody.position;
+            int c = Physics.RaycastNonAlloc(checkPoint, Vector3.down, raycastResult);
+            if (c > 0)
+            {
+                Vector3 tall = raycastResult[0].point;
+                for (int i = 1; i < c; i++)
+                {
+                    if (raycastResult[i].point.y > tall.y)
+                    {
+                        tall = raycastResult[i].point;
+                    }
+                }
+                if (_rigidbody.position.y - tall.y > 0.01f)
+                {
+                    StopRigidbody(false);
+                }
+                else
+                {
+                    StopRigidbody(true);
+                }
+            }
         }
         public void MoveAddDelt()
         {
@@ -227,8 +229,8 @@ namespace SkyTrespass.Character
 
             Vector3 pos = _rigidbody.position + new Vector3(moveDelt.x, 0, moveDelt.y) * moveSpeed * Time.fixedDeltaTime;
             Vector3 next = pos;
-            next.y += 0.3f;
-            int c = Physics.RaycastNonAlloc(next, Vector3.down, raycastResult, 0.6f, -1);
+            next.y += 0.2f;
+            int c = Physics.RaycastNonAlloc(next, Vector3.down, raycastResult, 0.4f, -1);
             if (c > 0)
             {
                 Vector3 tall = raycastResult[0].point;
