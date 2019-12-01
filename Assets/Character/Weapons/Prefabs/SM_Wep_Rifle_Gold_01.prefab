@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 6948836648786096843}
   - component: {fileID: 6924712381839988781}
   - component: {fileID: 6932032184666458653}
-  - component: {fileID: 3022463336263880396}
+  - component: {fileID: -535964499973671158}
   m_Layer: 0
   m_Name: SM_Wep_Rifle_Gold_01
   m_TagString: Untagged
@@ -347,7 +347,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &3022463336263880396
+--- !u!114 &-535964499973671158
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -356,20 +356,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 6946684046442630651}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d7e88266d521b64391ba91e246df967, type: 3}
+  m_Script: {fileID: 11500000, guid: 11e9c2d51c4df3d4ea0e1cd9ad146876, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weaponsType: 1
-  leftIK: {fileID: 6944919044103685717}
-  shootPoint: {x: 0.08, y: 1, z: 0.9}
+  shootLocalPoint: {x: 0, y: 1.4, z: 1}
   bulletLinerObj: {fileID: 6903977335012489328, guid: 2fbdc81ecad492d42890fc67a3a939e8,
     type: 3}
-  weaponsInfo: {fileID: 11400000, guid: 04e9da377b31a9441b6c18b14ad63240, type: 2}
-  attackDamage: 10
-  attackCD: 2.5
-  attackDistance: 10
-  attackOffset: 10
-  hasAim: 1
-  aimAttackCD: 1
-  aimAttackDistance: 10
-  aimAttackOffset: 3
+  info: {fileID: 11400000, guid: 04e9da377b31a9441b6c18b14ad63240, type: 2}
+  leftIK: {fileID: 6944919044103685717}
+  shootDir: {x: 0, y: 0, z: 0}
+  shootPosition: {x: 0, y: 0, z: 0}
+  isAimShoot: 0

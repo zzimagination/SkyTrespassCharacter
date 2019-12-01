@@ -6,20 +6,25 @@ namespace SkyTrespass.Character
 {
     public class PlayerWeaponsIK : StateMachineBehaviour
     {
+        WeaponsRifle weaponsShoot;
+        STCharacterController characterController;
+        public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
+        {
+            characterController = animator.GetComponent<STCharacterController>();
+            var eq = animator.GetComponent<EquipmentManager>();
+            weaponsShoot= eq.currentWeapons as WeaponsRifle;
+            characterController.isIK = true;
+        }
+
         public override void OnStateIK(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-
-            var eq = animator.GetComponent<EquipmentManager>();
-            if (eq&&eq.currentWeapons)
+            if (characterController.isIK)
             {
-                if (eq.currentWeapons.HasIK())
+                if (weaponsShoot)
                 {
-                    var leftPos = eq.currentWeapons.leftIK.position;
-                    animator.SetIKPosition(AvatarIKGoal.LeftHand, leftPos);
-                    animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+                    weaponsShoot.LeftIKAnimation(animator);
                 }
             }
-
 
         }
 

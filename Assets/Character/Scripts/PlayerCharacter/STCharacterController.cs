@@ -22,9 +22,11 @@ namespace SkyTrespass.Character
         public bool keepAttack;
         [HideInInspector]
         public bool prepareIdle;
+        [HideInInspector]
+        public bool isIK;
 
-
-        bool isAim;
+        bool hasAim;
+        bool isAim = false;
         bool isChangeWeapons;
 
         Vector2 moveDelt;
@@ -33,7 +35,7 @@ namespace SkyTrespass.Character
         List<PickUp> pickUps;
 
         float DisToGround;
-        RaycastHit[] raycastResult = new RaycastHit[8];
+        RaycastHit[] raycastResult = new RaycastHit[16];
 
         Vector3 PositionTarget;
         Quaternion RotationTarget;
@@ -48,30 +50,14 @@ namespace SkyTrespass.Character
 
         public delegate void buttonAction();
 
-        public bool IsAim
-        {
-            get
-            {
-                return isAim;
-            }
-            set
-            {
-                isAim = value;
-                attackMachine.isAim = isAim;
-                _animator.SetFloat("attackSpeedMul", isAim ? attackMachine.gunAttackInfo.aimAttackCD : attackMachine.gunAttackInfo.attackCD);
-                _animator.SetFloat("speed", isAim ? 0 : 1);
-                _animator.SetBool("isAim", isAim);
-            }
-        }
-
-
         private void Start()
         {
             MainButtonPress = PickOrAttack;
-            AimButton = ChangeAimState;
+            AimButton = AutoChangeAim;
             MainButtonUp = StopAttack;
 
             pickUps = new List<PickUp>();
+            StartCoroutine(InitState());
         }
 
         void Update()
@@ -93,10 +79,7 @@ namespace SkyTrespass.Character
 
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
 
-        }
         private void OnGUI()
         {
             if (GUILayout.Button("Death"))
@@ -106,24 +89,61 @@ namespace SkyTrespass.Character
             else if (GUILayout.Button("Relife"))
             {
                 Relife();
+            }else if(GUILayout.Button("Bullet"))
+            {
+                _animator.SetTrigger("bullet");
             }
 
         }
 #endif
 
 
-
-        public void ChangeAimState()
+        IEnumerator InitState()
         {
-            IsAim = !IsAim;
-            moveSpeed = IsAim ? _InternalWalkSpeed : _internalRunSpeed;
+            yield return null;
+            equipment.InitWeapons();
+            InitWeapons();
+        }
+
+        float GetAttackCD()
+        {
+            if (equipment.myWeaponsType == WeaponsType.none)
+            {
+                var u = equipment.characterInfo.unArmAttackInfo;
+                return u.CD * u.CD_Per;
+            }
+            else
+            {
+                var s = equipment.characterInfo.weaponsAttackInfo.shootAttackInfo;
+                return isAim ? s.shootAimCD * s.shootAimCD_Per : s.shootCD * s.shootCD_Per;
+            }
+        }
+
+        public void AutoChangeAim()
+        {
+            if (hasAim)
+            {
+                ChangeAimState(!isAim);
+            }
+        }
+
+        public void ChangeAimState(bool _isAim)
+        {
+            isAim = _isAim;
+            moveSpeed = isAim ? _InternalWalkSpeed : _internalRunSpeed;
+            attackMachine.isAim = isAim;
             _animator.SetBool("changeAim", true);
+            _animator.SetFloat("attackSpeedMul", GetAttackCD());
+            Debug.Log(GetAttackCD());
+            _animator.SetFloat("speed", isAim ? 0 : 1);
+            _animator.SetBool("isAim", isAim);
         }
 
         public void PickOrAttack()
         {
             if (pickUps.Count > 0)
             {
+                ChangeAimState(false);
                 pickUps[0].Pick();
                 pickUps.RemoveAt(0);
                 _animator.SetTrigger("pick");
@@ -135,21 +155,28 @@ namespace SkyTrespass.Character
             }
         }
 
-        public void InitWeapons(WeaponsType type)
+        public void InitWeapons()
         {
-            IsAim = false;
-            _animator.SetInteger("weapons", (int)type);
-            if (type == WeaponsType.none)
+            ChangeAimState(false);
+            WeaponsType type = equipment.myWeaponsType;
+            hasAim = equipment.hasAim;
+            if (type== WeaponsType.none)
             {
-                _animator.SetFloat("attackSpeedMul", attackMachine.unArmAttackInfo.fistAttackCD);
-                _animator.SetFloat("speed", 1);
-                _animator.SetBool("isAim", false);
+                _animator.SetInteger("weapons", 0);
+                return;
             }
+            _animator.SetInteger("weapons", (int)type);
         }
+
+
+
+
+
         public void ChangeWeapons()
         {
             isChangeWeapons = true;
             StopAttack();
+
             if (!keepAttack)
                 ChangeWeaponsEnd();
         }
@@ -157,11 +184,10 @@ namespace SkyTrespass.Character
         {
             if (!isChangeWeapons)
                 return;
-            IsAim = false;
-            moveSpeed = _internalRunSpeed;
             equipment.ChangeWeapons();
             _animator.SetInteger("weapons", (int)equipment.myWeaponsType);
 
+            ChangeAimState(false);
             isChangeWeapons = false;
         }
 
@@ -201,26 +227,17 @@ namespace SkyTrespass.Character
         public void Idle()
         {
             Vector3 checkPoint = _rigidbody.position;
-            int c = Physics.RaycastNonAlloc(checkPoint, Vector3.down, raycastResult);
-            if (c > 0)
+            checkPoint.y += 0.1f;
+            bool r = Physics.Raycast(checkPoint, Vector3.down, 0.2f);
+            if (r)
             {
-                Vector3 tall = raycastResult[0].point;
-                for (int i = 1; i < c; i++)
-                {
-                    if (raycastResult[i].point.y > tall.y)
-                    {
-                        tall = raycastResult[i].point;
-                    }
-                }
-                if (_rigidbody.position.y - tall.y > 0.01f)
-                {
-                    StopRigidbody(false);
-                }
-                else
-                {
-                    StopRigidbody(true);
-                }
+                StopRigidbody(true);
             }
+            else
+            {
+                StopRigidbody(false);
+            }
+
         }
         public void MoveAddDelt()
         {
@@ -230,20 +247,10 @@ namespace SkyTrespass.Character
             Vector3 pos = _rigidbody.position + new Vector3(moveDelt.x, 0, moveDelt.y) * moveSpeed * Time.fixedDeltaTime;
             Vector3 next = pos;
             next.y += 0.2f;
-            int c = Physics.RaycastNonAlloc(next, Vector3.down, raycastResult, 0.4f, -1);
-            if (c > 0)
+            if (Physics.Raycast(next, Vector3.down, out RaycastHit hitInfo, 0.4f))
             {
-                Vector3 tall = raycastResult[0].point;
-                for (int i = 1; i < c; i++)
-                {
-                    if (raycastResult[i].point.y > tall.y)
-                    {
-                        tall = raycastResult[i].point;
-                    }
-                }
-                pos = tall;
+                pos = hitInfo.point;
             }
-
             _rigidbody.MovePosition(pos);
         }
         public void RotateDelt()
@@ -275,7 +282,7 @@ namespace SkyTrespass.Character
 
         public void HasGuns()
         {
-            IsAim = false;
+            ChangeAimState(false);
         }
         public void Relife()
         {

@@ -1,13 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using Sirenix.OdinInspector;
 
 namespace SkyTrespass.Character
 {
     public class EquipmentManager : MonoBehaviour
     {
+        int weaponsIndex;
+        CharacterInfo defaultInfo;
+
+
         public GameObject rifle1;
         public GameObject pistol1;
 
@@ -16,22 +19,40 @@ namespace SkyTrespass.Character
         public Transform rifleRoot;
         public Transform pistolRoot;
 
-        public WeaponsType myWeaponsType;
-      
         [ReadOnly]
         public CharacterInfo characterInfo;
-
+        [HideInInspector]
+        public WeaponsType myWeaponsType;
+        [HideInInspector]
+        public bool hasAim;
         [HideInInspector]
         public Weaponsbase currentWeapons;
         [HideInInspector]
-        public Weaponsbase weapons_1;
+        public Weaponsbase weapons_0;
         [HideInInspector]
-        public Weaponsbase weapons_2;
+        public Weaponsbase weapons_1;
 
 
+        public int WeaponsIndex
+        {
+            get { return weaponsIndex; }
+            private set
+            {
+                if (value > 1)
+                {
+                    weaponsIndex = 0;
+                }
+                else if (value < 0)
+                {
+                    weaponsIndex = 1;
+                }
+                else
+                {
+                    weaponsIndex = value;
+                }
+            }
+        }
 
-        int weaponsNumber;
-        CharacterInfo defaultInfo;
 
         // Start is called before the first frame update
         void Start()
@@ -39,8 +60,6 @@ namespace SkyTrespass.Character
             defaultInfo = Resources.Load<CharacterInfo>("DefaultCharacterInfo");
             characterInfo = ScriptableObject.CreateInstance<CharacterInfo>();
             characterInfo.CopyValue(defaultInfo);
-
-            InitWeapons();
 
         }
 
@@ -65,49 +84,56 @@ namespace SkyTrespass.Character
                 return null;
         }
 
-
-        void SetWeaponsAttack()
+        void SetCurrentWeapons(Weaponsbase weaponsbase)
         {
             if(currentWeapons)
             {
-                myWeaponsType = currentWeapons.weaponsType;
-                currentWeapons.Open();
-                SetWeaponsInfoToCharacterInfo(currentWeapons);               
-               
-            }else
+                currentWeapons.SubCharacterInfo(characterInfo.weaponsAttackInfo);
+                currentWeapons.Hidden();
+            }
+            if (weaponsbase == null)
             {
+                currentWeapons = null;
                 myWeaponsType = WeaponsType.none;
-                characterInfo.gunAttackInfo = new GunAttackInfo();
+                return;
             }
-        }
-        void SetWeaponsInfoToCharacterInfo<T>(T weaponsbase) where T : Weaponsbase
-        {
-            if (typeof(T) == typeof(Weaponsbase))
-            {
-                Weaponsbase w = weaponsbase as Weaponsbase;
-                GunAttackInfo gunAttackInfo = new GunAttackInfo();
-                gunAttackInfo.attackCD = weaponsbase.weaponsInfo.CD;
-                gunAttackInfo.attackDamage = weaponsbase.weaponsInfo.damage;
-                gunAttackInfo.attackDistance = weaponsbase.weaponsInfo.Distance;
-                gunAttackInfo.attackOffset = weaponsbase.weaponsInfo.offset;
-                if (weaponsbase.weaponsInfo.hasAim)
-                {
-                    gunAttackInfo.hasAim = weaponsbase.weaponsInfo.hasAim;
-                    gunAttackInfo.aimAttackDamage = weaponsbase.weaponsInfo.aimDamage;
-                    gunAttackInfo.aimAttackCD = weaponsbase.weaponsInfo.aimCD;
-                    gunAttackInfo.aimAttackDistance = weaponsbase.weaponsInfo.aimDistance;
-                    gunAttackInfo.aimAttackOffset = weaponsbase.weaponsInfo.aimOffset;
-                }
-                characterInfo.gunAttackInfo = gunAttackInfo;
-            }
-        }
-        void SetAttackState()
-        {
-            attackMachine.SetWeapons(currentWeapons);
-            attackMachine.gunAttackInfo = characterInfo.gunAttackInfo;
-            attackMachine.unArmAttackInfo = characterInfo.unArmAttackInfo;
 
-            controller.InitWeapons(myWeaponsType);
+            currentWeapons = weaponsbase;
+            currentWeapons.AddCharacterInfo(characterInfo.weaponsAttackInfo);
+            myWeaponsType = currentWeapons.weaponsType;
+            if (currentWeapons is WeaponsRifle)
+            {
+                hasAim = true;
+            }
+            else
+            {
+                hasAim = false;
+            }
+        }
+
+        /// <summary>
+        /// 设置武器对象
+        /// </summary>
+        void SetWeaponsObject()
+        {
+            if (currentWeapons)
+            {
+                currentWeapons.Open();
+            }
+        }
+        /// <summary>
+        /// 设置对应武器的环境因素
+        /// </summary>
+        void SetAttackMachine()
+        {
+            if (currentWeapons == null)
+            {
+                attackMachine.unArmAttackInfo = characterInfo.unArmAttackInfo;
+                return;
+            }
+
+            attackMachine.weaponsAttackInfo = characterInfo.weaponsAttackInfo;
+            attackMachine.SetWeapons(currentWeapons);
         }
 
 
@@ -115,38 +141,31 @@ namespace SkyTrespass.Character
 
         public void InitWeapons()
         {
-            weapons_1 = GenerateWeapons(001);
-            weapons_2 = GenerateWeapons(002);
-            currentWeapons = weapons_1;
-            weaponsNumber = 1;
-            if (currentWeapons)
-            {
-                currentWeapons.Open();
-            }
-            SetWeaponsAttack();
-            SetAttackState();
+            weapons_0 = GenerateWeapons(001);
+            weapons_1 = GenerateWeapons(002);
+
+            SetCurrentWeapons(weapons_0);
+            WeaponsIndex = 0;
+
+            SetWeaponsObject();
+            SetAttackMachine();
         }
 
         public void ChangeWeapons()
         {
-            if (currentWeapons)
-                currentWeapons.Hidden();
-            if (weaponsNumber == 1)
+            if (WeaponsIndex == 0)
             {
-                weaponsNumber = 2;
-                currentWeapons = weapons_2;
+                WeaponsIndex = 1;
+                SetCurrentWeapons(weapons_1);
             }
             else
             {
-                weaponsNumber = 1;
-                currentWeapons = weapons_1;
+                WeaponsIndex = 0;
+                SetCurrentWeapons(weapons_0);
             }
-            if (currentWeapons)
-            {
-                currentWeapons.Open();
-            }
-            SetWeaponsAttack();
-            SetAttackState();
+
+            SetWeaponsObject();
+            SetAttackMachine();
         }
 
     }

@@ -6,10 +6,12 @@ namespace SkyTrespass.Character
 {
     public class PlayerShoot : PlayerWpAttack
     {
-
+        WeaponsRifle weaponsShoot;
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             PrepareAttack(animator);
+            weaponsShoot = equipmentManager.currentWeapons as WeaponsRifle;
+            characterController.isIK = true;
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -25,15 +27,11 @@ namespace SkyTrespass.Character
 
         public override void OnStateIK(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-
-            if (equipmentManager && equipmentManager.currentWeapons)
+            if (characterController.isIK)
             {
-                if (equipmentManager.currentWeapons.HasIK())
+                if (weaponsShoot)
                 {
-                    var leftPos = equipmentManager.currentWeapons.leftIK.position;
-
-                    animator.SetIKPosition(AvatarIKGoal.LeftHand, leftPos);
-                    animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+                    weaponsShoot.LeftIKAnimation(animator);
                 }
             }
         }

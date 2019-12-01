@@ -7,7 +7,7 @@ namespace SkyTrespass.Character
     public enum WeaponsType
     {
         none,
-        shoot,
+        rifle,
         pisol
     }
 }

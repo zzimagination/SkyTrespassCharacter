@@ -42,8 +42,6 @@ namespace SkyTrespass.Character
             characterController.ExitAttack();
             if (animator.GetBool("changeAim"))
                 animator.SetBool("changeAim", false);
-            else
-                animator.SetLayerWeight(1, 0);
 
         }
     }

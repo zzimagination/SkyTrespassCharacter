@@ -11,59 +11,70 @@ namespace SkyTrespass.Character
         public Transform shootPoint;
         public Transform r_hand;
 
-        [HideInInspector]
-        public Weaponsbase currentWeapons;
-
-        [HideInInspector]
-        public GameObject shootLinerObj;
-        [ReadOnly]
-        public WeaponsType weaponsType;
         [ReadOnly]
         public bool isAim;
         [ReadOnly]
         public UnArmAttackInfo unArmAttackInfo;
         [ReadOnly]
-        public GunAttackInfo gunAttackInfo;
-
-        Collider[] hitColliders=new Collider[1];
+        public WeaponsAttackInfo weaponsAttackInfo;
+        
+        Collider[] hitColliders = new Collider[1];
         RaycastHit shootResult;
-        CharacterInfo defaultCharacterInfo;
+
+        AttackAction WeaponsAttack;
+        delegate void AttackAction();
 
 
-        public void SetWeapons<T>(T obj) where T:Weaponsbase
+
+        public void SetWeapons(Weaponsbase obj)
         {
-            currentWeapons = obj;
-            if (currentWeapons == null)
+            if (obj==null)
             {
-                weaponsType = WeaponsType.none;
-                shootLinerObj = null;
                 return;
             }
-            if(typeof(T)==typeof(Weaponsbase))
-            {
-                var t = obj as Weaponsbase;
-                weaponsType = t.weaponsType;
-                shootLinerObj = t.bulletLinerObj;
-                shootPoint.localPosition = t.shootPoint;
-            }
 
-        }
-        public void AddAttack()
-        {
+            var w1 = obj as WeaponsRifle;
+            if(w1)
+            {
+                shootPoint.localPosition = w1.shootLocalPoint;
+                WeaponsAttack = () =>
+                {
+                    w1.isAimShoot = isAim;
+                    w1.shootDir = transform.forward;
+                    w1.shootPosition = shootPoint.position;
+                    w1.Attack(weaponsAttackInfo);
+                };
+                return;
+            }
+            var w2 = obj as WeaponsPistol;
+            if(w2)
+            {
+                shootPoint.localPosition = w2.shootLocalPoint;
+                WeaponsAttack = () =>
+                {
+                    w2.isAimShoot = isAim;
+                    w2.shootDir = transform.forward;
+                    w2.shootPosition = shootPoint.position;
+                    w2.Attack(weaponsAttackInfo);
+                };
+                return;
+            }
 
         }
 
         public void FistAttack()
         {
-        
-            var number = Physics.OverlapSphereNonAlloc(r_hand.position, unArmAttackInfo.fistAttackCheckRange, hitColliders, (1 << 9 | 1 << 10));
-            if (number>0)
+            float Range = unArmAttackInfo.attackCheckRange * unArmAttackInfo.attackCheckRange_Per;
+            float damage = unArmAttackInfo.damage * unArmAttackInfo.damage_Per;
+
+            var number = Physics.OverlapSphereNonAlloc(r_hand.position, Range, hitColliders, (1 << 9 | 1 << 10));
+            if (number > 0)
             {
-                var t= hitColliders[0].GetComponent<IDestructible>();
-                if(t!=null)
+                var t = hitColliders[0].GetComponent<IDestructible>();
+                if (t != null)
                 {
                     AttackInfo attackInfo = new AttackInfo();
-                    attackInfo.damage = unArmAttackInfo.fistAttackDamage;
+                    attackInfo.damage = damage;
                     t.Attack(attackInfo);
                 }
             }
@@ -71,44 +82,10 @@ namespace SkyTrespass.Character
 
         public void GunAttack()
         {
-            Vector3 shootDir = transform.forward;
-
-            float offset = isAim ? gunAttackInfo.aimAttackOffset : gunAttackInfo.attackOffset;
-            Random.InitState(RandomSeed.GetSeed());
-            float angle= Random.Range(-offset, offset);
-            var qa= Quaternion.AngleAxis(angle, Vector3.up);
-            shootDir = qa*shootDir;
-            float dis = isAim ? gunAttackInfo.aimAttackDistance : gunAttackInfo.attackDistance;
-            bool isHit = Physics.Raycast(shootPoint.position, shootDir, out shootResult,dis, (1 << 9|1<<10));
-            GameObject obj = Instantiate(shootLinerObj);
-            obj.transform.SetParent(shootPoint);
-            obj.transform.position = new Vector3(0, 0, 0);
-            if (isHit)
-            {
-                obj.GetComponent<BulletLiner>().SetPoint(shootPoint.position, shootResult.point);
-
-                var t= shootResult.transform.GetComponent<IDestructible>();
-                if(t!=null)
-                {
-                    AttackInfo attackInfo = new AttackInfo();
-                    attackInfo.damage = gunAttackInfo.attackDamage;
-                    t.Attack(attackInfo);
-                }
-            }else
-            {
-                Vector3 end = shootPoint.position + shootDir * dis;
-                obj.GetComponent<BulletLiner>().SetPoint(shootPoint.position, end);
-            }
+            WeaponsAttack?.Invoke();
         }
 
-#if UNITY_EDITOR
-
-        private void OnDrawGizmos()
-        {
-           
-        }
-#endif
     }
 
-   
+
 }

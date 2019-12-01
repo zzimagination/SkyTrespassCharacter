@@ -10,7 +10,7 @@ namespace SkyTrespass.Character
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             controller = animator.GetComponent<STCharacterController>();
-           
+            
         }
         public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {

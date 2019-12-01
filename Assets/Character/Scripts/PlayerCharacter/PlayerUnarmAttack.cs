@@ -30,7 +30,6 @@ namespace SkyTrespass.Character
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)
         {
-            animator.SetLayerWeight(1, 0);
             characterController.ExitAttack();
             characterController.ChangeWeaponsEnd();
             

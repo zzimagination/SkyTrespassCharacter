@@ -29,7 +29,7 @@ namespace SkyTrespass.Character {
         public override void OnStateExit(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             controller.MainButtonPress = controller.PickOrAttack;
-            controller.AimButton = controller.ChangeAimState;
+            controller.AimButton = controller.AutoChangeAim;
             controller.MainButtonUp = controller.StopAttack;
             controller.isFall = false;
         }

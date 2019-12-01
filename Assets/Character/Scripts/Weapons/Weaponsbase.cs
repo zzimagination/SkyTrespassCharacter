@@ -5,30 +5,22 @@ using Sirenix.OdinInspector;
 
 namespace SkyTrespass.Character
 {
-    public class Weaponsbase : MonoBehaviour
+    public abstract class Weaponsbase : MonoBehaviour
     {
         public WeaponsType weaponsType;
-        
 
-        [ShowIf("weaponsType",WeaponsType.shoot)]
-        public Transform leftIK;
-        public Vector3 shootPoint;
-        public GameObject bulletLinerObj;
 
-        public WeaponsInfo weaponsInfo;
-
-        public void Hidden()
+        public virtual void Hidden()
         {
             gameObject.SetActive(false);
         }
-        public void Open()
+        public virtual void Open()
         {
             gameObject.SetActive(true);
         }
+        public abstract void Attack(WeaponsAttackInfo characterInfo);
+        public abstract void AddCharacterInfo(WeaponsAttackInfo characterInfo);
+        public abstract void SubCharacterInfo(WeaponsAttackInfo characterInfo);
 
-        public bool HasIK()
-        {
-            return leftIK != null;
-        }
     }
 }

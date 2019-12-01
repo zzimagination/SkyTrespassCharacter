@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 6534404469264293223}
   - component: {fileID: 6542419554004209563}
   - component: {fileID: 6552150727314329755}
-  - component: {fileID: 6065582327184127409}
+  - component: {fileID: 2077120308435303095}
   m_Layer: 0
   m_Name: SM_Wep_Pistol_Revolver_01
   m_TagString: Untagged
@@ -239,7 +239,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &6065582327184127409
+--- !u!114 &2077120308435303095
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -248,23 +248,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 6537660892618991361}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d7e88266d521b64391ba91e246df967, type: 3}
+  m_Script: {fileID: 11500000, guid: 34fee443aca0c2a40aa1f6fff34237f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weaponsType: 2
-  leftIK: {fileID: 0}
-  shootPoint: {x: 0.07, y: 1.17, z: 1.24}
+  shootLocalPoint: {x: 0, y: 1.4, z: 1}
   bulletLinerObj: {fileID: 6903977335012489328, guid: 2fbdc81ecad492d42890fc67a3a939e8,
     type: 3}
-  weaponsInfo: {fileID: 11400000, guid: 5cffd3a52b20adf45bb13978cd156659, type: 2}
-  attackDamage: 20
-  attackCD: 1
-  attackDistance: 10
-  attackOffset: 5
-  hasAim: 0
-  aimAttackCD: 0
-  aimAttackDistance: 0
-  aimAttackOffset: 0
+  info: {fileID: 11400000, guid: 5cffd3a52b20adf45bb13978cd156659, type: 2}
+  shootDir: {x: 0, y: 0, z: 0}
+  shootPosition: {x: 0, y: 0, z: 0}
+  isAimShoot: 0
 --- !u!1 &6537671399183390133
 GameObject:
   m_ObjectHideFlags: 0
