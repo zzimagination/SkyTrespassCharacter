@@ -7,6 +7,7 @@ namespace SkyTrespass.Character
 {
     public class STCharacterController : MonoBehaviour
     {
+        public PlayerAnimatorManager animatorManager;
         public Animator _animator;
         public Rigidbody _rigidbody;
         public PlayerInput playerInput;
@@ -29,16 +30,13 @@ namespace SkyTrespass.Character
         bool isAim = false;
         bool isChangeWeapons;
 
-        Vector2 moveDelt;
-        Vector2 rotateDelt;
+        //Vector2 moveDelt;
+        //Vector2 rotateDelt;
 
         List<PickUp> pickUps;
 
-        float DisToGround;
-        RaycastHit[] raycastResult = new RaycastHit[16];
-
-        Vector3 PositionTarget;
-        Quaternion RotationTarget;
+        //float DisToGround;
+        //RaycastHit[] raycastResult = new RaycastHit[16];
 
         const float _internalRotateSpeed = 8;
         const float _internalRunSpeed = 4.2f;
@@ -62,19 +60,19 @@ namespace SkyTrespass.Character
 
         void Update()
         {
-            if (!transform.localPosition.Equals(_rigidbody.position))
-                transform.localPosition = _rigidbody.position;
-            if (!transform.localRotation.Equals(_rigidbody.rotation))
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, _rigidbody.rotation, _internalRotateSpeed * Time.deltaTime);
+            //if (!transform.localPosition.Equals(_rigidbody.position))
+            //    transform.localPosition = _rigidbody.position;
+            //if (!transform.localRotation.Equals(_rigidbody.rotation))
+            //    transform.localRotation = Quaternion.Slerp(transform.localRotation, _rigidbody.rotation, _internalRotateSpeed * Time.deltaTime);
 
-            bool isDown = _rigidbody.velocity.y < -2f;
-            bool isMove = moveDelt.x != 0 || moveDelt.y != 0;
-            Vector3 move = transform.worldToLocalMatrix.MultiplyVector(new Vector3(moveDelt.x, 0, moveDelt.y));
+            //bool isDown = _rigidbody.velocity.y < -2f;
+            //bool isMove = moveDelt.x != 0 || moveDelt.y != 0;
+            //Vector3 move = transform.worldToLocalMatrix.MultiplyVector(new Vector3(moveDelt.x, 0, moveDelt.y));
 
-            _animator.SetBool("isMove", isMove);
-            _animator.SetFloat("moveX", move.x);
-            _animator.SetFloat("moveY", move.z);
-            _animator.SetBool("down", isDown);
+            //_animator.SetBool("isMove", isMove);
+            //_animator.SetFloat("moveX", move.x);
+            //_animator.SetFloat("moveY", move.z);
+            //_animator.SetBool("down", isDown);
         }
 
 
@@ -131,6 +129,7 @@ namespace SkyTrespass.Character
         {
             isAim = _isAim;
             moveSpeed = isAim ? _InternalWalkSpeed : _internalRunSpeed;
+            animatorManager.physics_MoveSpeed = moveSpeed;
             attackMachine.isAim = isAim;
             _animator.SetBool("changeAim", true);
             _animator.SetFloat("attackSpeedMul", GetAttackCD());
@@ -239,34 +238,34 @@ namespace SkyTrespass.Character
             }
 
         }
-        public void MoveAddDelt()
-        {
-            if (moveDelt.Equals(Vector2.zero))
-                return;
+        //public void MoveAddDelt()
+        //{
+        //    if (moveDelt.Equals(Vector2.zero))
+        //        return;
 
-            Vector3 pos = _rigidbody.position + new Vector3(moveDelt.x, 0, moveDelt.y) * moveSpeed * Time.fixedDeltaTime;
-            Vector3 next = pos;
-            next.y += 0.2f;
-            if (Physics.Raycast(next, Vector3.down, out RaycastHit hitInfo, 0.4f))
-            {
-                pos = hitInfo.point;
-            }
-            _rigidbody.MovePosition(pos);
-        }
-        public void RotateDelt()
-        {
-            Vector2 v2 = rotateDelt;
-            if (v2.x == 0 && v2.y == 0)
-                v2 = moveDelt;
-            if (v2.x == 0 && v2.y == 0)
-                return;
+        //    Vector3 pos = _rigidbody.position + new Vector3(moveDelt.x, 0, moveDelt.y) * moveSpeed * Time.fixedDeltaTime;
+        //    Vector3 next = pos;
+        //    next.y += 0.2f;
+        //    if (Physics.Raycast(next, Vector3.down, out RaycastHit hitInfo, 0.4f))
+        //    {
+        //        pos = hitInfo.point;
+        //    }
+        //    _rigidbody.MovePosition(pos);
+        //}
+        //public void RotateDelt()
+        //{
+        //    Vector2 v2 = rotateDelt;
+        //    if (v2.x == 0 && v2.y == 0)
+        //        v2 = moveDelt;
+        //    if (v2.x == 0 && v2.y == 0)
+        //        return;
 
-            Vector3 moveDir = new Vector3(v2.x, 0, v2.y);
-            float angle = Vector3.Angle(new Vector3(0, 0, 1), moveDir);
-            angle *= Vector3.Dot(new Vector3(1, 0, 0), moveDir) > 0 ? 1 : -1;
-            Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
-            _rigidbody.MoveRotation(qua);
-        }
+        //    Vector3 moveDir = new Vector3(v2.x, 0, v2.y);
+        //    float angle = Vector3.Angle(new Vector3(0, 0, 1), moveDir);
+        //    angle *= Vector3.Dot(new Vector3(1, 0, 0), moveDir) > 0 ? 1 : -1;
+        //    Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
+        //    _rigidbody.MoveRotation(qua);
+        //}
 
         public void RegisterPickUp(PickUp obj)
         {
@@ -310,12 +309,19 @@ namespace SkyTrespass.Character
         public void OnMove(InputValue value)
         {
 
-            moveDelt = value.Get<Vector2>();
+            var moveDelt = value.Get<Vector2>();
+            animatorManager.moveDelt = moveDelt;
+            bool isMove = moveDelt.x != 0 || moveDelt.y != 0;
+            Vector3 move = transform.worldToLocalMatrix.MultiplyVector(new Vector3(moveDelt.x, 0, moveDelt.y));
+            _animator.SetBool("isMove", isMove);
+            _animator.SetFloat("moveX", move.x);
+            _animator.SetFloat("moveY", move.z);
         }
 
         public void OnRotate(InputValue value)
         {
-            rotateDelt = value.Get<Vector2>();
+            var rotateDelt = value.Get<Vector2>();
+            animatorManager.rotateDelt = rotateDelt;
         }
 
         public void OnAim()
