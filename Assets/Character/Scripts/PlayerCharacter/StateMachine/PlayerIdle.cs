@@ -7,11 +7,9 @@ namespace SkyTrespass.Character {
     public class PlayerIdle : StateMachineBehaviour
     {
         PlayerAnimatorManager animatorManager;
-        STCharacterController controller;
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             animatorManager = animator.GetComponent<PlayerAnimatorManager>();
-            controller = animator.GetComponent<STCharacterController>();
         }
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {

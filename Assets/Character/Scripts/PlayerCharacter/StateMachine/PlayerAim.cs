@@ -4,22 +4,19 @@ using UnityEngine;
 
 namespace SkyTrespass.Character
 {
-    public class PlayerPistol : PlayerWpAttack
+    public class PlayerAim : StateMachineBehaviour
     {
+        PlayerAnimatorManager animatorManager;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-            PrepareAttack(animator);
-        }
-        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        {
-            UpdataAttack(animator,stateInfo);
-        }
-        public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        {
-            ExitAttack(animator);
-            characterController.ChangeWeaponsEnd();
+            animatorManager = animator.GetComponent<PlayerAnimatorManager>();
+            animatorManager.physics_MoveSpeed = animatorManager.aimMoveSpeed;
         }
 
+        public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        {
+            animatorManager.physics_MoveSpeed = animatorManager.moveSpeed;
+        }
     }
 }

@@ -24,8 +24,6 @@ namespace SkyTrespass.Character
         [HideInInspector]
         public WeaponsType myWeaponsType;
         [HideInInspector]
-        public bool hasAim;
-        [HideInInspector]
         public Weaponsbase currentWeapons;
         [HideInInspector]
         public Weaponsbase weapons_0;
@@ -86,7 +84,7 @@ namespace SkyTrespass.Character
 
         void SetCurrentWeapons(Weaponsbase weaponsbase)
         {
-            if(currentWeapons)
+            if (currentWeapons)
             {
                 currentWeapons.SubCharacterInfo(characterInfo.weaponsAttackInfo);
                 currentWeapons.Hidden();
@@ -95,19 +93,12 @@ namespace SkyTrespass.Character
             {
                 currentWeapons = null;
                 myWeaponsType = WeaponsType.none;
-                return;
-            }
-
-            currentWeapons = weaponsbase;
-            currentWeapons.AddCharacterInfo(characterInfo.weaponsAttackInfo);
-            myWeaponsType = currentWeapons.weaponsType;
-            if (currentWeapons is WeaponsRifle)
-            {
-                hasAim = true;
             }
             else
             {
-                hasAim = false;
+                myWeaponsType = weaponsbase.weaponsType;
+                currentWeapons = weaponsbase;
+                currentWeapons.AddCharacterInfo(characterInfo.weaponsAttackInfo);
             }
         }
 
@@ -126,22 +117,14 @@ namespace SkyTrespass.Character
         /// </summary>
         void SetAttackMachine()
         {
-            if (currentWeapons == null)
-            {
-                attackMachine.unArmAttackInfo = characterInfo.unArmAttackInfo;
-                return;
-            }
-
             attackMachine.weaponsAttackInfo = characterInfo.weaponsAttackInfo;
+            attackMachine.unArmAttackInfo = characterInfo.unArmAttackInfo;
             attackMachine.SetWeapons(currentWeapons);
         }
 
-
-
-
         public void InitWeapons()
         {
-            weapons_0 = GenerateWeapons(001);
+            weapons_0 =  GenerateWeapons(001);
             weapons_1 = GenerateWeapons(002);
 
             SetCurrentWeapons(weapons_0);

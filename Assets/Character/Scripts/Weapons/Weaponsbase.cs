@@ -8,8 +8,7 @@ namespace SkyTrespass.Character
     public abstract class Weaponsbase : MonoBehaviour
     {
         public WeaponsType weaponsType;
-
-
+        public AttackCommand attackCommand;
         public virtual void Hidden()
         {
             gameObject.SetActive(false);
@@ -18,7 +17,12 @@ namespace SkyTrespass.Character
         {
             gameObject.SetActive(true);
         }
-        public abstract void Attack(WeaponsAttackInfo characterInfo);
+        public virtual void Drop()
+        {
+            Destroy(gameObject);
+        }
+
+
         public abstract void AddCharacterInfo(WeaponsAttackInfo characterInfo);
         public abstract void SubCharacterInfo(WeaponsAttackInfo characterInfo);
 

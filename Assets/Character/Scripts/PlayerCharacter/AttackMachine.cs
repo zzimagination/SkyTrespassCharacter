@@ -17,60 +17,68 @@ namespace SkyTrespass.Character
         public UnArmAttackInfo unArmAttackInfo;
         [ReadOnly]
         public WeaponsAttackInfo weaponsAttackInfo;
-        
-        Collider[] hitColliders = new Collider[1];
-        RaycastHit shootResult;
 
-        AttackAction WeaponsAttack;
-        delegate void AttackAction();
-
-
+        AttackCommand currentCommand;
+        Weaponsbase currentWeapons;
 
         public void SetWeapons(Weaponsbase obj)
         {
-            if (obj==null)
+            if (obj == null)
             {
-                return;
-            }
-
-            var w1 = obj as WeaponsRifle;
-            if(w1)
+                currentCommand = new UnarmAttackCommand();
+                shootPoint = null;
+            }else
             {
-                shootPoint.localPosition = w1.shootLocalPoint;
-                WeaponsAttack = () =>
-                {
-                    w1.isAimShoot = isAim;
-                    w1.shootDir = transform.forward;
-                    w1.shootPosition = shootPoint.position;
-                    w1.Attack(weaponsAttackInfo);
-                };
-                return;
-            }
-            var w2 = obj as WeaponsPistol;
-            if(w2)
-            {
-                shootPoint.localPosition = w2.shootLocalPoint;
-                WeaponsAttack = () =>
-                {
-                    w2.isAimShoot = isAim;
-                    w2.shootDir = transform.forward;
-                    w2.shootPosition = shootPoint.position;
-                    w2.Attack(weaponsAttackInfo);
-                };
-                return;
-            }
-
+                currentCommand = obj.attackCommand;
+            } 
         }
 
-        public void FistAttack()
+        public void Attack(AttackStage attackStage)
+        {
+            if (attackStage == AttackStage.enter)
+            {
+                currentCommand.Prepare(this);
+            }
+            else if (attackStage == AttackStage.start)
+            {
+                currentCommand.Start();
+            }
+            else if (attackStage == AttackStage.keep)
+            {
+                currentCommand.Keep();
+
+            }
+            else if (attackStage == AttackStage.end)
+            {
+                currentCommand.End();
+            }
+        }
+
+    }
+
+    public class UnarmAttackCommand : AttackCommand
+    {
+        public Transform r_hand;
+        public UnArmAttackInfo unArmAttackInfo;
+
+        public override void Prepare(AttackMachine attackMachine)
+        {
+            unArmAttackInfo = attackMachine.unArmAttackInfo;
+            r_hand = attackMachine.r_hand;
+        }
+        public override void Start()
+        {
+
+        }
+        public override void Keep()
         {
             float Range = unArmAttackInfo.attackCheckRange * unArmAttackInfo.attackCheckRange_Per;
             float damage = unArmAttackInfo.damage * unArmAttackInfo.damage_Per;
-
-            var number = Physics.OverlapSphereNonAlloc(r_hand.position, Range, hitColliders, (1 << 9 | 1 << 10));
-            if (number > 0)
+           
+            var number = Physics.OverlapSphere(r_hand.position, Range, (1 << 9 | 1 << 10));
+            if (number.Length > 0)
             {
-                var t = hitColliders[0].GetComponent<IDestructible>();
+                var t = number[0].GetComponent<IDestructible>();
                 if (t != null)
                 {
                     AttackInfo attackInfo = new AttackInfo();
@@ -78,14 +86,12 @@ namespace SkyTrespass.Character
                     t.Attack(attackInfo);
                 }
             }
-        }
 
-        public void GunAttack()
+        }
+        public override void End()
         {
-            WeaponsAttack?.Invoke();
+
         }
-
     }
-
 
 }

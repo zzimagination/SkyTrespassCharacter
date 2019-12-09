@@ -33,7 +33,6 @@ namespace SkyTrespass.Character
                 deathAction.Invoke();
                 return;
             }
-            Debug.Log(health);
             attackAction.Invoke();
         }
 

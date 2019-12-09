@@ -345,6 +345,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 328215641}
+  - component: {fileID: 328215642}
   m_Layer: 8
   m_Name: Character
   m_TagString: Untagged
@@ -369,6 +370,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &328215642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 328215640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23bea9c1a39274042beb9a7470d27eae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 95747096184182244}
 --- !u!1 &445344599
 GameObject:
   m_ObjectHideFlags: 0
@@ -1411,11 +1425,7 @@ MonoBehaviour:
   playerInput: {fileID: 1268113835}
   equipment: {fileID: 1268113838}
   attackMachine: {fileID: 1268113839}
-  moveSpeed: 5
-  isGround: 0
   isFall: 0
-  keepAttack: 0
-  prepareIdle: 0
   isIK: 0
 --- !u!114 &1268113835
 MonoBehaviour:
@@ -1499,7 +1509,6 @@ MonoBehaviour:
   pistolRoot: {fileID: 1991573138}
   characterInfo: {fileID: 0}
   myWeaponsType: 0
-  hasAim: 0
   currentWeapons: {fileID: 0}
   weapons_0: {fileID: 0}
   weapons_1: {fileID: 0}
@@ -3794,6 +3803,13 @@ MonoBehaviour:
   _rigidbody: {fileID: 172554072}
   physics_MoveSpeed: 0
   weaponsInterger: 0
+  moveDelt: {x: 0, y: 0}
+  rotateDelt: {x: 0, y: 0}
+  moveSpeed: 0
+  aimMoveSpeed: 0
+  attackSpeed: 0
+  aimAttackSpeed: 0
+  keepAttack: 0
 --- !u!1 &1971422124220227
 GameObject:
   m_ObjectHideFlags: 0

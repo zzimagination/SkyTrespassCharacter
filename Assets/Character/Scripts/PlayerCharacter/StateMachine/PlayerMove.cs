@@ -12,6 +12,7 @@ namespace SkyTrespass.Character
         {
             controller = animator.GetComponent<STCharacterController>();
             animatorManager = animator.GetComponent<PlayerAnimatorManager>();
+            animatorManager.physics_MoveSpeed = animatorManager.moveSpeed;
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

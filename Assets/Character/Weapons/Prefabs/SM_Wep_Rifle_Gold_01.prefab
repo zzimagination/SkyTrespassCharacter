@@ -364,7 +364,4 @@ MonoBehaviour:
   bulletLinerObj: {fileID: 6903977335012489328, guid: 2fbdc81ecad492d42890fc67a3a939e8,
     type: 3}
   info: {fileID: 11400000, guid: 04e9da377b31a9441b6c18b14ad63240, type: 2}
-  leftIK: {fileID: 6944919044103685717}
-  shootDir: {x: 0, y: 0, z: 0}
-  shootPosition: {x: 0, y: 0, z: 0}
-  isAimShoot: 0
+  leftHandIK: {fileID: 6944919044103685717}

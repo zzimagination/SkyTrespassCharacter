@@ -10,7 +10,7 @@ namespace SkyTrespass.Character
         public Animator _animator;
         public Rigidbody _rigidbody;
 
-        [ReadOnly]
+        [HideInInspector]
         public float physics_MoveSpeed;
         [ReadOnly]
         public int weaponsInterger;
@@ -18,11 +18,33 @@ namespace SkyTrespass.Character
         public Vector2 moveDelt;
         [ReadOnly]
         public Vector2 rotateDelt;
+        [ReadOnly]
+        public float moveSpeed;
+        [ReadOnly]
+        public float aimMoveSpeed;
+        [ReadOnly]
+        public float attackSpeed;
+        [ReadOnly]
+        public float aimAttackSpeed;
+        [HideInInspector]
+        public bool keepAttack;
+        [HideInInspector]
+        public Transform LeftHandIK;
+
 
         const float _internalRotateSpeed = 8;
         const float _internalRunSpeed = 4.2f;
         const float _InternalWalkSpeed = 2f;
 
+        public event AnimationEvent EnterFall;
+        public event AnimationEvent ExitFall;
+        public event AnimationEvent EnterDeath;
+        public event AnimationEvent<AttackStage> Attack;
+
+        public delegate void AnimationEvent();
+        public delegate void AnimationEvent<T>(T a1);
+
+        
 
         private void Awake()
         {
@@ -35,7 +57,6 @@ namespace SkyTrespass.Character
         {
             _animator.SetFloat("moveX", 0);
             _animator.SetFloat("moveY", 0);
-            _animator.SetFloat("speed", 1);
             _animator.SetFloat("attackSpeedMul", 1);
             _animator.SetInteger("weapons",weaponsInterger);
             _animator.SetBool("down", false);
@@ -43,7 +64,6 @@ namespace SkyTrespass.Character
             _animator.SetBool("attack", false);
             _animator.SetBool("isMove", false);
             _animator.SetBool("isAim", false);
-            _animator.SetBool("changeAim", false);
             _animator.ResetTrigger("pick");
             _animator.ResetTrigger("death");
             _animator.ResetTrigger("bullet");
@@ -81,6 +101,7 @@ namespace SkyTrespass.Character
             _rigidbody.useGravity = !s;
             _rigidbody.isKinematic = s;
         }
+
         public void TransformUpdate()
         {
             if (!transform.localPosition.Equals(_rigidbody.position))
@@ -88,14 +109,12 @@ namespace SkyTrespass.Character
             if (!transform.localRotation.Equals(_rigidbody.rotation))
                 transform.localRotation = Quaternion.Slerp(transform.localRotation, _rigidbody.rotation, _internalRotateSpeed * Time.deltaTime);
         }
-
         public void MoveAddDelt()
         {
             float x = moveDelt.x;
             float y = moveDelt.y;
             if (x == 0 && y == 0)
                 return;
-
             Vector3 pos = _rigidbody.position + new Vector3(x, 0, y) * physics_MoveSpeed * Time.fixedDeltaTime;
             Vector3 next = pos;
             next.y += 0.2f;
@@ -123,5 +142,43 @@ namespace SkyTrespass.Character
             Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
             _rigidbody.MoveRotation(qua);
         }
+
+        public void Aim(bool isAim)
+        {
+            _animator.SetBool("isAim",isAim);
+            _animator.SetBool("changeAim", true);
+        }
+
+        public void StopAttack()
+        {
+            _animator.SetBool("attack", false);
+        }
+
+        public void EnterFallInvoke()
+        {
+            EnterFall?.Invoke();
+        }
+        public void ExitFallInvoke()
+        {
+            ExitFall?.Invoke();
+        }
+        public void EnterDeathInvoke()
+        {
+            EnterDeath?.Invoke();
+        }
+
+        public void AttackInvoke(AttackStage a1)
+        {
+            Attack?.Invoke(a1);
+        }
+    }
+
+    public enum AttackStage
+    {
+        enter,
+        start,
+        keep,
+        end,
+        exit,
     }
 }

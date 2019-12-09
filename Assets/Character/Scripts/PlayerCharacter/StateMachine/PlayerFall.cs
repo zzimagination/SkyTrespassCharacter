@@ -6,21 +6,12 @@ namespace SkyTrespass.Character {
     public class PlayerFall :StateMachineBehaviour
     {
         PlayerAnimatorManager animatorManager;
-        STCharacterController controller;
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             animatorManager = animator.GetComponent<PlayerAnimatorManager>();
-            controller = animator.GetComponent<STCharacterController>();
-            controller.StopRigidbody(false);
-
-            controller.MainButtonPress = null;
-            controller.MainButtonUp = null;
-            controller.AimButton = null;
-            controller.isFall = true;
-
-            controller.StopAttack();
-
-
+            animatorManager.StopRigidbody(false);
+            animatorManager.StopAttack();
+            animatorManager.EnterFallInvoke();
         }
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
@@ -33,10 +24,7 @@ namespace SkyTrespass.Character {
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-            controller.MainButtonPress = controller.PickOrAttack;
-            controller.AimButton = controller.AutoChangeAim;
-            controller.MainButtonUp = controller.StopAttack;
-            controller.isFall = false;
+            animatorManager.ExitFallInvoke();
         }
     }
 }

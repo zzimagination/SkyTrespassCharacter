@@ -13,32 +13,18 @@ namespace SkyTrespass.Character
         public PlayerInput playerInput;
         public EquipmentManager equipment;
         public AttackMachine attackMachine;
-        public float moveSpeed;
 
-        [HideInInspector]
-        public bool isGround;
         [HideInInspector]
         public bool isFall;
-        [HideInInspector]
-        public bool keepAttack;
-        [HideInInspector]
-        public bool prepareIdle;
-        [HideInInspector]
-        public bool isIK;
 
-        bool hasAim;
         bool isAim = false;
         bool isChangeWeapons;
 
-        //Vector2 moveDelt;
-        //Vector2 rotateDelt;
+        Vector2 moveDelt;
+        Vector2 rotateDelt;
 
         List<PickUp> pickUps;
 
-        //float DisToGround;
-        //RaycastHit[] raycastResult = new RaycastHit[16];
-
-        const float _internalRotateSpeed = 8;
         const float _internalRunSpeed = 4.2f;
         const float _InternalWalkSpeed = 2f;
 
@@ -47,6 +33,15 @@ namespace SkyTrespass.Character
         public buttonAction MainButtonUp;
 
         public delegate void buttonAction();
+
+        private void OnEnable()
+        {
+            animatorManager.EnterFall += EnterFall;
+            animatorManager.ExitFall += ExitFall;
+            animatorManager.EnterDeath += EnterDeath;
+
+            animatorManager.Attack += attackMachine.Attack;
+        }
 
         private void Start()
         {
@@ -60,21 +55,17 @@ namespace SkyTrespass.Character
 
         void Update()
         {
-            //if (!transform.localPosition.Equals(_rigidbody.position))
-            //    transform.localPosition = _rigidbody.position;
-            //if (!transform.localRotation.Equals(_rigidbody.rotation))
-            //    transform.localRotation = Quaternion.Slerp(transform.localRotation, _rigidbody.rotation, _internalRotateSpeed * Time.deltaTime);
-
-            //bool isDown = _rigidbody.velocity.y < -2f;
-            //bool isMove = moveDelt.x != 0 || moveDelt.y != 0;
-            //Vector3 move = transform.worldToLocalMatrix.MultiplyVector(new Vector3(moveDelt.x, 0, moveDelt.y));
-
-            //_animator.SetBool("isMove", isMove);
-            //_animator.SetFloat("moveX", move.x);
-            //_animator.SetFloat("moveY", move.z);
-            //_animator.SetBool("down", isDown);
+            MoveCheck();
         }
 
+        private void OnDisable()
+        {
+            animatorManager.EnterFall -= EnterFall;
+            animatorManager.ExitFall -= ExitFall;
+            animatorManager.EnterDeath -= EnterDeath;
+
+            animatorManager.Attack += attackMachine.Attack;
+        }
 
 #if UNITY_EDITOR
 
@@ -87,7 +78,8 @@ namespace SkyTrespass.Character
             else if (GUILayout.Button("Relife"))
             {
                 Relife();
-            }else if(GUILayout.Button("Bullet"))
+            }
+            else if (GUILayout.Button("Bullet"))
             {
                 _animator.SetTrigger("bullet");
             }
@@ -103,38 +95,58 @@ namespace SkyTrespass.Character
             InitWeapons();
         }
 
-        float GetAttackCD()
+        void MoveCheck()
+        {
+            Vector3 move = transform.worldToLocalMatrix.MultiplyVector(new Vector3(moveDelt.x, 0, moveDelt.y));
+            bool isMove = moveDelt.x != 0 || moveDelt.y != 0;
+            _animator.SetBool("isMove", isMove);
+            _animator.SetFloat("moveX", move.x);
+            _animator.SetFloat("moveY", move.z);
+        }
+
+        void SetAttackCD()
         {
             if (equipment.myWeaponsType == WeaponsType.none)
             {
                 var u = equipment.characterInfo.unArmAttackInfo;
-                return u.CD * u.CD_Per;
+                _animator.SetFloat("attackSpeedMul", u.CD * u.CD_Per);
             }
             else
             {
                 var s = equipment.characterInfo.weaponsAttackInfo.shootAttackInfo;
-                return isAim ? s.shootAimCD * s.shootAimCD_Per : s.shootCD * s.shootCD_Per;
+                if(equipment.myWeaponsType== WeaponsType.pisol)
+                {
+                    _animator.SetFloat("attackSpeedMul", s.shootCD * s.shootCD_Per);
+                }else if(equipment.myWeaponsType== WeaponsType.rifle)
+                {
+                    if (isAim)
+                    {
+                        _animator.SetFloat("attackSpeedMul", s.shootAimCD * s.shootAimCD_Per);
+                    }
+                    else
+                    {
+                        _animator.SetFloat("attackSpeedMul", s.shootCD * s.shootCD_Per);
+                    }
+                }
             }
+
+        }
+        void SetMoveSpeed()
+        {
+            animatorManager.moveSpeed = _internalRunSpeed;
+            animatorManager.aimMoveSpeed = _InternalWalkSpeed;
         }
 
         public void AutoChangeAim()
         {
-            if (hasAim)
-            {
-                ChangeAimState(!isAim);
-            }
+            ChangeAimState(!isAim);
         }
-
         public void ChangeAimState(bool _isAim)
         {
             isAim = _isAim;
-            moveSpeed = isAim ? _InternalWalkSpeed : _internalRunSpeed;
-            animatorManager.physics_MoveSpeed = moveSpeed;
             attackMachine.isAim = isAim;
-            _animator.SetBool("changeAim", true);
-            _animator.SetFloat("attackSpeedMul", GetAttackCD());
-            Debug.Log(GetAttackCD());
-            _animator.SetFloat("speed", isAim ? 0 : 1);
+
+            SetAttackCD();
             _animator.SetBool("isAim", isAim);
         }
 
@@ -149,8 +161,10 @@ namespace SkyTrespass.Character
             }
             else
             {
-                if (!keepAttack)
+                if (!animatorManager.keepAttack)
+                {
                     _animator.SetBool("attack", true);
+                }
             }
         }
 
@@ -158,47 +172,34 @@ namespace SkyTrespass.Character
         {
             ChangeAimState(false);
             WeaponsType type = equipment.myWeaponsType;
-            hasAim = equipment.hasAim;
-            if (type== WeaponsType.none)
+
+            SetMoveSpeed();
+            SetAttackCD();
+            if(type== WeaponsType.rifle)
             {
-                _animator.SetInteger("weapons", 0);
-                return;
+                WeaponsRifle weapons = equipment.currentWeapons as WeaponsRifle;
+                animatorManager.LeftHandIK = weapons.leftHandIK;
+            }
+            _animator.SetInteger("weapons", (int)type);
+        }
+        public void ChangeWeapons()
+        {
+            StopAttack();
+            ChangeAimState(false);
+            equipment.ChangeWeapons();
+            WeaponsType type = equipment.myWeaponsType;
+
+            SetMoveSpeed();
+            SetAttackCD();
+            if (type == WeaponsType.rifle)
+            {
+                WeaponsRifle weapons = equipment.currentWeapons as WeaponsRifle;
+                animatorManager.LeftHandIK = weapons.leftHandIK;
             }
             _animator.SetInteger("weapons", (int)type);
         }
 
 
-
-
-
-        public void ChangeWeapons()
-        {
-            isChangeWeapons = true;
-            StopAttack();
-
-            if (!keepAttack)
-                ChangeWeaponsEnd();
-        }
-        public void ChangeWeaponsEnd()
-        {
-            if (!isChangeWeapons)
-                return;
-            equipment.ChangeWeapons();
-            _animator.SetInteger("weapons", (int)equipment.myWeaponsType);
-
-            ChangeAimState(false);
-            isChangeWeapons = false;
-        }
-
-
-        public void EnterAttack()
-        {
-            keepAttack = true;
-        }
-        public void ExitAttack()
-        {
-            keepAttack = false;
-        }
         public void StopAttack()
         {
             _animator.SetBool("attack", false);
@@ -222,50 +223,6 @@ namespace SkyTrespass.Character
             _rigidbody.useGravity = !s;
             _rigidbody.isKinematic = s;
         }
-
-        public void Idle()
-        {
-            Vector3 checkPoint = _rigidbody.position;
-            checkPoint.y += 0.1f;
-            bool r = Physics.Raycast(checkPoint, Vector3.down, 0.2f);
-            if (r)
-            {
-                StopRigidbody(true);
-            }
-            else
-            {
-                StopRigidbody(false);
-            }
-
-        }
-        //public void MoveAddDelt()
-        //{
-        //    if (moveDelt.Equals(Vector2.zero))
-        //        return;
-
-        //    Vector3 pos = _rigidbody.position + new Vector3(moveDelt.x, 0, moveDelt.y) * moveSpeed * Time.fixedDeltaTime;
-        //    Vector3 next = pos;
-        //    next.y += 0.2f;
-        //    if (Physics.Raycast(next, Vector3.down, out RaycastHit hitInfo, 0.4f))
-        //    {
-        //        pos = hitInfo.point;
-        //    }
-        //    _rigidbody.MovePosition(pos);
-        //}
-        //public void RotateDelt()
-        //{
-        //    Vector2 v2 = rotateDelt;
-        //    if (v2.x == 0 && v2.y == 0)
-        //        v2 = moveDelt;
-        //    if (v2.x == 0 && v2.y == 0)
-        //        return;
-
-        //    Vector3 moveDir = new Vector3(v2.x, 0, v2.y);
-        //    float angle = Vector3.Angle(new Vector3(0, 0, 1), moveDir);
-        //    angle *= Vector3.Dot(new Vector3(1, 0, 0), moveDir) > 0 ? 1 : -1;
-        //    Quaternion qua = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
-        //    _rigidbody.MoveRotation(qua);
-        //}
 
         public void RegisterPickUp(PickUp obj)
         {
@@ -304,23 +261,36 @@ namespace SkyTrespass.Character
 
         }
 
+        public void EnterFall()
+        {
+            MainButtonPress = null;
+            MainButtonUp = null;
+            AimButton = null;
+            isFall = true;
+        }
+        public void ExitFall()
+        {
+            MainButtonPress = PickOrAttack;
+            AimButton = AutoChangeAim;
+            MainButtonUp = StopAttack;
+            isFall = false;
+        }
+        public void EnterDeath()
+        {
+            InputSwitch(false);
+        }
+
 
 
         public void OnMove(InputValue value)
         {
-
-            var moveDelt = value.Get<Vector2>();
+            moveDelt = value.Get<Vector2>();
             animatorManager.moveDelt = moveDelt;
-            bool isMove = moveDelt.x != 0 || moveDelt.y != 0;
-            Vector3 move = transform.worldToLocalMatrix.MultiplyVector(new Vector3(moveDelt.x, 0, moveDelt.y));
-            _animator.SetBool("isMove", isMove);
-            _animator.SetFloat("moveX", move.x);
-            _animator.SetFloat("moveY", move.z);
         }
 
         public void OnRotate(InputValue value)
         {
-            var rotateDelt = value.Get<Vector2>();
+            rotateDelt = value.Get<Vector2>();
             animatorManager.rotateDelt = rotateDelt;
         }
 

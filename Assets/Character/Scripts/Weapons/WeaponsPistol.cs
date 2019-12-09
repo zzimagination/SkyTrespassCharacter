@@ -10,12 +10,12 @@ namespace SkyTrespass.Character
         public GameObject bulletLinerObj;
         public WeaponsPistolInfo info;
 
-        [HideInInspector]
-        public Vector3 shootDir;
-        [HideInInspector]
-        public Vector3 shootPosition;
-        [HideInInspector]
-        public bool isAimShoot;
+        private void OnEnable()
+        {
+            var command = new PistolAttackCommand();
+            command.bulletLinerObj = bulletLinerObj;
+            attackCommand = command;
+        }
 
         public override void AddCharacterInfo(WeaponsAttackInfo finalInfo)
         {
@@ -30,6 +30,8 @@ namespace SkyTrespass.Character
 
             finalInfo.shootAttackInfo.shootOffset += info.shootOffset;
             finalInfo.shootAttackInfo.shootOffset_Per += info.shootOffset_Per;
+
+           
         }
 
         public override void SubCharacterInfo(WeaponsAttackInfo finalInfo)
@@ -46,9 +48,38 @@ namespace SkyTrespass.Character
             finalInfo.shootAttackInfo.shootOffset -= info.shootOffset;
             finalInfo.shootAttackInfo.shootOffset_Per -= info.shootOffset_Per;
         }
+    }
 
-        public override void Attack(WeaponsAttackInfo characterInfo)
+    public class PistolAttackCommand : AttackCommand
+    {
+
+        public GameObject bulletLinerObj;
+
+        Transform shootPoint;
+        Vector3 shootPosition;
+        Vector3 shootDir;
+        WeaponsAttackInfo characterInfo;
+        bool isAimShoot;
+        Transform transform;
+        public override void Prepare(AttackMachine attackMachine)
         {
+            shootPoint = attackMachine.shootPoint;
+
+            isAimShoot = attackMachine.isAim;
+            characterInfo = attackMachine.weaponsAttackInfo;
+            transform = attackMachine.transform;
+
+        }
+        public override void Start()
+        {
+
+        }
+
+
+        public override void Keep()
+        {
+            shootPosition = shootPoint.position;
+            shootDir = shootPoint.forward;
             ShootAttackInfo saInfo = characterInfo.shootAttackInfo;
 
             float offset = isAimShoot ? (saInfo.shootAimOffset * saInfo.shootAimOffset_Per) : saInfo.shootOffset * saInfo.shootOffset_Per;
@@ -59,7 +90,7 @@ namespace SkyTrespass.Character
 
             float dis = isAimShoot ? saInfo.shootAimDistance * saInfo.shootAimDistance_Per : saInfo.shootDistance * saInfo.shootDistance_Per;
             bool isHit = Physics.Raycast(shootPosition, shootDir, out RaycastHit shootResult, dis, (1 << 9 | 1 << 10));
-            GameObject obj = Instantiate(bulletLinerObj);
+            GameObject obj = GameObject.Instantiate(bulletLinerObj);
             obj.transform.SetParent(transform);
             obj.transform.position = shootPosition;
             if (isHit)
@@ -80,5 +111,13 @@ namespace SkyTrespass.Character
                 obj.GetComponent<BulletLiner>().SetPoint(shootPosition, end);
             }
         }
+
+        public override void End()
+        {
+
+        }
+
+
     }
+
 }

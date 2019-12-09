@@ -5,15 +5,11 @@ using Sirenix.OdinInspector;
 
 namespace SkyTrespass.Character
 {
-    [CreateAssetMenu(fileName = "ShootWeaponsInfo", menuName = "Setting/WeaponsInfo/Shoot")]
-    public class WeaponsShootInfo : ScriptableObject
-    {
-        public ShootAttackInfo ShootAttackInfo;
-    }
-
     [CreateAssetMenu(fileName = "Rifle", menuName = "Setting/WeaponsInfo/Rifle")]
     public class WeaponsRifleInfo : ScriptableObject
     {
+        public int magazineCapacity;
+
         public float shootDamage;
         public float shootDamage_Per=1;
         [Tooltip("武器动画片段的速度，1为默认速度")]
@@ -36,6 +32,8 @@ namespace SkyTrespass.Character
     [CreateAssetMenu(fileName = "Pistol", menuName = "Setting/WeaponsInfo/Pistol")]
     public class WeaponsPistolInfo:ScriptableObject
     {
+        public int magazineCapacity;
+
         public float shootDamage;
         public float shootDamage_Per=1;
         [Tooltip("武器动画片段的速度，1为默认速度")]
