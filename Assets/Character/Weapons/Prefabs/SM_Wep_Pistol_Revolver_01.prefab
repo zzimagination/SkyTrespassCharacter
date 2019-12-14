@@ -252,13 +252,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponsType: 2
-  shootLocalPoint: {x: 0, y: 1.4, z: 1}
+  shootLocalPoint: {x: 0, y: 1.4, z: 0}
   bulletLinerObj: {fileID: 6903977335012489328, guid: 2fbdc81ecad492d42890fc67a3a939e8,
     type: 3}
   info: {fileID: 11400000, guid: 5cffd3a52b20adf45bb13978cd156659, type: 2}
-  shootDir: {x: 0, y: 0, z: 0}
-  shootPosition: {x: 0, y: 0, z: 0}
-  isAimShoot: 0
+  pistolInfo: {fileID: 11400000, guid: 4537b52da0b83c4428ae3df648553291, type: 2}
 --- !u!1 &6537671399183390133
 GameObject:
   m_ObjectHideFlags: 0

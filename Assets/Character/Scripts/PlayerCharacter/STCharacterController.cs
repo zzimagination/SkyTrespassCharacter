@@ -18,7 +18,8 @@ namespace SkyTrespass.Character
         public bool isFall;
 
         bool isAim = false;
-        bool isChangeWeapons;
+        //bool isChangeWeapons;
+        bool isReloadBullet;
 
         Vector2 moveDelt;
         Vector2 rotateDelt;
@@ -39,13 +40,16 @@ namespace SkyTrespass.Character
             animatorManager.EnterFall += EnterFall;
             animatorManager.ExitFall += ExitFall;
             animatorManager.EnterDeath += EnterDeath;
-
             animatorManager.Attack += attackMachine.Attack;
+            animatorManager.EnterReload += EnterReloadBullet;
+            animatorManager.ExitReload += ExitReloadBullet;
+
+            attackMachine.ReloadBullets += ReloadBullets;
         }
 
         private void Start()
         {
-            MainButtonPress = PickOrAttack;
+            MainButtonPress = MainButtonActionManager;
             AimButton = AutoChangeAim;
             MainButtonUp = StopAttack;
 
@@ -63,8 +67,11 @@ namespace SkyTrespass.Character
             animatorManager.EnterFall -= EnterFall;
             animatorManager.ExitFall -= ExitFall;
             animatorManager.EnterDeath -= EnterDeath;
+            animatorManager.Attack -= attackMachine.Attack;
+            animatorManager.EnterReload -= EnterReloadBullet;
+            animatorManager.ExitReload -= ExitReloadBullet;
 
-            animatorManager.Attack += attackMachine.Attack;
+            attackMachine.ReloadBullets -= ReloadBullets;
         }
 
 #if UNITY_EDITOR
@@ -106,19 +113,14 @@ namespace SkyTrespass.Character
 
         void SetAttackCD()
         {
-            if (equipment.myWeaponsType == WeaponsType.none)
+            var s = equipment.characterInfo.weaponsAttackInfo;
+            var type = equipment.currentWeapons.weaponsType;
+            switch (type)
             {
-                var u = equipment.characterInfo.unArmAttackInfo;
-                _animator.SetFloat("attackSpeedMul", u.CD * u.CD_Per);
-            }
-            else
-            {
-                var s = equipment.characterInfo.weaponsAttackInfo.shootAttackInfo;
-                if(equipment.myWeaponsType== WeaponsType.pisol)
-                {
-                    _animator.SetFloat("attackSpeedMul", s.shootCD * s.shootCD_Per);
-                }else if(equipment.myWeaponsType== WeaponsType.rifle)
-                {
+                case WeaponsType.none:
+                    _animator.SetFloat("attackSpeedMul", s.unarmCD * s.unarmCD_Per);
+                    break;
+                case WeaponsType.rifle:
                     if (isAim)
                     {
                         _animator.SetFloat("attackSpeedMul", s.shootAimCD * s.shootAimCD_Per);
@@ -127,9 +129,13 @@ namespace SkyTrespass.Character
                     {
                         _animator.SetFloat("attackSpeedMul", s.shootCD * s.shootCD_Per);
                     }
-                }
+                    break;
+                case WeaponsType.pisol:
+                    _animator.SetFloat("attackSpeedMul", s.shootCD * s.shootCD_Per);
+                    break;
+                default:
+                    break;
             }
-
         }
         void SetMoveSpeed()
         {
@@ -137,12 +143,29 @@ namespace SkyTrespass.Character
             animatorManager.aimMoveSpeed = _InternalWalkSpeed;
         }
 
+        void ReloadBullets()
+        {
+            _animator.SetTrigger("bullet");
+        }
+
+        public void EnterReloadBullet()
+        {
+            isReloadBullet = true;
+        }
+        public void ExitReloadBullet()
+        {
+            isReloadBullet = false;
+        }
+
         public void AutoChangeAim()
         {
+
             ChangeAimState(!isAim);
         }
         public void ChangeAimState(bool _isAim)
         {
+            if (isReloadBullet)
+                return;
             isAim = _isAim;
             attackMachine.isAim = isAim;
 
@@ -150,32 +173,42 @@ namespace SkyTrespass.Character
             _animator.SetBool("isAim", isAim);
         }
 
-        public void PickOrAttack()
+        public void MainButtonActionManager()
         {
             if (pickUps.Count > 0)
             {
-                ChangeAimState(false);
-                pickUps[0].Pick();
-                pickUps.RemoveAt(0);
-                _animator.SetTrigger("pick");
+                Pick();
+                return;
             }
             else
             {
-                if (!animatorManager.keepAttack)
-                {
-                    _animator.SetBool("attack", true);
-                }
+                Atack();
             }
         }
 
+        public void Pick()
+        {
+            ChangeAimState(false);
+            pickUps[0].Pick();
+            pickUps.RemoveAt(0);
+            _animator.SetTrigger("pick");
+        }
+
+        public void Atack()
+        {
+            if (!animatorManager.keepAttack)
+            {
+                _animator.SetBool("attack", true);
+            }
+        }
         public void InitWeapons()
         {
             ChangeAimState(false);
-            WeaponsType type = equipment.myWeaponsType;
+            WeaponsType type = equipment.currentWeapons.weaponsType;
 
             SetMoveSpeed();
             SetAttackCD();
-            if(type== WeaponsType.rifle)
+            if (type == WeaponsType.rifle)
             {
                 WeaponsRifle weapons = equipment.currentWeapons as WeaponsRifle;
                 animatorManager.LeftHandIK = weapons.leftHandIK;
@@ -184,10 +217,12 @@ namespace SkyTrespass.Character
         }
         public void ChangeWeapons()
         {
+            if (isReloadBullet)
+                return;
             StopAttack();
             ChangeAimState(false);
             equipment.ChangeWeapons();
-            WeaponsType type = equipment.myWeaponsType;
+            WeaponsType type = equipment.currentWeapons.weaponsType;
 
             SetMoveSpeed();
             SetAttackCD();
@@ -236,10 +271,10 @@ namespace SkyTrespass.Character
                 pickUps.Remove(obj);
         }
 
-        public void HasGuns()
-        {
-            ChangeAimState(false);
-        }
+        //public void HasGuns()
+        //{
+        //    ChangeAimState(false);
+        //}
         public void Relife()
         {
             //    _animator.Play("UnArmed");
@@ -270,7 +305,7 @@ namespace SkyTrespass.Character
         }
         public void ExitFall()
         {
-            MainButtonPress = PickOrAttack;
+            MainButtonPress = MainButtonActionManager;
             AimButton = AutoChangeAim;
             MainButtonUp = StopAttack;
             isFall = false;

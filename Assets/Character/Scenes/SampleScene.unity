@@ -569,6 +569,51 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 492389571}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &543815568
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 543815570}
+  - component: {fileID: 543815569}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &543815569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543815568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f25cc736dc5ba0c4c9d4940f143a84aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rifle1: {fileID: 6946684046442630651, guid: 1f587a8cbab548540867fc36c8cbbdf4, type: 3}
+  pistol1: {fileID: 6537660892618991361, guid: 7a78bf7c39f8f5a4eb1df98b8bb68592, type: 3}
+--- !u!4 &543815570
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543815568}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.57648623, y: -2.5137076, z: 2.7488444}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &568652216
 GameObject:
   m_ObjectHideFlags: 0
@@ -1426,7 +1471,6 @@ MonoBehaviour:
   equipment: {fileID: 1268113838}
   attackMachine: {fileID: 1268113839}
   isFall: 0
-  isIK: 0
 --- !u!114 &1268113835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1501,14 +1545,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fdc37ef9ae364945b94cea3be92a007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rifle1: {fileID: 6946684046442630651, guid: 1f587a8cbab548540867fc36c8cbbdf4, type: 3}
-  pistol1: {fileID: 6537660892618991361, guid: 7a78bf7c39f8f5a4eb1df98b8bb68592, type: 3}
+  TestObjectList: {fileID: 543815569}
   controller: {fileID: 1268113834}
   attackMachine: {fileID: 1268113839}
   rifleRoot: {fileID: 1614743861}
   pistolRoot: {fileID: 1991573138}
   characterInfo: {fileID: 0}
-  myWeaponsType: 0
   currentWeapons: {fileID: 0}
   weapons_0: {fileID: 0}
   weapons_1: {fileID: 0}
@@ -1524,36 +1566,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a133a49eb375c34c8aea763a335aa9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootPoint: {fileID: 1643697804}
   r_hand: {fileID: 4971080090445864}
   isAim: 0
-  unArmAttackInfo:
-    damage: 0
-    damage_Per: 0
-    CD: 0
-    CD_Per: 0
-    attackCheckRange: 0
-    attackCheckRange_Per: 0
   weaponsAttackInfo:
-    shootAttackInfo:
-      shootDamage: 0
-      shootDamage_Per: 0
-      shootCD: 0
-      shootCD_Per: 0
-      shootOffset: 0
-      shootOffset_Per: 0
-      shootDistance: 0
-      shootDistance_Per: 0
-      shootAimDamage: 0
-      shootAimDamage_Per: 0
-      shootAimCD: 0
-      shootAimCD_Per: 0
-      shootAimOffset: 0
-      shootAimOffset_Per: 0
-      shootAimDistance: 0
-      shootAimDistance_Per: 0
-    barrageAttackInfo:
-      fireCD: 0
+    unarmDamage: 0
+    unarmDamage_Per: 0
+    unarmCD: 0
+    unarmCD_Per: 0
+    unarmAttackCheckRange: 0
+    unarmAttackCheckRange_Per: 0
+    magazineCapacity: 0
+    shootDamage: 0
+    shootDamage_Per: 0
+    shootCD: 0
+    shootCD_Per: 0
+    shootOffset: 0
+    shootOffset_Per: 0
+    shootDistance: 0
+    shootDistance_Per: 0
+    shootAimDamage: 0
+    shootAimDamage_Per: 0
+    shootAimCD: 0
+    shootAimCD_Per: 0
+    shootAimOffset: 0
+    shootAimOffset_Per: 0
+    shootAimDistance: 0
+    shootAimDistance_Per: 0
+    fireCD: 0
 --- !u!1 &1282770020
 GameObject:
   m_ObjectHideFlags: 0
@@ -3810,6 +3849,7 @@ MonoBehaviour:
   attackSpeed: 0
   aimAttackSpeed: 0
   keepAttack: 0
+  LeftHandIK: {fileID: 0}
 --- !u!1 &1971422124220227
 GameObject:
   m_ObjectHideFlags: 0

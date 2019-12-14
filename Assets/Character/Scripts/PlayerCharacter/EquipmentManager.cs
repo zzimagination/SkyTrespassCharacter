@@ -10,9 +10,7 @@ namespace SkyTrespass.Character
         int weaponsIndex;
         CharacterInfo defaultInfo;
 
-
-        public GameObject rifle1;
-        public GameObject pistol1;
+        public TestObjectList TestObjectList;
 
         public STCharacterController controller;
         public AttackMachine attackMachine;
@@ -22,36 +20,11 @@ namespace SkyTrespass.Character
         [ReadOnly]
         public CharacterInfo characterInfo;
         [HideInInspector]
-        public WeaponsType myWeaponsType;
-        [HideInInspector]
         public Weaponsbase currentWeapons;
         [HideInInspector]
         public Weaponsbase weapons_0;
         [HideInInspector]
         public Weaponsbase weapons_1;
-
-
-        public int WeaponsIndex
-        {
-            get { return weaponsIndex; }
-            private set
-            {
-                if (value > 1)
-                {
-                    weaponsIndex = 0;
-                }
-                else if (value < 0)
-                {
-                    weaponsIndex = 1;
-                }
-                else
-                {
-                    weaponsIndex = value;
-                }
-            }
-        }
-
-
         // Start is called before the first frame update
         void Start()
         {
@@ -66,14 +39,14 @@ namespace SkyTrespass.Character
         {
             if (id == 001)
             {
-                GameObject obj = Instantiate(rifle1, rifleRoot);
+                GameObject obj = Instantiate(TestObjectList.rifle1, rifleRoot);
                 var w = obj.GetComponent<Weaponsbase>();
                 w.Hidden();
                 return w;
             }
             else if (id == 002)
             {
-                GameObject obj = Instantiate(pistol1, pistolRoot);
+                GameObject obj = Instantiate(TestObjectList.pistol1, pistolRoot);
                 var w = obj.GetComponent<Weaponsbase>();
                 w.Hidden();
                 return w;
@@ -92,11 +65,9 @@ namespace SkyTrespass.Character
             if (weaponsbase == null)
             {
                 currentWeapons = null;
-                myWeaponsType = WeaponsType.none;
             }
             else
             {
-                myWeaponsType = weaponsbase.weaponsType;
                 currentWeapons = weaponsbase;
                 currentWeapons.AddCharacterInfo(characterInfo.weaponsAttackInfo);
             }
@@ -118,7 +89,6 @@ namespace SkyTrespass.Character
         void SetAttackMachine()
         {
             attackMachine.weaponsAttackInfo = characterInfo.weaponsAttackInfo;
-            attackMachine.unArmAttackInfo = characterInfo.unArmAttackInfo;
             attackMachine.SetWeapons(currentWeapons);
         }
 
@@ -127,30 +97,37 @@ namespace SkyTrespass.Character
             weapons_0 =  GenerateWeapons(001);
             weapons_1 = GenerateWeapons(002);
 
+            weaponsIndex = 0;
             SetCurrentWeapons(weapons_0);
-            WeaponsIndex = 0;
-
+            
             SetWeaponsObject();
             SetAttackMachine();
         }
-
         public void ChangeWeapons()
         {
-            if (WeaponsIndex == 0)
+            if (weaponsIndex==0)
             {
-                WeaponsIndex = 1;
-                SetCurrentWeapons(weapons_1);
+                ChangeWeapons(1);
             }
             else
             {
-                WeaponsIndex = 0;
-                SetCurrentWeapons(weapons_0);
+                ChangeWeapons(0);
             }
 
             SetWeaponsObject();
             SetAttackMachine();
         }
-
+        public void ChangeWeapons(int index)
+        {
+            weaponsIndex = index;
+            if(index==0)
+            {
+                SetCurrentWeapons(weapons_0);
+            }else
+            {
+                SetCurrentWeapons(weapons_1);
+            }
+        }
     }
 
 

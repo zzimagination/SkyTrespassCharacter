@@ -7,30 +7,33 @@ namespace SkyTrespass.Character
 {
     public class AttackMachine : MonoBehaviour
     {
-
-        public Transform shootPoint;
         public Transform r_hand;
 
         [ReadOnly]
         public bool isAim;
         [ReadOnly]
-        public UnArmAttackInfo unArmAttackInfo;
-        [ReadOnly]
         public WeaponsAttackInfo weaponsAttackInfo;
+
+        public event AttackEvent ReloadBullets;
 
         AttackCommand currentCommand;
         Weaponsbase currentWeapons;
 
+        int attackNumber;
+        public delegate void AttackEvent();
+
         public void SetWeapons(Weaponsbase obj)
         {
+            currentWeapons = obj;
+
             if (obj == null)
             {
                 currentCommand = new UnarmAttackCommand();
-                shootPoint = null;
             }else
             {
                 currentCommand = obj.attackCommand;
-            } 
+            }
+            attackNumber = 0;
         }
 
         public void Attack(AttackStage attackStage)
@@ -38,6 +41,7 @@ namespace SkyTrespass.Character
             if (attackStage == AttackStage.enter)
             {
                 currentCommand.Prepare(this);
+        
             }
             else if (attackStage == AttackStage.start)
             {
@@ -46,11 +50,19 @@ namespace SkyTrespass.Character
             else if (attackStage == AttackStage.keep)
             {
                 currentCommand.Keep();
-
+                attackNumber++;
             }
             else if (attackStage == AttackStage.end)
             {
                 currentCommand.End();
+                if (attackNumber >= weaponsAttackInfo.magazineCapacity)
+                {
+                    attackNumber = 0;
+                    ReloadBullets?.Invoke();
+                }
+            }else if(attackStage== AttackStage.exit)
+            {
+
             }
         }
 
@@ -59,11 +71,11 @@ namespace SkyTrespass.Character
     public class UnarmAttackCommand : AttackCommand
     {
         public Transform r_hand;
-        public UnArmAttackInfo unArmAttackInfo;
+        public WeaponsAttackInfo unArmAttackInfo;
 
         public override void Prepare(AttackMachine attackMachine)
         {
-            unArmAttackInfo = attackMachine.unArmAttackInfo;
+            unArmAttackInfo = attackMachine.weaponsAttackInfo;
             r_hand = attackMachine.r_hand;
         }
         public override void Start()
@@ -72,8 +84,8 @@ namespace SkyTrespass.Character
         }
         public override void Keep()
         {
-            float Range = unArmAttackInfo.attackCheckRange * unArmAttackInfo.attackCheckRange_Per;
-            float damage = unArmAttackInfo.damage * unArmAttackInfo.damage_Per;
+            float Range = unArmAttackInfo.unarmAttackCheckRange * unArmAttackInfo.unarmAttackCheckRange_Per;
+            float damage = unArmAttackInfo.unarmDamage * unArmAttackInfo.unarmDamage_Per;
            
             var number = Physics.OverlapSphere(r_hand.position, Range, (1 << 9 | 1 << 10));
             if (number.Length > 0)

@@ -8,16 +8,10 @@ namespace SkyTrespass.Character
     [CreateAssetMenu(fileName = "CharacterInfo", menuName = "Setting/CharacterInfo")]
     public class CharacterInfo : ScriptableObject
     {
-
-        [BoxGroup("Fist")]
-        public UnArmAttackInfo unArmAttackInfo;
-
         public WeaponsAttackInfo weaponsAttackInfo;
 
         public void CopyValue(CharacterInfo info)
         {
-            unArmAttackInfo = new UnArmAttackInfo();
-            unArmAttackInfo.Copy(info.unArmAttackInfo);
             weaponsAttackInfo = new WeaponsAttackInfo();
             weaponsAttackInfo.Copy( info.weaponsAttackInfo);
         }
@@ -48,46 +42,69 @@ namespace SkyTrespass.Character
     [System.Serializable]
     public class WeaponsAttackInfo
     {
+        [BoxGroup("Unarm")]
+        public float unarmDamage;
+        [BoxGroup("Unarm")]
+        public float unarmDamage_Per;
+        [BoxGroup("Unarm")]
+        public float unarmCD;
+        [BoxGroup("Unarm")]
+        public float unarmCD_Per;
+        [BoxGroup("Unarm")]
+        public float unarmAttackCheckRange;
+        [BoxGroup("Unarm")]
+        public float unarmAttackCheckRange_Per;
+
         [BoxGroup("Shoot Info")]
-        public ShootAttackInfo shootAttackInfo;
+        public int magazineCapacity;
+        [BoxGroup("Shoot Info")]
+        public float shootDamage;
+        [BoxGroup("Shoot Info")]
+        public float shootDamage_Per;
+        [BoxGroup("Shoot Info")]
+        [Tooltip("武器动画片段的速度，1为默认速度")]
+        public float shootCD;
+        [BoxGroup("Shoot Info")]
+        public float shootCD_Per;
+        [BoxGroup("Shoot Info")]
+        public float shootOffset;
+        [BoxGroup("Shoot Info")]
+        public float shootOffset_Per;
+        [BoxGroup("Shoot Info")]
+        public float shootDistance;
+        [BoxGroup("Shoot Info")]
+        public float shootDistance_Per;
+        [BoxGroup("Shoot Info")]
+        public float shootAimDamage;
+        [BoxGroup("Shoot Info")]
+        public float shootAimDamage_Per;
+        [BoxGroup("Shoot Info")]
+        [Tooltip("武器动画片段的速度，1为默认速度")]
+        public float shootAimCD;
+        [BoxGroup("Shoot Info")]
+        public float shootAimCD_Per;
+        [BoxGroup("Shoot Info")]
+        public float shootAimOffset;
+        [BoxGroup("Shoot Info")]
+        public float shootAimOffset_Per;
+        [BoxGroup("Shoot Info")]
+        public float shootAimDistance;
+        [BoxGroup("Shoot Info")]
+        public float shootAimDistance_Per;
+
         [BoxGroup("Barrage Info")]
-        public BarrageAttackInfo barrageAttackInfo;
+        public float fireCD;
 
         public void Copy(WeaponsAttackInfo other)
         {
-            shootAttackInfo = new ShootAttackInfo();
-            shootAttackInfo.Copy(other.shootAttackInfo);
-            barrageAttackInfo = new BarrageAttackInfo();
-            barrageAttackInfo.Copy(other.barrageAttackInfo);
-        }
-    }
 
+            unarmDamage = other.unarmDamage;
+            unarmDamage_Per = other.unarmDamage_Per;
+            unarmCD = other.unarmCD;
+            unarmCD_Per = other.unarmCD_Per;
+            unarmAttackCheckRange = other.unarmAttackCheckRange;
+            unarmAttackCheckRange_Per = other.unarmAttackCheckRange_Per;
 
-    [System.Serializable]
-    public class ShootAttackInfo
-    {
-    
-        public float shootDamage;
-        public float shootDamage_Per;
-        [Tooltip("武器动画片段的速度，1为默认速度")]
-        public float shootCD;
-        public float shootCD_Per;
-        public float shootOffset;
-        public float shootOffset_Per;
-        public float shootDistance;
-        public float shootDistance_Per;
-        public float shootAimDamage;
-        public float shootAimDamage_Per;
-        [Tooltip("武器动画片段的速度，1为默认速度")]
-        public float shootAimCD;
-        public float shootAimCD_Per;
-        public float shootAimOffset;
-        public float shootAimOffset_Per;
-        public float shootAimDistance;
-        public float shootAimDistance_Per;
-
-        public void Copy(ShootAttackInfo other)
-        {
             shootDamage = other.shootDamage;
             shootDamage_Per = other.shootDamage_Per;
             shootCD = other.shootCD;
@@ -104,17 +121,9 @@ namespace SkyTrespass.Character
             shootAimOffset_Per = other.shootAimOffset_Per;
             shootAimDistance = other.shootAimDistance;
             shootAimDistance_Per = other.shootAimDistance_Per;
-        }
 
-    }
-    [System.Serializable]
-    public class BarrageAttackInfo
-    {
-        public float fireCD;
-
-        public void Copy(BarrageAttackInfo other)
-        {
             fireCD = other.fireCD;
         }
     }
+
 }

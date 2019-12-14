@@ -8,45 +8,50 @@ namespace SkyTrespass.Character
     {
         public Vector3 shootLocalPoint;
         public GameObject bulletLinerObj;
-        public WeaponsPistolInfo info;
+        public PistolInfo pistolInfo;
 
         private void OnEnable()
         {
             var command = new PistolAttackCommand();
             command.bulletLinerObj = bulletLinerObj;
+            command.localPoint = shootLocalPoint;
             attackCommand = command;
         }
 
         public override void AddCharacterInfo(WeaponsAttackInfo finalInfo)
         {
-            finalInfo.shootAttackInfo.shootDamage += info.shootDamage;
-            finalInfo.shootAttackInfo.shootDamage_Per += info.shootDamage_Per;
+            finalInfo.magazineCapacity = pistolInfo.magazineCapacity;
 
-            finalInfo.shootAttackInfo.shootCD += info.shootCD;
-            finalInfo.shootAttackInfo.shootCD_Per += info.shootCD_Per;
+            finalInfo.shootDamage += pistolInfo.shootDamage;
+            finalInfo.shootDamage_Per += pistolInfo.shootDamage_Per;
 
-            finalInfo.shootAttackInfo.shootDistance += info.shootDistance;
-            finalInfo.shootAttackInfo.shootDistance_Per += info.shootDistance_Per;
+            finalInfo.shootCD += pistolInfo.shootCD;
+            finalInfo.shootCD_Per += pistolInfo.shootCD_Per;
 
-            finalInfo.shootAttackInfo.shootOffset += info.shootOffset;
-            finalInfo.shootAttackInfo.shootOffset_Per += info.shootOffset_Per;
+            finalInfo.shootDistance += pistolInfo.shootDistance;
+            finalInfo.shootDistance_Per += pistolInfo.shootDistance_Per;
+
+            finalInfo.shootOffset += pistolInfo.shootOffset;
+            finalInfo.shootOffset_Per += pistolInfo.shootOffset_Per;
 
            
         }
 
         public override void SubCharacterInfo(WeaponsAttackInfo finalInfo)
         {
-            finalInfo.shootAttackInfo.shootDamage -= info.shootDamage;
-            finalInfo.shootAttackInfo.shootDamage_Per -= info.shootDamage_Per;
+            finalInfo.magazineCapacity = 0;
 
-            finalInfo.shootAttackInfo.shootCD -= info.shootCD;
-            finalInfo.shootAttackInfo.shootCD_Per -= info.shootCD_Per;
+            finalInfo.shootDamage -= pistolInfo.shootDamage;
+            finalInfo.shootDamage_Per -= pistolInfo.shootDamage_Per;
 
-            finalInfo.shootAttackInfo.shootDistance -= info.shootDistance;
-            finalInfo.shootAttackInfo.shootDistance_Per -= info.shootDistance_Per;
+            finalInfo.shootCD -= pistolInfo.shootCD;
+            finalInfo.shootCD_Per -= pistolInfo.shootCD_Per;
 
-            finalInfo.shootAttackInfo.shootOffset -= info.shootOffset;
-            finalInfo.shootAttackInfo.shootOffset_Per -= info.shootOffset_Per;
+            finalInfo.shootDistance -= pistolInfo.shootDistance;
+            finalInfo.shootDistance_Per -= pistolInfo.shootDistance_Per;
+
+            finalInfo.shootOffset -= pistolInfo.shootOffset;
+            finalInfo.shootOffset_Per -= pistolInfo.shootOffset_Per;
         }
     }
 
@@ -54,41 +59,37 @@ namespace SkyTrespass.Character
     {
 
         public GameObject bulletLinerObj;
-
-        Transform shootPoint;
+        public Vector3 localPoint;
         Vector3 shootPosition;
         Vector3 shootDir;
-        WeaponsAttackInfo characterInfo;
-        bool isAimShoot;
+        WeaponsAttackInfo info;
         Transform transform;
+
         public override void Prepare(AttackMachine attackMachine)
         {
-            shootPoint = attackMachine.shootPoint;
-
-            isAimShoot = attackMachine.isAim;
-            characterInfo = attackMachine.weaponsAttackInfo;
+            info = attackMachine.weaponsAttackInfo;
             transform = attackMachine.transform;
-
         }
         public override void Start()
         {
-
+            
+            
         }
 
 
         public override void Keep()
         {
-            shootPosition = shootPoint.position;
-            shootDir = shootPoint.forward;
-            ShootAttackInfo saInfo = characterInfo.shootAttackInfo;
+            shootPosition = transform.localToWorldMatrix.MultiplyPoint(localPoint);
+            shootDir = transform.forward;
+            WeaponsAttackInfo saInfo = info;
 
-            float offset = isAimShoot ? (saInfo.shootAimOffset * saInfo.shootAimOffset_Per) : saInfo.shootOffset * saInfo.shootOffset_Per;
+            float offset =saInfo.shootOffset * saInfo.shootOffset_Per;
             Random.InitState(RandomSeed.GetSeed());
             float angle = Random.Range(-offset, offset);
             var qa = Quaternion.AngleAxis(angle, Vector3.up);
             shootDir = qa * shootDir;
 
-            float dis = isAimShoot ? saInfo.shootAimDistance * saInfo.shootAimDistance_Per : saInfo.shootDistance * saInfo.shootDistance_Per;
+            float dis = saInfo.shootDistance * saInfo.shootDistance_Per;
             bool isHit = Physics.Raycast(shootPosition, shootDir, out RaycastHit shootResult, dis, (1 << 9 | 1 << 10));
             GameObject obj = GameObject.Instantiate(bulletLinerObj);
             obj.transform.SetParent(transform);
@@ -101,7 +102,7 @@ namespace SkyTrespass.Character
                 if (t != null)
                 {
                     AttackInfo attackInfo = new AttackInfo();
-                    attackInfo.damage = isAimShoot ? saInfo.shootAimDamage * saInfo.shootAimDamage_Per : saInfo.shootDamage * saInfo.shootDamage_Per;
+                    attackInfo.damage = saInfo.shootDamage * saInfo.shootDamage_Per;
                     t.Attack(attackInfo);
                 }
             }
@@ -114,7 +115,6 @@ namespace SkyTrespass.Character
 
         public override void End()
         {
-
         }
 
 

@@ -40,7 +40,8 @@ namespace SkyTrespass.Character
         public event AnimationEvent ExitFall;
         public event AnimationEvent EnterDeath;
         public event AnimationEvent<AttackStage> Attack;
-
+        public event AnimationEvent EnterReload;
+        public event AnimationEvent ExitReload;
         public delegate void AnimationEvent();
         public delegate void AnimationEvent<T>(T a1);
 
@@ -68,11 +69,6 @@ namespace SkyTrespass.Character
             _animator.ResetTrigger("death");
             _animator.ResetTrigger("bullet");
         }
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
 
         // Update is called once per frame
         void Update()
@@ -81,6 +77,7 @@ namespace SkyTrespass.Character
             _animator.SetBool("down", isDown);
         }
 
+        #region 状态通用函数
         public void Idle()
         {
             Vector3 checkPoint = _rigidbody.position;
@@ -143,17 +140,20 @@ namespace SkyTrespass.Character
             _rigidbody.MoveRotation(qua);
         }
 
-        public void Aim(bool isAim)
-        {
-            _animator.SetBool("isAim",isAim);
-            _animator.SetBool("changeAim", true);
-        }
+        //public void Aim(bool isAim)
+        //{
+        //    _animator.SetBool("isAim",isAim);
+        //    _animator.SetBool("changeAim", true);
+        //}
 
         public void StopAttack()
         {
             _animator.SetBool("attack", false);
         }
+        #endregion
 
+
+        #region 动画事件
         public void EnterFallInvoke()
         {
             EnterFall?.Invoke();
@@ -171,6 +171,15 @@ namespace SkyTrespass.Character
         {
             Attack?.Invoke(a1);
         }
+        public void EnterReloadInvoke()
+        {
+            EnterReload?.Invoke();
+        }
+        public void ExitReloadInvoke()
+        {
+            ExitReload?.Invoke();
+        }
+        #endregion
     }
 
     public enum AttackStage
