@@ -7,8 +7,18 @@ namespace SkyTrespass.Character
 {
     public abstract class Weaponsbase : MonoBehaviour
     {
+
+        private int attackNumber=-1;
+
         public WeaponsType weaponsType;
-        public AttackCommand attackCommand;
+        public int AttackNumber
+        {
+            get
+            {
+                return attackNumber;
+            }
+            protected set { attackNumber = value; }
+        }
         public virtual void Hidden()
         {
             gameObject.SetActive(false);
@@ -21,10 +31,12 @@ namespace SkyTrespass.Character
         {
             Destroy(gameObject);
         }
+        public virtual int DoAttackNumber() { return 0; }
+        public virtual int ResetAttackNumber() { return 0; }
+        public virtual int MaxAttackNumber() { return 0; }
 
-
-        public abstract void AddCharacterInfo(WeaponsAttackInfo characterInfo);
-        public abstract void SubCharacterInfo(WeaponsAttackInfo characterInfo);
+        public abstract void AddCharacterInfo(CharacterAttackInfo characterInfo);
+        public abstract void SubCharacterInfo(CharacterAttackInfo characterInfo);
 
     }
 }

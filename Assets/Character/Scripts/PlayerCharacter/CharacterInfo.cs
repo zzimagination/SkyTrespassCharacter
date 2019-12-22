@@ -8,39 +8,44 @@ namespace SkyTrespass.Character
     [CreateAssetMenu(fileName = "CharacterInfo", menuName = "Setting/CharacterInfo")]
     public class CharacterInfo : ScriptableObject
     {
-        public WeaponsAttackInfo weaponsAttackInfo;
+        public CharacterAttackInfo AttackInfo;
+
+        public float MoveSpeed;
+        public float AimMoveSpeed;
 
         public void CopyValue(CharacterInfo info)
         {
-            weaponsAttackInfo = new WeaponsAttackInfo();
-            weaponsAttackInfo.Copy( info.weaponsAttackInfo);
+            MoveSpeed = info.MoveSpeed;
+            AimMoveSpeed = info.AimMoveSpeed;
+            AttackInfo = new CharacterAttackInfo();
+            AttackInfo.Copy( info.AttackInfo);
         }
     }
 
-    [System.Serializable]
-    public class UnArmAttackInfo
-    {
+    //[System.Serializable]
+    //public class UnArmAttackInfo
+    //{
   
-        public float damage;
-        public float damage_Per;
-        public float CD;
-        public float CD_Per;
-        public float attackCheckRange;
-        public float attackCheckRange_Per;
+    //    public float damage;
+    //    public float damage_Per;
+    //    public float CD;
+    //    public float CD_Per;
+    //    public float attackCheckRange;
+    //    public float attackCheckRange_Per;
 
-        public void Copy(UnArmAttackInfo other)
-        {
-            damage = other.damage;
-            damage_Per = other.damage_Per;
-            CD = other.CD;
-            CD_Per = other.CD_Per;
-            attackCheckRange = other.attackCheckRange;
-            attackCheckRange_Per = other.attackCheckRange_Per;
-        }
-    }
+    //    public void Copy(UnArmAttackInfo other)
+    //    {
+    //        damage = other.damage;
+    //        damage_Per = other.damage_Per;
+    //        CD = other.CD;
+    //        CD_Per = other.CD_Per;
+    //        attackCheckRange = other.attackCheckRange;
+    //        attackCheckRange_Per = other.attackCheckRange_Per;
+    //    }
+    //}
 
     [System.Serializable]
-    public class WeaponsAttackInfo
+    public class CharacterAttackInfo
     {
         [BoxGroup("Unarm")]
         public float unarmDamage;
@@ -95,7 +100,7 @@ namespace SkyTrespass.Character
         [BoxGroup("Barrage Info")]
         public float fireCD;
 
-        public void Copy(WeaponsAttackInfo other)
+        public void Copy(CharacterAttackInfo other)
         {
 
             unarmDamage = other.unarmDamage;

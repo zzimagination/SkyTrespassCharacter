@@ -7,103 +7,114 @@ namespace SkyTrespass.Character
 {
     public class AttackMachine : MonoBehaviour
     {
-        public Transform r_hand;
+        //public Transform r_hand;
+        public bool playDefault = true;
+        //[ReadOnly]
+        //public bool isAim;
+        //[ReadOnly]
+        //public WeaponsAttackInfo weaponsAttackInfo;
 
-        [ReadOnly]
-        public bool isAim;
-        [ReadOnly]
-        public WeaponsAttackInfo weaponsAttackInfo;
+        //public event AttackEvent ReloadBullets;
 
-        public event AttackEvent ReloadBullets;
-
-        AttackCommand currentCommand;
-        Weaponsbase currentWeapons;
-
-        int attackNumber;
-        public delegate void AttackEvent();
-
-        public void SetWeapons(Weaponsbase obj)
+        public AttackCommand DefaultCommand
         {
-            currentWeapons = obj;
+            get { return defaultCommand; }
+            protected set { defaultCommand = value; }
+        }
 
-            if (obj == null)
-            {
-                currentCommand = new UnarmAttackCommand();
-            }else
-            {
-                currentCommand = obj.attackCommand;
-            }
-            attackNumber = 0;
+        public AttackCommand CurrentCommand
+        {
+            get { return currentCommand; }
+            protected set { currentCommand = value; }
+        }
+
+        private AttackCommand defaultCommand;
+        private AttackCommand currentCommand;
+        //Weaponsbase currentWeapons;
+
+        //int attackNumber;
+        //public delegate void AttackEvent();
+
+        //public void SetWeapons(Weaponsbase obj)
+        //{
+        //    currentWeapons = obj;
+
+        //    if (obj == null)
+        //    {
+        //        currentCommand = new UnarmAttackCommand();
+        //    }else
+        //    {
+        //        currentCommand = obj.attackCommand;
+        //    }
+        //    //attackNumber = 0;
+        //}
+
+        public void SetDefaultCommand(AttackCommand attackCommand)
+        {
+            DefaultCommand = attackCommand;
+        }
+
+        public void SetAttackCommand(AttackCommand attackCommand)
+        {
+            CurrentCommand = attackCommand;
         }
 
         public void Attack(AttackStage attackStage)
         {
-            if (attackStage == AttackStage.enter)
+            AttackCommand c = playDefault ? DefaultCommand : CurrentCommand;
+            switch (attackStage)
             {
-                currentCommand.Prepare(this);
-        
-            }
-            else if (attackStage == AttackStage.start)
-            {
-                currentCommand.Start();
-            }
-            else if (attackStage == AttackStage.keep)
-            {
-                currentCommand.Keep();
-                attackNumber++;
-            }
-            else if (attackStage == AttackStage.end)
-            {
-                currentCommand.End();
-                if (attackNumber >= weaponsAttackInfo.magazineCapacity)
-                {
-                    attackNumber = 0;
-                    ReloadBullets?.Invoke();
-                }
-            }else if(attackStage== AttackStage.exit)
-            {
-
-            }
-        }
-
-    }
-
-    public class UnarmAttackCommand : AttackCommand
-    {
-        public Transform r_hand;
-        public WeaponsAttackInfo unArmAttackInfo;
-
-        public override void Prepare(AttackMachine attackMachine)
-        {
-            unArmAttackInfo = attackMachine.weaponsAttackInfo;
-            r_hand = attackMachine.r_hand;
-        }
-        public override void Start()
-        {
-
-        }
-        public override void Keep()
-        {
-            float Range = unArmAttackInfo.unarmAttackCheckRange * unArmAttackInfo.unarmAttackCheckRange_Per;
-            float damage = unArmAttackInfo.unarmDamage * unArmAttackInfo.unarmDamage_Per;
-           
-            var number = Physics.OverlapSphere(r_hand.position, Range, (1 << 9 | 1 << 10));
-            if (number.Length > 0)
-            {
-                var t = number[0].GetComponent<IDestructible>();
-                if (t != null)
-                {
-                    AttackInfo attackInfo = new AttackInfo();
-                    attackInfo.damage = damage;
-                    t.Attack(attackInfo);
-                }
+                case AttackStage.enter:
+                    c.Prepare(this);
+                    break;
+                case AttackStage.start:
+                    c.Start();
+                    break;
+                case AttackStage.update:
+                    c.Update();
+                    break;
+                case AttackStage.tick:
+                    c.Tick();
+                    break;
+                case AttackStage.end:
+                    c.End();
+                    break;
+                case AttackStage.exit:
+                    c.Exit();
+                    break;
+                default:
+                    break;
             }
 
-        }
-        public override void End()
-        {
+            //if (attackStage == AttackStage.enter)
+            //{
+            //    currentCommand.Prepare(this);
 
+            //}
+            //else if (attackStage == AttackStage.start)
+            //{
+            //    currentCommand.Start();
+            //}
+            //else if (attackStage == AttackStage.update)
+            //{
+            //    currentCommand.Update();
+            //    //attackNumber++;
+            //}
+            //else if (attackStage == AttackStage.end)
+            //{
+            //    currentCommand.End();
+            //    //if (attackNumber >= weaponsAttackInfo.magazineCapacity)
+            //    //{
+            //    //    attackNumber = 0;
+            //    //    ReloadBullets?.Invoke();
+            //    //}
+            //}
+            //else if (attackStage == AttackStage.exit)
+            //{
+
+            //}
         }
+
     }
 
 }

@@ -6,10 +6,14 @@ namespace SkyTrespass.Character
 {
     public abstract class AttackCommand
     {
-        public abstract void Prepare(AttackMachine attackMachine);
-        public abstract void Start();
-        public abstract void Keep();
-        public abstract void End();
+        public delegate void AttackEvent();
+
+        public virtual void Prepare(AttackMachine attackMachine) { }
+        public virtual void Start() { }
+        public virtual void Update() { }
+        public virtual void Tick() { }
+        public virtual void End() { }
+        public virtual void Exit() { }
     }
 
 

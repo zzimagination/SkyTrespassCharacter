@@ -8,6 +8,6 @@ namespace SkyTrespass.Character
     {
         none,
         rifle,
-        pisol
+        pistol
     }
 }

@@ -35,23 +35,29 @@ namespace SkyTrespass.Character
             {
                 if (t - attackTimer + 1 > attackNormalizedTime)
                 {
-                    animatorManager.AttackInvoke(AttackStage.keep);
-                    stage = AttackStage.keep;
+                    animatorManager.AttackInvoke(AttackStage.tick);
+                    stage = AttackStage.update;
+                }else
+                {
+                    animatorManager.AttackInvoke(AttackStage.update);
                 }
             }
-            else if (stage == AttackStage.keep)
+            else if (stage == AttackStage.update)
             {
                 if (t > attackTimer)
                 {
                     animatorManager.AttackInvoke(AttackStage.end);
                     stage = AttackStage.end;
+                }else
+                {
+                    animatorManager.AttackInvoke(AttackStage.update);
                 }
             }
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (stage == AttackStage.keep)
+            if (stage == AttackStage.update)
             {
                 animatorManager.AttackInvoke(AttackStage.end);
 

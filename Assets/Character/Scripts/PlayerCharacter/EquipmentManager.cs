@@ -9,16 +9,15 @@ namespace SkyTrespass.Character
     {
         int weaponsIndex;
         CharacterInfo defaultInfo;
+        bool isPickWeapons;
+
 
         public TestObjectList TestObjectList;
 
-        public STCharacterController controller;
-        public AttackMachine attackMachine;
-        public Transform rifleRoot;
-        public Transform pistolRoot;
-
         [ReadOnly]
         public CharacterInfo characterInfo;
+        [HideInInspector]
+        public bool isAim;
         [HideInInspector]
         public Weaponsbase currentWeapons;
         [HideInInspector]
@@ -39,14 +38,14 @@ namespace SkyTrespass.Character
         {
             if (id == 001)
             {
-                GameObject obj = Instantiate(TestObjectList.rifle1, rifleRoot);
+                GameObject obj = Instantiate(TestObjectList.rifle1);
                 var w = obj.GetComponent<Weaponsbase>();
                 w.Hidden();
                 return w;
             }
             else if (id == 002)
             {
-                GameObject obj = Instantiate(TestObjectList.pistol1, pistolRoot);
+                GameObject obj = Instantiate(TestObjectList.pistol1);
                 var w = obj.GetComponent<Weaponsbase>();
                 w.Hidden();
                 return w;
@@ -55,77 +54,154 @@ namespace SkyTrespass.Character
                 return null;
         }
 
-        void SetCurrentWeapons(Weaponsbase weaponsbase)
+        void SetCurrentWeapons(int index)
         {
+            weaponsIndex = index;
             if (currentWeapons)
             {
-                currentWeapons.SubCharacterInfo(characterInfo.weaponsAttackInfo);
+                currentWeapons.SubCharacterInfo(characterInfo.AttackInfo);
                 currentWeapons.Hidden();
             }
-            if (weaponsbase == null)
+            if (index == 0)
             {
-                currentWeapons = null;
+                currentWeapons = weapons_0;
             }
-            else
+            else if (index == 1)
             {
-                currentWeapons = weaponsbase;
-                currentWeapons.AddCharacterInfo(characterInfo.weaponsAttackInfo);
+                currentWeapons = weapons_1;
+            }
+            if (currentWeapons)
+            {
+                currentWeapons.AddCharacterInfo(characterInfo.AttackInfo);
+                currentWeapons.Open();
+                isPickWeapons = true;
             }
         }
 
-        /// <summary>
-        /// 设置武器对象
-        /// </summary>
-        void SetWeaponsObject()
-        {
-            if (currentWeapons)
-            {
-                currentWeapons.Open();
-            }
-        }
-        /// <summary>
-        /// 设置对应武器的环境因素
-        /// </summary>
-        void SetAttackMachine()
-        {
-            attackMachine.weaponsAttackInfo = characterInfo.weaponsAttackInfo;
-            attackMachine.SetWeapons(currentWeapons);
-        }
 
         public void InitWeapons()
         {
-            weapons_0 =  GenerateWeapons(001);
-            weapons_1 = GenerateWeapons(002);
-
+            GetWeapons(001);
+            GetWeapons(002);
             weaponsIndex = 0;
-            SetCurrentWeapons(weapons_0);
-            
-            SetWeaponsObject();
-            SetAttackMachine();
         }
+
+        public void GetWeapons(int id)
+        {
+            var w = GenerateWeapons(id);
+            if (!weapons_0)
+            {
+                weapons_0 = w;
+                return;
+            }
+            if (!weapons_1)
+            {
+                weapons_1 = w;
+                return;
+            }
+            if (weaponsIndex == 0)
+            {
+                weapons_0.Drop();
+                weapons_0 = w;
+                return;
+            }
+            else if (weaponsIndex == 1)
+            {
+                weapons_1.Drop();
+                weapons_1 = w;
+                return;
+            }
+
+
+        }
+
+        public void PickWeapons()
+        {
+            if (isPickWeapons)
+                return;
+
+            if (weaponsIndex == 0)
+                currentWeapons = weapons_0;
+            else
+                currentWeapons = weapons_1;
+            if (currentWeapons)
+            {
+                currentWeapons.AddCharacterInfo(characterInfo.AttackInfo);
+                currentWeapons.Open();
+                isPickWeapons = true;
+            }
+        }
+
+        public void PutWeapons()
+        {
+            if (!isPickWeapons)
+                return;
+            currentWeapons.SubCharacterInfo(characterInfo.AttackInfo);
+            currentWeapons.Hidden();
+            //currentWeapons = null;
+            isPickWeapons = false;
+        }
+
+
+
         public void ChangeWeapons()
         {
-            if (weaponsIndex==0)
+            if (weaponsIndex == 0)
             {
-                ChangeWeapons(1);
+                //SetCurrentWeapons(1);
+                weaponsIndex = 1;
             }
             else
             {
-                ChangeWeapons(0);
+                //SetCurrentWeapons(0);
+                weaponsIndex = 0;
             }
-
-            SetWeaponsObject();
-            SetAttackMachine();
         }
-        public void ChangeWeapons(int index)
+
+        public void ReloadBullet()
         {
-            weaponsIndex = index;
-            if(index==0)
+            if (currentWeapons==null)
+                return;
+            currentWeapons.ResetAttackNumber();
+        }
+
+        public int GetBullet()
+        {
+            if (currentWeapons)
+                return -1;
+            return currentWeapons.AttackNumber;
+        }
+
+        public float GetMoveSpeed()
+        {
+            return isAim ? characterInfo.AimMoveSpeed : characterInfo.MoveSpeed;
+        }
+        public float GetAttackSpeedMul()
+        {
+            if (isAim)
             {
-                SetCurrentWeapons(weapons_0);
-            }else
+                float cd = characterInfo.AttackInfo.shootAimCD * characterInfo.AttackInfo.shootAimCD_Per;
+                return cd;
+            }
+            else
             {
-                SetCurrentWeapons(weapons_1);
+                float cd = characterInfo.AttackInfo.shootCD * characterInfo.AttackInfo.shootCD_Per;
+                return cd;
+            }
+        }
+        public float GetUnarmAttackSpeedMul()
+        {
+            return characterInfo.AttackInfo.unarmCD * characterInfo.AttackInfo.unarmCD_Per;
+        }
+
+        public void HiddenWeapons(bool hide)
+        {
+            if (currentWeapons)
+            {
+                if (hide)
+                    currentWeapons.Hidden();
+                else
+                    currentWeapons.Open();
             }
         }
     }

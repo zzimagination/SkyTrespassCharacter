@@ -11,12 +11,14 @@ namespace SkyTrespass.Character
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             animatorManager = animator.GetComponent<PlayerAnimatorManager>();
-            animatorManager.physics_MoveSpeed = animatorManager.aimMoveSpeed;
+            //animatorManager.physics_MoveSpeed = animatorManager.aimMoveSpeed;
+            animatorManager.isAim = true;
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            animatorManager.physics_MoveSpeed = animatorManager.moveSpeed;
+            //animatorManager.physics_MoveSpeed = animatorManager.moveSpeed;
+            animatorManager.isAim = false;
         }
     }
 }

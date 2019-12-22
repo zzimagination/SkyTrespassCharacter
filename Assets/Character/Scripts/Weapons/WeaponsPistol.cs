@@ -6,19 +6,42 @@ namespace SkyTrespass.Character
 {
     public class WeaponsPistol : Weaponsbase
     {
-        public Vector3 shootLocalPoint;
-        public GameObject bulletLinerObj;
         public PistolInfo pistolInfo;
+        int shootNumber;
+        int remainBullet;
 
-        private void OnEnable()
+        private void Awake()
         {
-            var command = new PistolAttackCommand();
-            command.bulletLinerObj = bulletLinerObj;
-            command.localPoint = shootLocalPoint;
-            attackCommand = command;
+            AttackNumber = pistolInfo.magazineCapacity;
         }
 
-        public override void AddCharacterInfo(WeaponsAttackInfo finalInfo)
+        public override int DoAttackNumber()
+        {
+            shootNumber++;
+            remainBullet = pistolInfo.magazineCapacity - shootNumber;
+
+            if (remainBullet <= 0)
+            {
+                remainBullet = 0;
+            }
+            AttackNumber = remainBullet;
+            return remainBullet;
+        }
+        public override int ResetAttackNumber()
+        {
+            if (remainBullet == pistolInfo.magazineCapacity)
+                return remainBullet;
+            shootNumber = 0;
+            remainBullet = pistolInfo.magazineCapacity;
+            AttackNumber = remainBullet;
+            return remainBullet;
+        }
+        public override int MaxAttackNumber()
+        {
+            return pistolInfo.magazineCapacity;
+        }
+
+        public override void AddCharacterInfo(CharacterAttackInfo finalInfo)
         {
             finalInfo.magazineCapacity = pistolInfo.magazineCapacity;
 
@@ -37,7 +60,7 @@ namespace SkyTrespass.Character
            
         }
 
-        public override void SubCharacterInfo(WeaponsAttackInfo finalInfo)
+        public override void SubCharacterInfo(CharacterAttackInfo finalInfo)
         {
             finalInfo.magazineCapacity = 0;
 
@@ -57,31 +80,21 @@ namespace SkyTrespass.Character
 
     public class PistolAttackCommand : AttackCommand
     {
-
-        public GameObject bulletLinerObj;
         public Vector3 localPoint;
+        public CharacterAttackInfo info;
+        public Transform transform;
+        public AttackEvent TickEvent;
+        public BulletLiner bulletLiner;
+
+
         Vector3 shootPosition;
         Vector3 shootDir;
-        WeaponsAttackInfo info;
-        Transform transform;
 
-        public override void Prepare(AttackMachine attackMachine)
-        {
-            info = attackMachine.weaponsAttackInfo;
-            transform = attackMachine.transform;
-        }
-        public override void Start()
-        {
-            
-            
-        }
-
-
-        public override void Keep()
+        public override void Tick()
         {
             shootPosition = transform.localToWorldMatrix.MultiplyPoint(localPoint);
             shootDir = transform.forward;
-            WeaponsAttackInfo saInfo = info;
+            CharacterAttackInfo saInfo = info;
 
             float offset =saInfo.shootOffset * saInfo.shootOffset_Per;
             Random.InitState(RandomSeed.GetSeed());
@@ -91,12 +104,12 @@ namespace SkyTrespass.Character
 
             float dis = saInfo.shootDistance * saInfo.shootDistance_Per;
             bool isHit = Physics.Raycast(shootPosition, shootDir, out RaycastHit shootResult, dis, (1 << 9 | 1 << 10));
-            GameObject obj = GameObject.Instantiate(bulletLinerObj);
-            obj.transform.SetParent(transform);
-            obj.transform.position = shootPosition;
+            //GameObject obj = GameObject.Instantiate(bulletLinerObj);
+            //obj.transform.SetParent(transform);
+            //obj.transform.position = shootPosition;
             if (isHit)
             {
-                obj.GetComponent<BulletLiner>().SetPoint(shootPosition, shootResult.point);
+                //obj.GetComponent<BulletLiner>().SetPoint(shootPosition, shootResult.point);
 
                 var t = shootResult.transform.GetComponent<IDestructible>();
                 if (t != null)
@@ -109,15 +122,10 @@ namespace SkyTrespass.Character
             else
             {
                 Vector3 end = shootPosition + shootDir * dis;
-                obj.GetComponent<BulletLiner>().SetPoint(shootPosition, end);
+                //obj.GetComponent<BulletLiner>().SetPoint(shootPosition, end);
             }
+            TickEvent?.Invoke();
         }
-
-        public override void End()
-        {
-        }
-
-
     }
 
 }

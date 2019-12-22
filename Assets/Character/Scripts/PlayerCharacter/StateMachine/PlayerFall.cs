@@ -11,7 +11,7 @@ namespace SkyTrespass.Character {
             animatorManager = animator.GetComponent<PlayerAnimatorManager>();
             animatorManager.StopRigidbody(false);
             animatorManager.StopAttack();
-            animatorManager.EnterFallInvoke();
+            animatorManager.isFall = true;
         }
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
@@ -24,7 +24,7 @@ namespace SkyTrespass.Character {
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-            animatorManager.ExitFallInvoke();
+            animatorManager.isFall = false;
         }
     }
 }

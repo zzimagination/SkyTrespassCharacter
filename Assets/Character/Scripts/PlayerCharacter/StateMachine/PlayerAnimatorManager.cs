@@ -10,7 +10,7 @@ namespace SkyTrespass.Character
         public Animator _animator;
         public Rigidbody _rigidbody;
 
-        [HideInInspector]
+        [ReadOnly]
         public float physics_MoveSpeed;
         [ReadOnly]
         public int weaponsInterger;
@@ -18,16 +18,20 @@ namespace SkyTrespass.Character
         public Vector2 moveDelt;
         [ReadOnly]
         public Vector2 rotateDelt;
-        [ReadOnly]
-        public float moveSpeed;
-        [ReadOnly]
-        public float aimMoveSpeed;
+        //[ReadOnly]
+        //public float moveSpeed;
+        //[ReadOnly]
+        //public float aimMoveSpeed;
         [ReadOnly]
         public float attackSpeed;
         [ReadOnly]
         public float aimAttackSpeed;
         [HideInInspector]
         public bool keepAttack;
+        [HideInInspector]
+        public bool isAim;
+        [HideInInspector]
+        public bool isFall;
         [HideInInspector]
         public Transform LeftHandIK;
 
@@ -36,8 +40,6 @@ namespace SkyTrespass.Character
         const float _internalRunSpeed = 4.2f;
         const float _InternalWalkSpeed = 2f;
 
-        public event AnimationEvent EnterFall;
-        public event AnimationEvent ExitFall;
         public event AnimationEvent EnterDeath;
         public event AnimationEvent<AttackStage> Attack;
         public event AnimationEvent EnterReload;
@@ -154,14 +156,7 @@ namespace SkyTrespass.Character
 
 
         #region 动画事件
-        public void EnterFallInvoke()
-        {
-            EnterFall?.Invoke();
-        }
-        public void ExitFallInvoke()
-        {
-            ExitFall?.Invoke();
-        }
+
         public void EnterDeathInvoke()
         {
             EnterDeath?.Invoke();
@@ -186,7 +181,8 @@ namespace SkyTrespass.Character
     {
         enter,
         start,
-        keep,
+        update,
+        tick,
         end,
         exit,
     }
