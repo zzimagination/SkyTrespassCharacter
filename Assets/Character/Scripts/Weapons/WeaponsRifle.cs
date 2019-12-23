@@ -7,8 +7,32 @@ namespace SkyTrespass.Character
     public class WeaponsRifle : Weaponsbase
     {
         public Transform leftHandIK;
-        public RifleInfo rifleInfo;
         public BulletLiner bulletLiner;
+        public RifleInfo rifleInfo;
+
+        public int magazineCapacity;
+
+        public float shootDamage;
+        [Tooltip("武器动画片段的速度，1为默认速度")]
+        public float shootCD = 1;
+        public float shootOffset;
+        public float shootDistance;
+        public float shootAimDamage;
+        [Tooltip("武器动画片段的速度，1为默认速度")]
+        public float shootAimCD = 1;
+        public float shootAimOffset;
+        public float shootAimDistance;
+
+
+        [HideInInspector]
+        public bool isAim;
+        [HideInInspector]
+        public Transform playerTransform;
+        [HideInInspector]
+        public Vector3 shootPoint;
+
+        public event AttackEvent TickEvent;
+
         int shootNumber;
         int remainBullet;
 
@@ -16,6 +40,7 @@ namespace SkyTrespass.Character
         {
             AttackNumber = rifleInfo.magazineCapacity;
         }
+
 
         public override int DoAttackNumber()
         {
@@ -44,6 +69,90 @@ namespace SkyTrespass.Character
         {
             return rifleInfo.magazineCapacity;
         }
+
+        public override void Tick()
+        {
+            var shootPosition = transform.localToWorldMatrix.MultiplyPoint(shootPoint);
+            var shootDir = playerTransform.forward;
+
+            float offset = isAim ? shootAimOffset : shootOffset;
+            float damage = isAim ? shootAimDamage : shootDamage;
+            float distance = isAim ? shootAimDistance : shootDistance;
+
+            Random.InitState(RandomSeed.GetSeed());
+            float angle = Random.Range(-offset, offset);
+            var qa = Quaternion.AngleAxis(angle, Vector3.up);
+            shootDir = qa * shootDir;
+
+            bool isHit = Physics.Raycast(shootPosition, shootDir, out RaycastHit shootResult, distance, (1 << 9 | 1 << 10));
+            //GameObject obj = GameObject.Instantiate(bulletLinerObj);
+            //obj.transform.SetParent(transform);
+            //obj.transform.position = shootPosition;
+            //if (isHit)
+            //{
+            //    obj.GetComponent<BulletLiner>().SetPoint(shootPosition, shootResult.point);
+
+            //    var t = shootResult.transform.GetComponent<IDestructible>();
+            //    if (t != null)
+            //    {
+            //        AttackInfo attackInfo = new AttackInfo();
+            //        attackInfo.damage = isAimShoot ? saInfo.shootAimDamage * saInfo.shootAimDamage_Per : saInfo.shootDamage * saInfo.shootDamage_Per;
+            //        t.Attack(attackInfo);
+            //    }
+            //}
+            //else
+            //{
+            //    Vector3 end = shootPosition + shootDir * dis;
+            //    obj.GetComponent<BulletLiner>().SetPoint(shootPosition, end);
+            //}
+            if (isHit)
+            {
+                //obj.GetComponent<BulletLiner>().SetPoint(shootPosition, shootResult.point);
+
+                var t = shootResult.transform.GetComponent<IDestructible>();
+                if (t != null)
+                {
+                    AttackInfo attackInfo = new AttackInfo();
+                    attackInfo.damage = damage;
+                    t.Attack(attackInfo);
+                }
+                Debug.DrawLine(shootPosition, shootResult.point, Color.red);
+            }
+            else
+            {
+                Vector3 end = shootPosition + shootDir * distance;
+                Debug.DrawLine(shootPosition, end, Color.red);
+                //obj.GetComponent<BulletLiner>().SetPoint(shootPosition, end);
+            }
+
+            TickEvent?.Invoke();
+        }
+
+
+
+        public override AttackCommand CreatAttackCommand()
+        {
+            var ac = new BulletLineAC();
+            ac.bulletLiner = bulletLiner;
+            ac.localPoint = shootPoint;
+            ac.transform = playerTransform;
+            //ac.TickEvent = TickEventInvoke;
+           if(isAim)
+            {
+                ac.shootDamage = rifleInfo.shootAimDamage;
+                ac.shootOffset = rifleInfo.shootAimOffset;
+                ac.shootDistance = rifleInfo.shootAimDistance;
+                return ac;
+
+            }else
+            {
+                ac.shootDamage = rifleInfo.shootDamage;
+                ac.shootOffset = rifleInfo.shootOffset;
+                ac.shootDistance = rifleInfo.shootDistance;
+                return ac;
+            }
+        }
+
         public override void AddCharacterInfo(CharacterAttackInfo finalInfo)
         {
 

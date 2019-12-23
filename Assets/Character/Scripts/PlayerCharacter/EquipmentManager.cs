@@ -24,13 +24,19 @@ namespace SkyTrespass.Character
         public Weaponsbase weapons_0;
         [HideInInspector]
         public Weaponsbase weapons_1;
+        [HideInInspector]
+        public float unarmDamage;
+        [HideInInspector]
+        public float unarmAttackCheckRange;
+
         // Start is called before the first frame update
         void Start()
         {
             defaultInfo = Resources.Load<CharacterInfo>("DefaultCharacterInfo");
             characterInfo = ScriptableObject.CreateInstance<CharacterInfo>();
             characterInfo.CopyValue(defaultInfo);
-
+            unarmDamage = defaultInfo.AttackInfo.unarmDamage;
+            unarmAttackCheckRange = defaultInfo.AttackInfo.unarmAttackCheckRange;
         }
 
 

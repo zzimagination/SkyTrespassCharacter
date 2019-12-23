@@ -28,6 +28,21 @@ namespace SkyTrespass.Character
             protected set { currentCommand = value; }
         }
 
+        public IAttack DefaultAttack
+        {
+            get { return defaultAttack; }
+            protected set { defaultAttack = value; }
+        }
+        public IAttack CurrentAttack
+        {
+            get { return currentAttack; }
+            protected set { currentAttack = value; }
+        }
+
+
+        private IAttack defaultAttack;
+        private IAttack currentAttack;
+
         private AttackCommand defaultCommand;
         private AttackCommand currentCommand;
         //Weaponsbase currentWeapons;
@@ -62,25 +77,35 @@ namespace SkyTrespass.Character
         public void Attack(AttackStage attackStage)
         {
             AttackCommand c = playDefault ? DefaultCommand : CurrentCommand;
+
+            //IAttack a = playDefault ? DefaultAttack : CurrentAttack;
+
+
             switch (attackStage)
             {
                 case AttackStage.enter:
                     c.Prepare(this);
+                    //a.Prepare(this);
                     break;
                 case AttackStage.start:
                     c.Start();
+                    //a.Start();
                     break;
                 case AttackStage.update:
                     c.Update();
+                    //a.Update();
                     break;
                 case AttackStage.tick:
                     c.Tick();
+                    //a.Tick();
                     break;
                 case AttackStage.end:
                     c.End();
+                    //a.End();
                     break;
                 case AttackStage.exit:
                     c.Exit();
+                    //a.Exit();
                     break;
                 default:
                     break;

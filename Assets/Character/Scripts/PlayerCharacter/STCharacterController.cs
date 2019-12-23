@@ -127,7 +127,10 @@ namespace SkyTrespass.Character
             attackMachine.playDefault = true;
             if (attackMachine.DefaultCommand == null)
             {
-                SetAttackCommand(WeaponsType.none);
+                UnarmAttack unarmAttack = new UnarmAttack();
+                unarmAttack.r_hand = rightHand;
+                unarmAttack.unarmDamage = equipment.characterInfo.AttackInfo.unarmDamage;
+                unarmAttack.unarmAttackCheckRange = equipment.characterInfo.AttackInfo.unarmAttackCheckRange;
             }
             _animator.SetInteger("weapons", 0);
             _animator.SetFloat("attackSpeedMul", equipment.GetUnarmAttackSpeedMul());
@@ -148,18 +151,30 @@ namespace SkyTrespass.Character
                     weaponsrifle.transform.SetParent(rightHand);
                     weaponsrifle.transform.localPosition = Vector3.zero;
                     weaponsrifle.transform.localRotation = Quaternion.identity;
+                    weaponsrifle.shootPoint = shootPoint;
+                    weaponsrifle.playerTransform = transform;
+                    weaponsrifle.isAim = animatorManager.isAim;
+                    weaponsrifle.TickEvent += ShootOnceAttack;
+                    var ac= weaponsrifle.CreatAttackCommand();
+                    attackMachine.SetAttackCommand(ac);
                     break;
                 case WeaponsType.pistol:
                     WeaponsPistol weaponspistol = equipment.currentWeapons as WeaponsPistol;
                     weaponspistol.transform.SetParent(rightHand);
                     weaponspistol.transform.localPosition = Vector3.zero;
                     weaponspistol.transform.localRotation = Quaternion.identity;
+                    weaponspistol.shootPoint = shootPoint;
+                    weaponspistol.playerTransform = transform;
+                    weaponspistol.TickEvent += ShootOnceAttack;
+                    ac= weaponspistol.CreatAttackCommand();
+
+                    attackMachine.SetAttackCommand(ac);
                     break;
                 default:
                     return;
             }
 
-            SetAttackCommand(type);
+            //SetAttackCommand(type);
             _animator.SetInteger("weapons", (int)type);
             _animator.SetFloat("attackSpeedMul", equipment.GetAttackSpeedMul());
         }

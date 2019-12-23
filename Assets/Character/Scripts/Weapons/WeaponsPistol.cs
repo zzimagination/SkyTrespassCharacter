@@ -6,13 +6,36 @@ namespace SkyTrespass.Character
 {
     public class WeaponsPistol : Weaponsbase
     {
+
+        public BulletLiner bulletLiner;
+
+        public int magazineCapacity;
+
+        public float shootDamage;
+        [Tooltip("武器动画片段的速度，1为默认速度")]
+        public float shootCD = 1;
+        public float shootOffset;
+        public float shootDistance;
+
+
         public PistolInfo pistolInfo;
+        [HideInInspector]
+        public Transform playerTransform;
+        [HideInInspector]
+        public Vector3 shootPoint;
+        public event AttackEvent TickEvent;
+
         int shootNumber;
         int remainBullet;
 
         private void Awake()
         {
             AttackNumber = pistolInfo.magazineCapacity;
+        }
+
+        void TickEventInvoke()
+        {
+            TickEvent?.Invoke();
         }
 
         public override int DoAttackNumber()
@@ -41,6 +64,19 @@ namespace SkyTrespass.Character
             return pistolInfo.magazineCapacity;
         }
 
+
+        public override AttackCommand CreatAttackCommand()
+        {
+            var ac = new BulletLineAC();
+            ac.transform = transform;
+            ac.localPoint = shootPoint;
+            ac.shootDamage = pistolInfo.shootDamage;
+            ac.shootOffset = pistolInfo.shootOffset;
+            ac.shootDistance = pistolInfo.shootDistance;
+            ac.bulletLiner = bulletLiner;
+            ac.TickEvent = TickEventInvoke;
+            return ac;
+        }
         public override void AddCharacterInfo(CharacterAttackInfo finalInfo)
         {
             finalInfo.magazineCapacity = pistolInfo.magazineCapacity;
