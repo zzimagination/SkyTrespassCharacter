@@ -7,15 +7,9 @@ namespace SkyTrespass.Character
 {
     public class EquipmentManager : MonoBehaviour
     {
-        int weaponsIndex;
-        CharacterInfo defaultInfo;
-        bool isPickWeapons;
-
-
         public TestObjectList TestObjectList;
-
-        [ReadOnly]
-        public CharacterInfo characterInfo;
+        public BulletLinerPool BulletLinerPool;
+        public Transform rightHand;
         [HideInInspector]
         public bool isAim;
         [HideInInspector]
@@ -29,14 +23,22 @@ namespace SkyTrespass.Character
         [HideInInspector]
         public float unarmAttackCheckRange;
 
-        // Start is called before the first frame update
-        void Start()
+        [HideInInspector]
+        public float RunSpeed;
+        [HideInInspector]
+        public float WalkSpeed;
+   
+        public int bulletsNumber;
+
+
+        int weaponsIndex;
+        float moveSpeed;
+        bool isPickWeapons;
+
+        CharacterInfo defaultInfo;
+        private void Awake()
         {
-            defaultInfo = Resources.Load<CharacterInfo>("DefaultCharacterInfo");
-            characterInfo = ScriptableObject.CreateInstance<CharacterInfo>();
-            characterInfo.CopyValue(defaultInfo);
-            unarmDamage = defaultInfo.AttackInfo.unarmDamage;
-            unarmAttackCheckRange = defaultInfo.AttackInfo.unarmAttackCheckRange;
+
         }
 
 
@@ -44,51 +46,40 @@ namespace SkyTrespass.Character
         {
             if (id == 001)
             {
-                GameObject obj = Instantiate(TestObjectList.rifle1);
+                GameObject obj = Instantiate(TestObjectList.rifle1,rightHand);
                 var w = obj.GetComponent<Weaponsbase>();
-                w.Hidden();
+                w.linerPool = BulletLinerPool;
+                w.Close();
                 return w;
             }
             else if (id == 002)
             {
-                GameObject obj = Instantiate(TestObjectList.pistol1);
+                GameObject obj = Instantiate(TestObjectList.pistol1,rightHand);
                 var w = obj.GetComponent<Weaponsbase>();
-                w.Hidden();
+                w.linerPool = BulletLinerPool;
+                w.Close();
                 return w;
             }
             else
                 return null;
         }
 
-        void SetCurrentWeapons(int index)
+        public void InitEquipment()
         {
-            weaponsIndex = index;
-            if (currentWeapons)
-            {
-                currentWeapons.SubCharacterInfo(characterInfo.AttackInfo);
-                currentWeapons.Hidden();
-            }
-            if (index == 0)
-            {
-                currentWeapons = weapons_0;
-            }
-            else if (index == 1)
-            {
-                currentWeapons = weapons_1;
-            }
-            if (currentWeapons)
-            {
-                currentWeapons.AddCharacterInfo(characterInfo.AttackInfo);
-                currentWeapons.Open();
-                isPickWeapons = true;
-            }
+            defaultInfo = Resources.Load<CharacterInfo>("DefaultCharacterInfo");
+            unarmDamage = defaultInfo.AttackInfo.unarmDamage;
+            unarmAttackCheckRange = defaultInfo.AttackInfo.unarmAttackCheckRange;
+            RunSpeed = defaultInfo.RunSpeed;
+            WalkSpeed = defaultInfo.WalkSpeed;
+            moveSpeed = RunSpeed;
+            InitWeapons();
         }
 
 
         public void InitWeapons()
         {
             GetWeapons(001);
-            GetWeapons(002);
+            //GetWeapons(002);
             weaponsIndex = 0;
         }
 
@@ -117,8 +108,6 @@ namespace SkyTrespass.Character
                 weapons_1 = w;
                 return;
             }
-
-
         }
 
         public void PickWeapons()
@@ -132,7 +121,6 @@ namespace SkyTrespass.Character
                 currentWeapons = weapons_1;
             if (currentWeapons)
             {
-                currentWeapons.AddCharacterInfo(characterInfo.AttackInfo);
                 currentWeapons.Open();
                 isPickWeapons = true;
             }
@@ -142,13 +130,10 @@ namespace SkyTrespass.Character
         {
             if (!isPickWeapons)
                 return;
-            currentWeapons.SubCharacterInfo(characterInfo.AttackInfo);
-            currentWeapons.Hidden();
-            //currentWeapons = null;
+            currentWeapons.Close();
+            currentWeapons = null;
             isPickWeapons = false;
         }
-
-
 
         public void ChangeWeapons()
         {
@@ -164,50 +149,54 @@ namespace SkyTrespass.Character
             }
         }
 
+        public bool CanReloadBullet()
+        {
+            if (bulletsNumber == 0)
+                return false;
+
+            if (weaponsIndex == 0)
+                currentWeapons = weapons_0;
+            else if (weaponsIndex == 1)
+                currentWeapons = weapons_1;
+            if (currentWeapons == null)
+            {
+                return false;
+            }
+            if (currentWeapons.RemainBullet == currentWeapons.magazineCapacity)
+                return false;
+            return true;
+        }
         public void ReloadBullet()
         {
-            if (currentWeapons==null)
-                return;
-            currentWeapons.ResetAttackNumber();
+            bulletsNumber = currentWeapons.ReloadBullet(bulletsNumber);
         }
 
-        public int GetBullet()
-        {
-            if (currentWeapons)
-                return -1;
-            return currentWeapons.AttackNumber;
-        }
 
         public float GetMoveSpeed()
         {
-            return isAim ? characterInfo.AimMoveSpeed : characterInfo.MoveSpeed;
-        }
-        public float GetAttackSpeedMul()
-        {
-            if (isAim)
-            {
-                float cd = characterInfo.AttackInfo.shootAimCD * characterInfo.AttackInfo.shootAimCD_Per;
-                return cd;
-            }
-            else
-            {
-                float cd = characterInfo.AttackInfo.shootCD * characterInfo.AttackInfo.shootCD_Per;
-                return cd;
-            }
-        }
-        public float GetUnarmAttackSpeedMul()
-        {
-            return characterInfo.AttackInfo.unarmCD * characterInfo.AttackInfo.unarmCD_Per;
+            return moveSpeed;
         }
 
-        public void HiddenWeapons(bool hide)
+
+        public void ChangeAim(bool isAim)
         {
-            if (currentWeapons)
+            this.isAim = isAim;
+            if(currentWeapons)
             {
-                if (hide)
-                    currentWeapons.Hidden();
-                else
-                    currentWeapons.Open();
+                currentWeapons.ChangeAim(isAim);
+            }
+            moveSpeed = isAim ? WalkSpeed : RunSpeed;
+        }
+
+        public bool WeaponsCanAttack()
+        {
+            if(currentWeapons)
+            {
+                var r=currentWeapons.RemainBullet != 0;
+                return r;
+            }else
+            {
+                return false;
             }
         }
     }

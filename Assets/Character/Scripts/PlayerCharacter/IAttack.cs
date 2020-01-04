@@ -4,11 +4,11 @@ namespace SkyTrespass.Character
     public interface IAttack
     {
 
-        void Prepare(AttackMachine attackMachine);
-        void Start();
-        void Update();
-        void Tick();
-        void End();
-        void Exit();
+        void AttackPrepare(AttackMachine attackMachine);
+        void AttackStart();
+        void AttackUpdate();
+        void AttackTick();
+        void AttackEnd();
+        void AttackExit();
     }
 }

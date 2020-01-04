@@ -7,20 +7,27 @@ namespace SkyTrespass.Character
 {
     public abstract class Weaponsbase : MonoBehaviour,IAttack
     {
-
-        private int attackNumber = -1;
-
         public WeaponsType weaponsType;
-        public delegate void AttackEvent();
-        public int AttackNumber
+
+        public int magazineCapacity;
+        public Transform leftHandIK;
+        public BulletLinerPool linerPool;
+        [HideInInspector]
+        public AttackMachine attackMachine;
+
+        public int RemainBullet
         {
-            get
+            get { return remainBullet; }
+            protected set
             {
-                return attackNumber;
+                remainBullet = value;
             }
-            protected set { attackNumber = value; }
         }
-        public virtual void Hidden()
+
+        [SerializeField]
+        private int remainBullet;
+
+        public virtual void Close()
         {
             gameObject.SetActive(false);
         }
@@ -32,34 +39,37 @@ namespace SkyTrespass.Character
         {
             Destroy(gameObject);
         }
-        public virtual int DoAttackNumber() { return 0; }
-        public virtual int ResetAttackNumber() { return 0; }
-        public virtual int MaxAttackNumber() { return 0; }
-        public virtual AttackCommand CreatAttackCommand() { return null; }
-        public abstract void AddCharacterInfo(CharacterAttackInfo characterInfo);
-        public abstract void SubCharacterInfo(CharacterAttackInfo characterInfo);
 
-        public virtual void Prepare(AttackMachine attackMachine)
+        public virtual int ReloadBullet(int standby)
+        {
+            return standby;
+        }
+        public virtual void ChangeAim(bool isAim) { }
+
+
+        public abstract void InitWeapons();
+
+        public virtual void AttackPrepare(AttackMachine attackMachine)
         {
         }
 
-        public virtual void Start()
+        public virtual void AttackStart()
         {
         }
 
-        public virtual void Update()
+        public virtual void AttackUpdate()
         {
         }
 
-        public virtual void Tick()
+        public virtual void AttackTick()
         {
         }
 
-        public virtual void End()
+        public virtual void AttackEnd()
         {
         }
 
-        public virtual void Exit()
+        public virtual void AttackExit()
         {
         }
     }

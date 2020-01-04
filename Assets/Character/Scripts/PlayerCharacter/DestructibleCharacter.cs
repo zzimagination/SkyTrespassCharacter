@@ -23,7 +23,7 @@ namespace SkyTrespass.Character
 
         }
 
-        public void Attack(AttackInfo attackInfo)
+        public virtual void Attack(AttackInfo attackInfo)
         {
             health = health - attackInfo.damage;
             if (health <= 0)
@@ -36,7 +36,7 @@ namespace SkyTrespass.Character
             attackAction.Invoke();
         }
 
-        public void Death()
+        public virtual void Death()
         {
             Debug.Log("Death");
         }

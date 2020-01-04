@@ -14,35 +14,33 @@ namespace SkyTrespass.Character
         public EquipmentManager equipment;
         public AttackMachine attackMachine;
         public Transform rightHand;
-        public Vector3 shootPoint;
         [HideInInspector]
         public bool isFall;
-        
+
         bool isReloadBullet;
         bool isUnarm;
         Vector2 moveDelt;
         Vector2 rotateDelt;
 
-        List<PickUp> pickUps;
+        List<PickUp> pickUps = new List<PickUp>();
 
         public buttonAction MainButtonPress;
         public buttonAction MainButtonUp;
 
         public delegate void buttonAction();
 
-        private void OnEnable()
+        private void Awake()
         {
             animatorManager.EnterDeath += EnterDeath;
             animatorManager.Attack += attackMachine.Attack;
             animatorManager.EnterReload += EnterReloadBullet;
             animatorManager.ExitReload += ExitReloadBullet;
+            attackMachine.StopAttackEvent += AttackMachineStop;
         }
 
         private void Start()
         {
-            pickUps = new List<PickUp>();
-            MainButtonPress = MainButtonActionManager;
-            MainButtonUp = StopAttack;
+
             StartCoroutine(InitState());
         }
 
@@ -51,15 +49,6 @@ namespace SkyTrespass.Character
             MoveCheck();
 
         }
-
-        private void OnDisable()
-        {
-            animatorManager.EnterDeath -= EnterDeath;
-            animatorManager.Attack -= attackMachine.Attack;
-            animatorManager.EnterReload -= EnterReloadBullet;
-            animatorManager.ExitReload -= ExitReloadBullet;
-        }
-
 #if UNITY_EDITOR
 
         private void OnGUI()
@@ -84,8 +73,7 @@ namespace SkyTrespass.Character
         IEnumerator InitState()
         {
             yield return null;
-            attackMachine.playDefault = true;
-            equipment.InitWeapons();
+            equipment.InitEquipment();
             PickCurrentWeapons();
         }
 
@@ -98,163 +86,71 @@ namespace SkyTrespass.Character
             _animator.SetFloat("moveY", move.z);
         }
 
-        void ShootOnceAttack()
+        void AttackMachineStop()
         {
-
-            var type = equipment.currentWeapons.weaponsType;
-            int number = 0;
-            switch (type)
-            {
-                case WeaponsType.none:
-                    return;
-                case WeaponsType.rifle:
-                    var w1 = equipment.currentWeapons as WeaponsRifle;
-                    number = w1.DoAttackNumber();
-                    break;
-                case WeaponsType.pistol:
-                    var w2 = equipment.currentWeapons as WeaponsPistol;
-                    number = w2.DoAttackNumber();
-                    break;
-                default:
-                    break;
-            }
-            if (number == 0)
-                StopAttack();
+            StopAttack();
         }
+
         void SetUnarmAttack()
         {
             isUnarm = true;
             attackMachine.playDefault = true;
-            if (attackMachine.DefaultCommand == null)
+            attackMachine.StartAttack();
+            if (attackMachine.DefaultAttack == null)
             {
                 UnarmAttack unarmAttack = new UnarmAttack();
                 unarmAttack.r_hand = rightHand;
-                unarmAttack.unarmDamage = equipment.characterInfo.AttackInfo.unarmDamage;
-                unarmAttack.unarmAttackCheckRange = equipment.characterInfo.AttackInfo.unarmAttackCheckRange;
+                unarmAttack.unarmDamage = equipment.unarmDamage;
+                unarmAttack.unarmAttackCheckRange = equipment.unarmAttackCheckRange;
+                attackMachine.DefaultAttack = unarmAttack;
             }
+            animatorManager.physics_MoveSpeed = equipment.GetMoveSpeed();
             _animator.SetInteger("weapons", 0);
-            _animator.SetFloat("attackSpeedMul", equipment.GetUnarmAttackSpeedMul());
         }
+
         void SetWeaponsAttack()
         {
             isUnarm = false;
             attackMachine.playDefault = false;
-
-            WeaponsType type = equipment.currentWeapons.weaponsType;
-            switch (type)
-            {
-                case WeaponsType.none:
-                    return;
-                case WeaponsType.rifle:
-                    WeaponsRifle weaponsrifle = equipment.currentWeapons as WeaponsRifle;
-                    animatorManager.LeftHandIK = weaponsrifle.leftHandIK;
-                    weaponsrifle.transform.SetParent(rightHand);
-                    weaponsrifle.transform.localPosition = Vector3.zero;
-                    weaponsrifle.transform.localRotation = Quaternion.identity;
-                    weaponsrifle.shootPoint = shootPoint;
-                    weaponsrifle.playerTransform = transform;
-                    weaponsrifle.isAim = animatorManager.isAim;
-                    weaponsrifle.TickEvent += ShootOnceAttack;
-                    var ac= weaponsrifle.CreatAttackCommand();
-                    attackMachine.SetAttackCommand(ac);
-                    break;
-                case WeaponsType.pistol:
-                    WeaponsPistol weaponspistol = equipment.currentWeapons as WeaponsPistol;
-                    weaponspistol.transform.SetParent(rightHand);
-                    weaponspistol.transform.localPosition = Vector3.zero;
-                    weaponspistol.transform.localRotation = Quaternion.identity;
-                    weaponspistol.shootPoint = shootPoint;
-                    weaponspistol.playerTransform = transform;
-                    weaponspistol.TickEvent += ShootOnceAttack;
-                    ac= weaponspistol.CreatAttackCommand();
-
-                    attackMachine.SetAttackCommand(ac);
-                    break;
-                default:
-                    return;
-            }
-
-            //SetAttackCommand(type);
-            _animator.SetInteger("weapons", (int)type);
-            _animator.SetFloat("attackSpeedMul", equipment.GetAttackSpeedMul());
-        }
-        void SetAttackCommand(WeaponsType type)
-        {
-
-            switch (type)
-            {
-                case WeaponsType.none:
-                    UnarmAttackCommand unarmAttackCommand = new UnarmAttackCommand();
-                    unarmAttackCommand.r_hand = rightHand;
-                    unarmAttackCommand.unArmAttackInfo = equipment.characterInfo.AttackInfo;
-                    attackMachine.SetDefaultCommand(unarmAttackCommand);
-                    return;
-                case WeaponsType.rifle:
-                    var wr = equipment.currentWeapons as WeaponsRifle;
-                    if (animatorManager.isAim)
-                    {
-                        var attackCommand = new RifleAttackCommand();
-                        attackCommand.transform = transform;
-                        attackCommand.localPoint = shootPoint;
-                        attackCommand.info = equipment.characterInfo.AttackInfo;
-                        attackCommand.TickEvent += ShootOnceAttack;
-                        attackCommand.bulletLiner = wr.bulletLiner;
-                        attackMachine.SetAttackCommand(attackCommand);
-                    }
-                    else
-                    {
-                        var attackCommand = new RifleAimAttackCommand();
-                        attackCommand.transform = transform;
-                        attackCommand.localPoint = shootPoint;
-                        attackCommand.info = equipment.characterInfo.AttackInfo;
-                        attackCommand.TickEvent += ShootOnceAttack;
-                        attackMachine.SetAttackCommand(attackCommand);
-                    }
-                    break;
-                case WeaponsType.pistol:
-                    var pcmd = new PistolAttackCommand();
-                    pcmd.transform = transform;
-                    pcmd.localPoint = shootPoint;
-                    pcmd.info = equipment.characterInfo.AttackInfo;
-                    pcmd.TickEvent += ShootOnceAttack;
-                    attackMachine.SetAttackCommand(pcmd);
-                    break;
-                default:
-                    break;
-            }
+            attackMachine.StartAttack();
+            attackMachine.CurrentAttack = equipment.currentWeapons;
+            animatorManager.LeftHandIK = equipment.currentWeapons.leftHandIK;
+            animatorManager.physics_MoveSpeed = equipment.GetMoveSpeed();
+            _animator.SetInteger("weapons", (int)equipment.currentWeapons.weaponsType);
         }
 
         void ChangeAimState(bool _isAim)
         {
-            animatorManager.isAim = _isAim;
-            equipment.isAim = _isAim;
+            if (isUnarm)
+            {
+                equipment.ChangeAim(false);
+                _animator.SetBool("isAim", false);
+            }
+            else
+            {
+                equipment.ChangeAim(_isAim);
+                _animator.SetBool("isAim", _isAim);
+            }
             animatorManager.physics_MoveSpeed = equipment.GetMoveSpeed();
-            _animator.SetBool("isAim", _isAim);
-            _animator.SetFloat("attackSpeedMul", equipment.GetAttackSpeedMul());
         }
 
-        void ReloadBullets()
+        public void ReloadBullets()
         {
-            if (isReloadBullet)
-                return;
-            if (equipment.currentWeapons == null)
-                return;
-            if(equipment.currentWeapons.AttackNumber==equipment.currentWeapons.MaxAttackNumber())
+            if (equipment.CanReloadBullet())
             {
-                return;
+                PickCurrentWeapons();
+                ChangeAimState(false);
+                _animator.SetTrigger("bullet");
             }
-
-            PickCurrentWeapons();
-            _animator.SetTrigger("bullet");
         }
 
         public void EnterReloadBullet()
         {
             isReloadBullet = true;
+            equipment.ReloadBullet();
         }
         public void ExitReloadBullet()
         {
-            equipment.ReloadBullet();
             isReloadBullet = false;
         }
 
@@ -267,7 +163,6 @@ namespace SkyTrespass.Character
             if (isUnarm)
                 return;
             ChangeAimState(!animatorManager.isAim);
-            SetAttackCommand(equipment.currentWeapons.weaponsType);
         }
 
 
@@ -277,7 +172,7 @@ namespace SkyTrespass.Character
                 return;
             if (animatorManager.isFall)
                 return;
-            
+
 
             if (pickUps.Count > 0)
             {
@@ -303,12 +198,14 @@ namespace SkyTrespass.Character
                 return;
             }
 
-            if (equipment.currentWeapons.AttackNumber == 0)
+            if (equipment.WeaponsCanAttack())
+            {
+                _animator.SetBool("attack", true);
+            }
+            else
             {
                 PutCurrentWeapons();
-                return;
             }
-            _animator.SetBool("attack", true);
         }
 
         public void StopAttack()
@@ -319,17 +216,16 @@ namespace SkyTrespass.Character
 
         public void PickCurrentWeapons()
         {
-            ChangeAimState(false);
             equipment.PickWeapons();
             if (equipment.currentWeapons)
                 SetWeaponsAttack();
             else
                 SetUnarmAttack();
+            ChangeAimState(false);
         }
         public void PutCurrentWeapons()
         {
             ChangeAimState(false);
-            StopAttack();
             equipment.PutWeapons();
             SetUnarmAttack();
         }
@@ -338,8 +234,11 @@ namespace SkyTrespass.Character
         {
             if (animatorManager.isFall)
                 return;
+            if (isReloadBullet)
+                return;
             if (animatorManager.keepAttack)
                 StopAttack();
+            ChangeAimState(false);
             PutCurrentWeapons();
             equipment.ChangeWeapons();
             PickCurrentWeapons();
@@ -381,18 +280,7 @@ namespace SkyTrespass.Character
 
         public void Relife()
         {
-            //    _animator.Play("UnArmed");
 
-            //    _animator.SetFloat("moveX", 0);
-            //    _animator.SetFloat("moveY", 0);
-            //    _animator.SetBool("down", false);
-            //    _animator.SetBool("isDeath", false);
-            //    _animator.SetBool("attack", false);
-            //    _animator.SetBool("changeAim", false);
-            //    _animator.SetBool("isAim", false);
-
-            //    equipment.InitWeapons();
-            //    InputSwitch(true);
         }
         public void Death()
         {
@@ -425,12 +313,12 @@ namespace SkyTrespass.Character
 
         public void OnMainButtonPress()
         {
-            MainButtonPress?.Invoke();
+            MainButtonActionManager();
         }
 
         public void OnMainButtonUp()
         {
-            MainButtonUp?.Invoke();
+            StopAttack();
         }
 
 
@@ -439,6 +327,10 @@ namespace SkyTrespass.Character
             ChangeWeapons();
         }
 
+        public void OnReloadBullet()
+        {
+            ReloadBullets();
+        }
         #endregion
     }
 }

@@ -57,10 +57,9 @@ namespace SkyTrespass.Character
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (stage == AttackStage.update)
+            if (stage != AttackStage.end)
             {
                 animatorManager.AttackInvoke(AttackStage.end);
-
             }
 
             stage = AttackStage.exit;

@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4695902668137952261}
-  - component: {fileID: 4813025193548179004}
   m_Layer: 8
   m_Name: Pistol
   m_TagString: Untagged
@@ -32,21 +31,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4813025193548179004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1489626534874535890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34fee443aca0c2a40aa1f6fff34237f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponsType: 2
-  shootLocalPoint: {x: 0, y: 1.4, z: 0}
-  pistolInfo: {fileID: 11400000, guid: 4537b52da0b83c4428ae3df648553291, type: 2}
 --- !u!1 &8660469454538791025
 GameObject:
   m_ObjectHideFlags: 0

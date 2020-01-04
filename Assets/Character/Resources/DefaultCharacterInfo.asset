@@ -14,28 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttackInfo:
     unarmDamage: 20
-    unarmDamage_Per: 1
-    unarmCD: 1
-    unarmCD_Per: 1
     unarmAttackCheckRange: 0.3
-    unarmAttackCheckRange_Per: 1
-    magazineCapacity: 0
-    shootDamage: 0
-    shootDamage_Per: 0
-    shootCD: 0
-    shootCD_Per: 0
-    shootOffset: 0
-    shootOffset_Per: 0
-    shootDistance: 0
-    shootDistance_Per: 0
-    shootAimDamage: 0
-    shootAimDamage_Per: 0
-    shootAimCD: 0
-    shootAimCD_Per: 0
-    shootAimOffset: 0
-    shootAimOffset_Per: 0
-    shootAimDistance: 0
-    shootAimDistance_Per: 0
-    fireCD: 0
-  MoveSpeed: 4.2
-  AimMoveSpeed: 2
+  RunSpeed: 4.2
+  WalkSpeed: 2

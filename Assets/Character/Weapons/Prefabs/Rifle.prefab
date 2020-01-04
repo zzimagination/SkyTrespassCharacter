@@ -356,7 +356,7 @@ GameObject:
   - component: {fileID: 6222803961342012398}
   - component: {fileID: 4817259970615280472}
   m_Layer: 8
-  m_Name: GameObject
+  m_Name: Rifle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -391,5 +391,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponsType: 1
+  magazineCapacity: 5
   leftHandIK: {fileID: 6555900331790345538}
-  rifleInfo: {fileID: 11400000, guid: b4ef3773812a30b4785a1d2b067f3341, type: 2}
+  linerPool: {fileID: 0}
+  attackMachine: {fileID: 0}
+  remainBullet: 0
+  shootDamage: 5
+  shootOffset: 5
+  shootDistance: 20
+  shootAimOffset: 2
+  isAim: 0
+  attackTransform: {fileID: 0}
+  shootPoint: {x: 0, y: 0, z: 0}

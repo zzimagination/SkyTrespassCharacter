@@ -12,27 +12,27 @@ namespace SkyTrespass.Character
         public float unarmAttackCheckRange;
 
 
-        public void End()
+        public void AttackEnd()
         {
           
         }
 
-        public void Exit()
+        public void AttackExit()
         {
             
         }
 
-        public void Prepare(AttackMachine attackMachine)
+        public void AttackPrepare(AttackMachine attackMachine)
         {
            
         }
 
-        public void Start()
+        public void AttackStart()
         {
            
         }
 
-        public void Tick()
+        public void AttackTick()
         {
 
             var number = Physics.OverlapSphere(r_hand.position, unarmAttackCheckRange, (1 << 9 | 1 << 10));
@@ -48,7 +48,7 @@ namespace SkyTrespass.Character
             }
         }
 
-        public void Update()
+        public void AttackUpdate()
         {
             
         }
