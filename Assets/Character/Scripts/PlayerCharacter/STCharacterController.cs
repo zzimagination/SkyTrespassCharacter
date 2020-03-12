@@ -1,56 +1,73 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Animations;
-namespace SkyTrespass.Character
+namespace SkyTrespass
 {
+    using Character;
+    using Goods;
     public class STCharacterController : MonoBehaviour
     {
         public PlayerAnimatorManager animatorManager;
+        public MoveController moveController;
         public Animator _animator;
-        public Rigidbody _rigidbody;
         public PlayerInput playerInput;
         public EquipmentManager equipment;
-        public AttackMachine attackMachine;
         public Transform rightHand;
-        [HideInInspector]
-        public bool isFall;
 
-        bool isReloadBullet;
+
+
+        int weaponsType;
+        int weaponIndex;
+        bool isAim;
+        bool isFall;
         bool isUnarm;
         Vector2 moveDelt;
         Vector2 rotateDelt;
 
-        List<PickUp> pickUps = new List<PickUp>();
-
-        public buttonAction MainButtonPress;
-        public buttonAction MainButtonUp;
-
-        public delegate void buttonAction();
-
-        private void Awake()
-        {
-            animatorManager.EnterDeath += EnterDeath;
-            animatorManager.Attack += attackMachine.Attack;
-            animatorManager.EnterReload += EnterReloadBullet;
-            animatorManager.ExitReload += ExitReloadBullet;
-            attackMachine.StopAttackEvent += AttackMachineStop;
-        }
+        public System.Action MainButtonDown;
+        public System.Action MainButtonUp;
 
         private void Start()
         {
-
+            MainButtonUp = StopAttack;
             StartCoroutine(InitState());
         }
 
         void Update()
         {
-            MoveCheck();
+            CheckDown();
+            MoveInput();
 
+
+            if (equipment.tempBackpack.PickNumber == 0)
+            {
+                MainButtonDown = Attack;
+            }
+            else
+            {
+                MainButtonDown = Pick;
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("PickObject"))
+            {
+                var t = other.GetComponent<PickUp>();
+                equipment.tempBackpack.RegisterPickUp(t);
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag("PickObject"))
+            {
+                var t = other.GetComponent<PickUp>();
+                equipment.tempBackpack.RemovePickUp(t);
+            }
         }
 #if UNITY_EDITOR
-
+        int t;
         private void OnGUI()
         {
             if (GUILayout.Button("Death"))
@@ -65,270 +82,239 @@ namespace SkyTrespass.Character
             {
                 ReloadBullets();
             }
+            else if (GUILayout.Button("PickUp"))
+            {
+                Pick();
+            }
+            else if (GUILayout.Button("A"))
+            {
+                SetAim(!isAim);
+            }
+            else if (GUILayout.Button("Change1"))
+            {
+                int last = weaponsType;
+                weaponsType++;
+                if (weaponsType > 2)
+                    weaponsType = 0;
+                AnimatorChangeWeapons(last, weaponsType);
+            }
 
+            GUILayout.Label("可拾取物品数量" + equipment.tempBackpack.PickNumber);
+            GUILayout.Label("生命值" + equipment.Health);
+            GUILayout.Label("弹药" + equipment.bulletsNumber);
         }
 #endif
 
 
         IEnumerator InitState()
         {
-            yield return null;
             equipment.InitEquipment();
-            PickCurrentWeapons();
+
+            yield return null;
+
+            equipment.UpWeapons(0);
+            equipment.PickWeapons(0);
+            _animator.SetInteger("weaponsType", (int)equipment.currentWeapons.weaponsType);
+            animatorManager.LeftHandIK = equipment.currentWeapons.leftHandIK;
+            SetMoveSpeed(equipment.GetMoveSpeed());
         }
 
-        void MoveCheck()
+        void MoveInput()
         {
             Vector3 move = transform.worldToLocalMatrix.MultiplyVector(new Vector3(moveDelt.x, 0, moveDelt.y));
-            bool isMove = moveDelt.x != 0 || moveDelt.y != 0;
-            _animator.SetBool("isMove", isMove);
+            move = move.normalized;
+            _animator.SetBool("isMove", moveDelt.x != 0 || moveDelt.y != 0);
             _animator.SetFloat("moveX", move.x);
             _animator.SetFloat("moveY", move.z);
         }
 
-        void AttackMachineStop()
+        void CheckDown()
         {
-            StopAttack();
+            isFall = moveController.isFall;
+            _animator.SetBool("down", isFall);
         }
 
-        void SetUnarmAttack()
+        void SetMoveSpeed(float speed)
         {
-            isUnarm = true;
-            attackMachine.playDefault = true;
-            attackMachine.StartAttack();
-            if (attackMachine.DefaultAttack == null)
-            {
-                UnarmAttack unarmAttack = new UnarmAttack();
-                unarmAttack.r_hand = rightHand;
-                unarmAttack.unarmDamage = equipment.unarmDamage;
-                unarmAttack.unarmAttackCheckRange = equipment.unarmAttackCheckRange;
-                attackMachine.DefaultAttack = unarmAttack;
-            }
-            animatorManager.physics_MoveSpeed = equipment.GetMoveSpeed();
-            _animator.SetInteger("weapons", 0);
+            moveController.physics_MoveSpeed = speed;
         }
 
-        void SetWeaponsAttack()
+        void AnimatorChangeWeapons(int oldType, int newType)
         {
-            isUnarm = false;
-            attackMachine.playDefault = false;
-            attackMachine.StartAttack();
-            attackMachine.CurrentAttack = equipment.currentWeapons;
-            animatorManager.LeftHandIK = equipment.currentWeapons.leftHandIK;
-            animatorManager.physics_MoveSpeed = equipment.GetMoveSpeed();
-            _animator.SetInteger("weapons", (int)equipment.currentWeapons.weaponsType);
+            if (oldType == newType)
+                return;
+            _animator.SetLayerWeight(1, 1);
+            _animator.SetTrigger("changeWeapons");
+            _animator.SetBool("isAim", false);
+            animatorManager.oldWeaponsType = oldType;
+            animatorManager.newWeaponsType = newType;
         }
 
-        void ChangeAimState(bool _isAim)
+
+        public void Move()
         {
-            if (isUnarm)
-            {
-                equipment.ChangeAim(false);
-                _animator.SetBool("isAim", false);
-            }
+            moveController.MoveDelt(moveDelt.x, moveDelt.y);
+
+        }
+        public void Rotate()
+        {
+            if (rotateDelt == Vector2.zero)
+                moveController.RotateDelt(moveDelt.x, moveDelt.y);
             else
-            {
-                equipment.ChangeAim(_isAim);
-                _animator.SetBool("isAim", _isAim);
-            }
-            animatorManager.physics_MoveSpeed = equipment.GetMoveSpeed();
+                moveController.RotateDelt(rotateDelt.x, rotateDelt.y);
+        }
+
+        public void SetAim(bool aim)
+        {
+            isAim = aim;
+            _animator.SetBool("isAim", isAim);
+            equipment.isAim = isAim;
+        }
+
+
+        public void DoingChangeWeaons()
+        {
+            equipment.PutWeapons(equipment.WeaponsIndex);
+
+            equipment.PickWeapons(++equipment.WeaponsIndex);
+            equipment.UpWeapons(equipment.WeaponsIndex);
+            animatorManager.LeftHandIK = equipment.currentWeapons.leftHandIK;
         }
 
         public void ReloadBullets()
         {
-            if (equipment.CanReloadBullet())
-            {
-                PickCurrentWeapons();
-                ChangeAimState(false);
-                _animator.SetTrigger("bullet");
-            }
+            _animator.SetBool("attack", false);
+            _animator.SetTrigger("bullet");
         }
-
-        public void EnterReloadBullet()
+        public void ReloadBulletComplete()
         {
-            isReloadBullet = true;
-            equipment.ReloadBullet();
-        }
-        public void ExitReloadBullet()
-        {
-            isReloadBullet = false;
-        }
-
-        public void AutoChangeAim()
-        {
-            if (isReloadBullet)
-                return;
-            if (animatorManager.isFall)
-                return;
-            if (isUnarm)
-                return;
-            ChangeAimState(!animatorManager.isAim);
-        }
-
-
-        public void MainButtonActionManager()
-        {
-            if (isReloadBullet)
-                return;
-            if (animatorManager.isFall)
-                return;
-
-
-            if (pickUps.Count > 0)
-            {
-                Pick();
-                return;
-            }
-
-            Attack();
+            equipment.ReloadBulletComplete();
         }
 
         public void Pick()
         {
-            pickUps[0].Pick();
-            pickUps.RemoveAt(0);
+
+            //equipment.PickObject();
             _animator.SetTrigger("pick");
+
         }
+
+        public void PickEnd()
+        {
+
+            equipment.PickObject();
+            //if (equipment.lastPickup.pickType == Goods.PickType.weapons)
+            //{
+            //    // SetWeapons();
+            //}
+            Debug.Log("111");
+        }
+
 
         public void Attack()
         {
-            if (isUnarm)
+            if (equipment.currentWeapons.RemainBullet > 0)
             {
                 _animator.SetBool("attack", true);
-                return;
             }
+        }
 
-            if (equipment.WeaponsCanAttack())
+        public void AttackProcess(AttackStage stage)
+        {
+            var w = equipment.currentWeapons;
+            switch (stage)
             {
-                _animator.SetBool("attack", true);
-            }
-            else
-            {
-                PutCurrentWeapons();
+                case AttackStage.enter:
+                    w.AttackPrepare();
+                    break;
+                case AttackStage.start:
+                    w.AttackStart();
+                    break;
+                case AttackStage.update:
+                    w.AttackUpdate();
+                    break;
+                case AttackStage.tick:
+                    w.AttackTick();
+                    if (w.RemainBullet <= 0)
+                    {
+                        ReloadBullets();
+                    }
+                    break;
+                case AttackStage.end:
+                    w.AttackEnd();
+                    break;
+                case AttackStage.exit:
+                    w.AttackExit();
+                    break;
             }
         }
 
         public void StopAttack()
         {
             _animator.SetBool("attack", false);
-        }
-
-
-        public void PickCurrentWeapons()
-        {
-            equipment.PickWeapons();
-            if (equipment.currentWeapons)
-                SetWeaponsAttack();
-            else
-                SetUnarmAttack();
-            ChangeAimState(false);
-        }
-        public void PutCurrentWeapons()
-        {
-            ChangeAimState(false);
-            equipment.PutWeapons();
-            SetUnarmAttack();
-        }
-
-        public void ChangeWeapons()
-        {
-            if (animatorManager.isFall)
-                return;
-            if (isReloadBullet)
-                return;
-            if (animatorManager.keepAttack)
-                StopAttack();
-            ChangeAimState(false);
-            PutCurrentWeapons();
-            equipment.ChangeWeapons();
-            PickCurrentWeapons();
-        }
-
-
-
-
-        public void InputSwitch(bool open)
-        {
-            if (open)
-            {
-                playerInput.ActivateInput();
-            }
-            else
-            {
-                playerInput.PassivateInput();
-
-            }
-        }
-
-        public void StopRigidbody(bool s)
-        {
-            _rigidbody.useGravity = !s;
-            _rigidbody.isKinematic = s;
-        }
-
-        public void RegisterPickUp(PickUp obj)
-        {
-            pickUps.Add(obj);
-        }
-        public void RemovePickUp(PickUp obj)
-        {
-            if (pickUps.Count == 0)
-                return;
-            if (pickUps.Contains(obj))
-                pickUps.Remove(obj);
+            MainButtonDown = Attack;
         }
 
         public void Relife()
         {
-
+            _animator.SetBool("isDeath", false);
         }
         public void Death()
         {
-            _animator.SetTrigger("death");
-
+            _animator.SetTrigger("dead");
+            _animator.SetBool("isDeath", true);
         }
-        public void EnterDeath()
-        {
-            InputSwitch(false);
-        }
-
 
         #region InputAction
         public void OnMove(InputValue value)
         {
             moveDelt = value.Get<Vector2>();
-            animatorManager.moveDelt = moveDelt;
+            //animatorManager.moveDelt = moveDelt;
         }
 
         public void OnRotate(InputValue value)
         {
             rotateDelt = value.Get<Vector2>();
-            animatorManager.rotateDelt = rotateDelt;
+           // animatorManager.rotateDelt = rotateDelt;
         }
 
         public void OnAim()
         {
-            AutoChangeAim();
+            if (isFall)
+                return;
+            SetAim(!isAim);
+            SetMoveSpeed(equipment.GetMoveSpeed());
         }
 
         public void OnMainButtonPress()
         {
-            MainButtonActionManager();
+            MainButtonDown?.Invoke();
         }
 
         public void OnMainButtonUp()
         {
-            StopAttack();
+            MainButtonUp?.Invoke();
         }
 
 
         public void OnChangeWeapons()
         {
-            ChangeWeapons();
+            if (isFall)
+                return;
+            SetAim(false);
+
+            int old = (int)equipment.currentWeapons.weaponsType;
+            equipment.WeaponsIndex = 1 + equipment.WeaponsIndex;
+            int newT = (int)equipment.weaponsArray[equipment.WeaponsIndex].weaponsType;
+            --equipment.WeaponsIndex;
+
+            AnimatorChangeWeapons(old, newT);
+            SetMoveSpeed(equipment.GetMoveSpeed());
         }
 
         public void OnReloadBullet()
         {
+            StopAttack();
             ReloadBullets();
         }
         #endregion

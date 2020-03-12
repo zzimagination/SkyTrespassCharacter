@@ -52,7 +52,7 @@ MeshRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 0
-  m_MotionVectors: 0
+  m_MotionVectors: 2
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 1
@@ -94,6 +94,5 @@ MonoBehaviour:
   pool: {fileID: 0}
   meshRenderer: {fileID: 8531222306656644705}
   meshFilter: {fileID: 8531222306656644710}
-  lineWidth: 0.1
-  fadeAway: 0.2
+  lineWidth: 0.2
   uvOffset: 0.0625

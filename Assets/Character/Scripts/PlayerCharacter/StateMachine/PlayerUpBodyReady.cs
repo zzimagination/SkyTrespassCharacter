@@ -9,10 +9,12 @@ namespace SkyTrespass.Character
         PlayerAnimatorManager animatorManager;
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-            animatorManager = animator.GetComponent<PlayerAnimatorManager>();
-            animatorManager.keepAttack = false;
+            if(!animatorManager)
+                animatorManager = animator.GetComponent<PlayerAnimatorManager>();
             animator.SetLayerWeight(1, 0);
         }
-
+        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        {
+        }
     }
 }

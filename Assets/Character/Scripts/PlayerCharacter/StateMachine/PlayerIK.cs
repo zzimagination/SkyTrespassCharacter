@@ -7,6 +7,7 @@ namespace SkyTrespass.Character
     public class PlayerIK : StateMachineBehaviour
     {
         public IKGoal goalMask;
+        public bool isIk;
 
         PlayerAnimatorManager animatorManager;
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -16,9 +17,12 @@ namespace SkyTrespass.Character
 
         public override void OnStateIK(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-            Vector3 p = animatorManager.LeftHandIK.position;
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, p);
-            animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+            if (isIk)
+            {
+                Vector3 p = animatorManager.LeftHandIK.position;
+                animator.SetIKPosition(AvatarIKGoal.LeftHand, p);
+                animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+            }
         }
 
         [System.Flags]

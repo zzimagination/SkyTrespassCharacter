@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a53f05dd5f07a347ad2a94cc3f17855, type: 3}
   m_Name: DefaultCharacterInfo
   m_EditorClassIdentifier: 
-  AttackInfo:
-    unarmDamage: 20
-    unarmAttackCheckRange: 0.3
+  health: 100
+  unarmDamage: 5
+  unarmAttackCheckRange: 0.3
   RunSpeed: 4.2
   WalkSpeed: 2

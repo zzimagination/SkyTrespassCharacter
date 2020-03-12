@@ -20,7 +20,7 @@ public class TestLiner : MonoBehaviour
     {
         if(GUILayout.Button("Shoot"))
         {
-            linerPool.CreatLiner(new Vector3(0, 0, 0), new Vector3(0, 0, 10));
+            linerPool.CreatLiner(new Vector3(0, 0, 0), new Vector3(0, 0, 10),transform.rotation);
         }
     }
 }

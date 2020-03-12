@@ -19,7 +19,7 @@ namespace SkyTrespass
 
         private void OnEnable()
         {
-            dis = transform.localPosition - target.localPosition;
+            dis = transform.localPosition - target.position;
         }
         // Update is called once per frame
         void Update()
@@ -29,7 +29,7 @@ namespace SkyTrespass
 
         private void LateUpdate()
         {
-            transform.localPosition = target.localPosition + dis;
+            transform.localPosition = target.position + dis;
         }
     }
 }

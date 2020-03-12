@@ -5,22 +5,27 @@ using Sirenix.OdinInspector;
 
 namespace SkyTrespass.Character
 {
-    public abstract class Weaponsbase : MonoBehaviour,IAttack
+    public abstract class Weaponsbase : MonoBehaviour, IAttack
     {
         public WeaponsType weaponsType;
+        public Transform leftHandIK;
 
         public int magazineCapacity;
-        public Transform leftHandIK;
+        public bool isAim;
         public BulletLinerPool linerPool;
+
         [HideInInspector]
-        public AttackMachine attackMachine;
+        public Transform playerTransform;
 
         public int RemainBullet
         {
             get { return remainBullet; }
-            protected set
+            set
             {
-                remainBullet = value;
+                if (value < 0)
+                    remainBullet = 0;
+                else
+                    remainBullet = value;
             }
         }
 
@@ -46,10 +51,9 @@ namespace SkyTrespass.Character
         }
         public virtual void ChangeAim(bool isAim) { }
 
+        public virtual void InitWeapons() { }
 
-        public abstract void InitWeapons();
-
-        public virtual void AttackPrepare(AttackMachine attackMachine)
+        public virtual void AttackPrepare()
         {
         }
 

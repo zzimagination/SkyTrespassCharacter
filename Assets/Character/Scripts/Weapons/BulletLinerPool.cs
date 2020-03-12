@@ -26,14 +26,14 @@ public class BulletLinerPool : MonoBehaviour
     }
 
 
-    public BulletLiner CreatLiner(Vector3 start,Vector3 end)
+    public BulletLiner CreatLiner(Vector3 start,Vector3 end, Quaternion rotation)
     {
-        start = transform.worldToLocalMatrix.MultiplyPoint3x4(start);
-        end = transform.worldToLocalMatrix.MultiplyPoint3x4(end);
+       
+
         if (inactive.Count > 0)
         {
             var t = inactive.Dequeue();
-            t.SetLine(start, end);
+            t.SetLine(start, end,rotation);
             active.Enqueue(t);
             return t;
         }else
@@ -41,7 +41,7 @@ public class BulletLinerPool : MonoBehaviour
             GameObject obj = Instantiate(bulletliner,transform);
             var t= obj.GetComponent<BulletLiner>();
             t.pool = this;
-            t.SetLine(start, end);
+            t.SetLine(start, end,rotation);
             active.Enqueue(t);
             return t;
         }

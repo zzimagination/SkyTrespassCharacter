@@ -6,25 +6,43 @@ namespace SkyTrespass.Character
 {
     public class PlayerMove : StateMachineBehaviour
     {
+        STCharacterController characterController;
         PlayerAnimatorManager animatorManager;
-        STCharacterController controller;
         public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
-            controller = animator.GetComponent<STCharacterController>();
-            animatorManager = animator.GetComponent<PlayerAnimatorManager>();
-            //animatorManager.physics_MoveSpeed = animatorManager.moveSpeed;
+            if(!animatorManager)
+                animatorManager = animator.GetComponent<PlayerAnimatorManager>();
+
+            if(!characterController)
+            {
+                characterController = animator.GetComponent<STCharacterController>();
+            }
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            animatorManager.TransformUpdate();
+            //animatorManager._rigidbody.useGravity = true;
+            //animatorManager._rigidbody.isKinematic = false;
+            //animatorManager.TransformUpdate();
+            //animatorManager.canPick = true;
+            //animatorManager.canAttack = true;
+            //animatorManager.canChangeWeapons = true;
         }
 
         public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            controller.StopRigidbody(false);
-            animatorManager.MoveAddDelt();
-            animatorManager.RotateDelt();
+            //animatorManager.MoveAddDelt();
+            //animatorManager.RotateDelt();
+
+            characterController.Move();
+            characterController.Rotate();
+        }
+
+        public override void OnStateExit(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
+        {
+            //animatorManager.canPick = false;
+            //animatorManager.canAttack = false;
+            //animatorManager.canChangeWeapons = false;
         }
     }
 }

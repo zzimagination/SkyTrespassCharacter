@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SkyTrespass.Character
 {
-    public class WeaponsPistol 
+    public class WeaponsPistol :Weaponsbase
     {
 
         //public BulletLiner bulletLiner;

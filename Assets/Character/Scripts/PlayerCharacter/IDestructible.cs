@@ -7,13 +7,12 @@ namespace SkyTrespass
     interface IDestructible
     {
         void Attack(AttackInfo attackInfo);
-        void Death();
     }
 
 
     public struct AttackInfo
     {
-        public float damage;
+        public int damage;
 
     }
 }

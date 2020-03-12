@@ -9,8 +9,6 @@ namespace SkyTrespass.Character
     public class DestructibleCharacter : MonoBehaviour,IDestructible
     {
         public float health;
-        public UnityEvent attackAction;
-        public UnityEvent deathAction;
         // Start is called before the first frame update
         void Start()
         {
@@ -30,10 +28,8 @@ namespace SkyTrespass.Character
             {
                 health = 0;
                 Death();
-                deathAction.Invoke();
                 return;
             }
-            attackAction.Invoke();
         }
 
         public virtual void Death()

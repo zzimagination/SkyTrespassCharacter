@@ -8,20 +8,14 @@ namespace SkyTrespass.Character
     [CreateAssetMenu(fileName = "CharacterInfo", menuName = "Setting/CharacterInfo")]
     public class CharacterInfo : ScriptableObject
     {
-        public CharacterAttackInfo AttackInfo;
+        public int health;
+
+        public int unarmDamage;
+        public float unarmAttackCheckRange;
 
         public float RunSpeed;
         public float WalkSpeed;
     }
 
-    [System.Serializable]
-    public class CharacterAttackInfo
-    {
-        [BoxGroup("Unarm")]
-        public float unarmDamage;
-        [BoxGroup("Unarm")]
-        public float unarmAttackCheckRange;
-
-    }
 
 }

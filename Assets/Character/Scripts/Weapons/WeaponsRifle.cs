@@ -7,20 +7,11 @@ namespace SkyTrespass.Character
 {
     public class WeaponsRifle : Weaponsbase
     {
- 
-        public float shootDamage;
+
+        public int shootDamage;
         public float shootOffset;
         public float shootDistance;
         public float shootAimOffset;
-
-        [ReadOnly]
-        public bool isAim;
-
-        [HideInInspector]
-        public Transform attackTransform;
-        [HideInInspector]
-        public Vector3 shootPoint;
-
         private void Awake()
         {
             RemainBullet = magazineCapacity;
@@ -54,23 +45,12 @@ namespace SkyTrespass.Character
             this.isAim = aim;
         }
 
-        public override void AttackPrepare(AttackMachine attackMachine)
-        {
-            this.attackMachine = attackMachine;
-            if (RemainBullet <= 0)
-            {
-                attackMachine.StopAttack();
-            }
-            attackTransform = attackMachine.transform;
-            shootPoint = attackMachine.shootPoint;
-        }
-
         public override void AttackTick()
         {
-            var shootPosition = attackTransform.position + shootPoint;
-            var shootDir = attackTransform.forward;
+            var shootPosition =  playerTransform.position+new Vector3(0,1.4f,0);
+            var shootDir = playerTransform.forward;
 
-            float damage = shootDamage;
+            int damage = shootDamage;
             float distance = shootDistance;
             float offset = isAim ? shootAimOffset : shootOffset;
 
@@ -80,30 +60,10 @@ namespace SkyTrespass.Character
             shootDir = qa * shootDir;
 
             bool isHit = Physics.Raycast(shootPosition, shootDir, out RaycastHit shootResult, distance, (1 << 9 | 1 << 10));
-            //GameObject obj = GameObject.Instantiate(bulletLinerObj);
-            //obj.transform.SetParent(transform);
-            //obj.transform.position = shootPosition;
-            //if (isHit)
-            //{
-            //    obj.GetComponent<BulletLiner>().SetPoint(shootPosition, shootResult.point);
 
-            //    var t = shootResult.transform.GetComponent<IDestructible>();
-            //    if (t != null)
-            //    {
-            //        AttackInfo attackInfo = new AttackInfo();
-            //        attackInfo.damage = isAimShoot ? saInfo.shootAimDamage * saInfo.shootAimDamage_Per : saInfo.shootDamage * saInfo.shootDamage_Per;
-            //        t.Attack(attackInfo);
-            //    }
-            //}
-            //else
-            //{
-            //    Vector3 end = shootPosition + shootDir * dis;
-            //    obj.GetComponent<BulletLiner>().SetPoint(shootPosition, end);
-            //}
             if (isHit)
             {
-                //obj.GetComponent<BulletLiner>().SetPoint(shootPosition, shootResult.point);
-
+ 
                 var t = shootResult.transform.GetComponent<IDestructible>();
                 if (t != null)
                 {
@@ -111,147 +71,18 @@ namespace SkyTrespass.Character
                     attackInfo.damage = damage;
                     t.Attack(attackInfo);
                 }
-                linerPool.CreatLiner(shootPosition, shootResult.point);
+                linerPool.CreatLiner(shootPosition, shootResult.point,playerTransform.rotation);
             }
             else
             {
                 Vector3 end = shootPosition + shootDir * distance;
-                //Debug.DrawLine(shootPosition, end, Color.red);
-                //obj.GetComponent<BulletLiner>().SetPoint(shootPosition, end);
-                linerPool.CreatLiner(shootPosition, end);
+                linerPool.CreatLiner(shootPosition, end,playerTransform.rotation);
             }
             RemainBullet--;
-            if(RemainBullet<=0)
-            {
-                attackMachine.StopAttack();
-            }
         }
 
     }
 
 
-    //public class RifleAttackCommand : AttackCommand
-    //{
-
-
-    //    public Vector3 localPoint;
-    //    public Transform transform;
-    //    public CharacterAttackInfo info;
-    //    public event AttackEvent TickEvent;
-
-    //    public BulletLiner bulletLiner;
-
-    //    Vector3 shootPosition;
-    //    Vector3 shootDir;
-
-
-
-    //    public override void Tick()
-    //    {
-    //        shootPosition = transform.localToWorldMatrix.MultiplyPoint(localPoint);
-    //        shootDir = transform.forward;
-    //        CharacterAttackInfo saInfo = info;
-
-    //        float offset = saInfo.shootOffset * saInfo.shootOffset_Per;
-    //        Random.InitState(RandomSeed.GetSeed());
-    //        float angle = Random.Range(-offset, offset);
-    //        var qa = Quaternion.AngleAxis(angle, Vector3.up);
-    //        shootDir = qa * shootDir;
-
-    //        float dis = saInfo.shootDistance * saInfo.shootDistance_Per;
-    //        bool isHit = Physics.Raycast(shootPosition, shootDir, out RaycastHit shootResult, dis, (1 << 9 | 1 << 10));
-    //        //GameObject obj = GameObject.Instantiate(bulletLinerObj);
-    //        //obj.transform.SetParent(transform);
-    //        //obj.transform.position = shootPosition;
-    //        if (isHit)
-    //        {
-    //            //obj.GetComponent<BulletLiner>().SetPoint(shootPosition, shootResult.point);
-
-    //            var t = shootResult.transform.GetComponent<IDestructible>();
-    //            if (t != null)
-    //            {
-    //                AttackInfo attackInfo = new AttackInfo();
-    //                attackInfo.damage = saInfo.shootDamage * saInfo.shootDamage_Per;
-    //                t.Attack(attackInfo);
-    //            }
-    //            Debug.DrawLine(shootPosition, shootResult.point, Color.red);
-    //        }
-    //        else
-    //        {
-    //            Vector3 end = shootPosition + shootDir * dis;
-    //            Debug.DrawLine(shootPosition, end, Color.red);
-    //            //obj.GetComponent<BulletLiner>().SetPoint(shootPosition, end);
-    //        }
-
-    //        TickEvent?.Invoke();
-    //    }
-    //}
-
-    //public class RifleAimAttackCommand : AttackCommand
-    //{
-    //    public Vector3 localPoint;
-    //    public Transform transform;
-    //    public CharacterAttackInfo info;
-    //    public AttackEvent TickEvent;
-
-    //    Vector3 shootPosition;
-    //    Vector3 shootDir;
-
-    //    public override void Tick()
-    //    {
-    //        shootPosition = transform.localToWorldMatrix.MultiplyPoint(localPoint);
-    //        shootDir = transform.forward;
-    //        CharacterAttackInfo saInfo = info;
-
-    //        float offset = saInfo.shootAimOffset * saInfo.shootAimOffset_Per;
-    //        Random.InitState(RandomSeed.GetSeed());
-    //        float angle = Random.Range(-offset, offset);
-    //        var qa = Quaternion.AngleAxis(angle, Vector3.up);
-    //        shootDir = qa * shootDir;
-
-    //        float dis = saInfo.shootAimDistance * saInfo.shootAimDistance_Per;
-    //        bool isHit = Physics.Raycast(shootPosition, shootDir, out RaycastHit shootResult, dis, (1 << 9 | 1 << 10));
-    //        //GameObject obj = GameObject.Instantiate(bulletLinerObj);
-    //        //obj.transform.SetParent(transform);
-    //        //obj.transform.position = shootPosition;
-    //        //if (isHit)
-    //        //{
-    //        //    obj.GetComponent<BulletLiner>().SetPoint(shootPosition, shootResult.point);
-
-    //        //    var t = shootResult.transform.GetComponent<IDestructible>();
-    //        //    if (t != null)
-    //        //    {
-    //        //        AttackInfo attackInfo = new AttackInfo();
-    //        //        attackInfo.damage = isAimShoot ? saInfo.shootAimDamage * saInfo.shootAimDamage_Per : saInfo.shootDamage * saInfo.shootDamage_Per;
-    //        //        t.Attack(attackInfo);
-    //        //    }
-    //        //}
-    //        //else
-    //        //{
-    //        //    Vector3 end = shootPosition + shootDir * dis;
-    //        //    obj.GetComponent<BulletLiner>().SetPoint(shootPosition, end);
-    //        //}
-    //        if (isHit)
-    //        {
-    //            //obj.GetComponent<BulletLiner>().SetPoint(shootPosition, shootResult.point);
-
-    //            var t = shootResult.transform.GetComponent<IDestructible>();
-    //            if (t != null)
-    //            {
-    //                AttackInfo attackInfo = new AttackInfo();
-    //                attackInfo.damage = saInfo.shootAimDamage * saInfo.shootAimDamage_Per;
-    //                t.Attack(attackInfo);
-    //            }
-    //            Debug.DrawLine(shootPosition, shootResult.point, Color.red);
-    //        }
-    //        else
-    //        {
-    //            Vector3 end = shootPosition + shootDir * dis;
-    //            Debug.DrawLine(shootPosition, end, Color.red);
-    //            //obj.GetComponent<BulletLiner>().SetPoint(shootPosition, end);
-    //        }
-
-    //        TickEvent?.Invoke();
-    //    }
-    //}
+   
 }

@@ -10,6 +10,13 @@ namespace SkyTrespass.Character
         protected AttackStage stage;
         protected float attackTimer;
         protected PlayerAnimatorManager animatorManager;
+        protected STCharacterController characterController;
+
+
+        protected virtual void Attack(AttackStage stage)
+        {
+            characterController.AttackProcess(stage);
+        }
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
@@ -17,9 +24,12 @@ namespace SkyTrespass.Character
             animator.SetLayerWeight(1, 1);
             stage = AttackStage.enter;
 
-            animatorManager = animator.GetComponent<PlayerAnimatorManager>();
-            animatorManager.keepAttack = true;
-            animatorManager.AttackInvoke(AttackStage.enter);
+            if(!animatorManager)
+                animatorManager = animator.GetComponent<PlayerAnimatorManager>();
+
+            if (!characterController)
+                characterController= animator.GetComponent<STCharacterController>();
+            Attack(AttackStage.enter);
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -27,7 +37,7 @@ namespace SkyTrespass.Character
             float t = stateInfo.normalizedTime;
             if (stage == AttackStage.enter || stage == AttackStage.end)
             {
-                animatorManager.AttackInvoke(AttackStage.start);
+                Attack(AttackStage.start);
                 stage = AttackStage.start;
                 attackTimer++;
             }
@@ -35,22 +45,22 @@ namespace SkyTrespass.Character
             {
                 if (t - attackTimer + 1 > attackNormalizedTime)
                 {
-                    animatorManager.AttackInvoke(AttackStage.tick);
+                    Attack(AttackStage.tick);
                     stage = AttackStage.update;
                 }else
                 {
-                    animatorManager.AttackInvoke(AttackStage.update);
+                    Attack(AttackStage.update);
                 }
             }
             else if (stage == AttackStage.update)
             {
                 if (t > attackTimer)
                 {
-                    animatorManager.AttackInvoke(AttackStage.end);
+                    Attack(AttackStage.end);
                     stage = AttackStage.end;
                 }else
                 {
-                    animatorManager.AttackInvoke(AttackStage.update);
+                    Attack(AttackStage.update);
                 }
             }
         }
@@ -59,12 +69,15 @@ namespace SkyTrespass.Character
         {
             if (stage != AttackStage.end)
             {
-                animatorManager.AttackInvoke(AttackStage.end);
+
+                Attack(AttackStage.end);
             }
 
             stage = AttackStage.exit;
-            animatorManager.AttackInvoke(AttackStage.exit);
+            Attack(AttackStage.exit);
         }
+
+
 
     }
 }

@@ -8,7 +8,6 @@ public class BulletLiner : MonoBehaviour
     public MeshRenderer meshRenderer;
     public MeshFilter meshFilter;
     public float lineWidth;
-    public float fadeAway;
     public float uvOffset;
 
     Mesh lineMesh;
@@ -34,7 +33,7 @@ public class BulletLiner : MonoBehaviour
 
     void UpdateUV()
     {
-        if (timeAway > 0.02f)
+        if (timeAway > 0.05f)
         {
             timeAway = 0;
             for (int i = 0; i < uvList.Count; i++)
@@ -45,7 +44,7 @@ public class BulletLiner : MonoBehaviour
             }
             lineMesh.SetUVs(0, uvList);
             uvNumber++;
-            if (uvNumber > 2)
+            if (uvNumber > 3)
             {
                 uvList[0] = (new Vector2(0, 0));
                 uvList[1] = (new Vector2(0, 1));
@@ -75,8 +74,13 @@ public class BulletLiner : MonoBehaviour
         meshRenderer.enabled = false;
     }
 
-    public void SetLine(Vector3 start, Vector3 end)
+    public void SetLine(Vector3 start, Vector3 end,Quaternion rotation)
     {
+        transform.position = start;
+        transform.rotation = rotation;
+        start = new Vector3(0, 0, 0);
+
+        end = transform.worldToLocalMatrix.MultiplyPoint(end);
         if (meshFilter.mesh)
         {
             lineMesh = meshFilter.mesh;

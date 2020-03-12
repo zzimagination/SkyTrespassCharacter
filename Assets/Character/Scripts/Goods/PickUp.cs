@@ -1,58 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace SkyTrespass
+namespace SkyTrespass.Goods
 {
     using Character;
     public class PickUp : MonoBehaviour
     {
         public bool open = true;
+        public int ID;
 
-        bool isPicked = false;
-        CharacterRigidbodyController characterRigidbodyController;
-        private void OnTriggerEnter(Collider other)
+
+        public PickUpInfomation Pick()
         {
-            if (open == false)
-                return;
-            if (other.CompareTag("Player"))
-            {
-                characterRigidbodyController = other.GetComponent<CharacterRigidbodyController>();
-                characterRigidbodyController.RegisterPickUp(this);
-            }
+            PickUpInfomation infomation = new PickUpInfomation();
+            infomation.id = ID;
+            Destroy(gameObject);
+            return infomation;
         }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if (open == false||isPicked)
-                return;
-            characterRigidbodyController.RemovePickUp(this);
-            
-        }
-
-        void TestPick(bool a)
-        {
-            var t = GetComponentsInChildren<Renderer>();
-            foreach (var item in t)
-            {
-                item.enabled = a;
-            }
-            GetComponent<Collider>().enabled = a;
-        }
-        IEnumerator DelayOpen()
-        {
-            yield return new WaitForSeconds(2);
-            isPicked = false;
-            TestPick(true);
-        }
-        public void Pick()
-        {
-            TestPick(false);
-            isPicked = true;
-            StartCoroutine(DelayOpen());
-        }
-
-
-
-
     }
+
+
 }

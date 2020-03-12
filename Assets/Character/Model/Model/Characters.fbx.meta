@@ -491,7 +491,7 @@ ModelImporter:
     second: Character_Son_01
   externalObjects: {}
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 0
