@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Unlit_TestCommandBuffer
   m_Shader: {fileID: 4800000, guid: 92d943b5c979c1547b3d7b16cad0c995, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: Gray
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0

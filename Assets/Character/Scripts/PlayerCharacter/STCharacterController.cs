@@ -101,7 +101,7 @@ namespace SkyTrespass
 
             GUILayout.Label("可拾取物品数量" + equipment.tempBackpack.PickNumber);
             GUILayout.Label("生命值" + equipment.Health);
-            GUILayout.Label("弹药" + equipment.bulletsNumber);
+            GUILayout.Label("弹药" + equipment.Bullet);
         }
 #endif
 
@@ -193,21 +193,12 @@ namespace SkyTrespass
 
         public void Pick()
         {
-
-            //equipment.PickObject();
             _animator.SetTrigger("pick");
-
         }
 
         public void PickEnd()
         {
-
             equipment.PickObject();
-            //if (equipment.lastPickup.pickType == Goods.PickType.weapons)
-            //{
-            //    // SetWeapons();
-            //}
-            Debug.Log("111");
         }
 
 

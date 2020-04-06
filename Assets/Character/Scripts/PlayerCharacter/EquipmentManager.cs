@@ -50,11 +50,11 @@ namespace SkyTrespass.Character
         const int WeaponsSpace = 2;
 
         WeaponsFist fist;
+        CharacterInfo defaultInfo;
 
         public TestObjectList TestObjectList;
         public BulletLinerPool BulletLinerPool;
         public Transform rightHand;
-        public int bulletsNumber;
 
         [HideInInspector]
         public bool isAim;
@@ -62,17 +62,8 @@ namespace SkyTrespass.Character
         public bool unArm;
         [HideInInspector]
         public Weaponsbase currentWeapons;
-        //[HideInInspector]
-        //public Weaponsbase weapons_0;
-        //[HideInInspector]
-        //public Weaponsbase weapons_1;
         [HideInInspector]
         public Weaponsbase[] weaponsArray = new Weaponsbase[WeaponsSpace];
-
-        //[HideInInspector]
-        //public int unarmDamage;
-        //[HideInInspector]
-        //public float unarmAttackCheckRange;
         [HideInInspector]
         public float RunSpeed;
         [HideInInspector]
@@ -146,14 +137,29 @@ namespace SkyTrespass.Character
             }
 
         }
+        int bullet;
+        public int Bullet
+        {
+            get
+            {
+                return bullet;
+            }
+            set
+            {
+                if (value < 0)
+                    bullet = 0;
+                else
+                    bullet = value;
+            }
+        }
 
 
-        public CharacterInfo defaultInfo;
+
+
         private void Awake()
         {
             tempBackpack = new TempBackpack();
-            if (defaultInfo)
-                defaultInfo = Resources.Load<CharacterInfo>("DefaultCharacterInfo");
+            defaultInfo = Resources.Load<CharacterInfo>("DefaultCharacterInfo");
         }
 
 
@@ -197,6 +203,8 @@ namespace SkyTrespass.Character
 
         public void InitEquipment()
         {
+            if (defaultInfo == null)
+                defaultInfo = Resources.Load<CharacterInfo>("DefaultCharacterInfo");
             fist = GetComponent<WeaponsFist>();
             fist.unarmDamage = defaultInfo.unarmDamage;
             fist.unarmAttackCheckRange = defaultInfo.unarmAttackCheckRange;
@@ -204,7 +212,7 @@ namespace SkyTrespass.Character
             RunSpeed = defaultInfo.RunSpeed;
             WalkSpeed = defaultInfo.WalkSpeed;
             health = defaultInfo.health;
-            bulletsNumber = 100;
+            Bullet = 100;
 
             InitWeapons();
         }
@@ -290,65 +298,10 @@ namespace SkyTrespass.Character
             }
         }
 
-
-        //public void ChangeAim(bool isAim)
-        //{
-
-        //    if (!unArm)
-        //    {
-        //        this.isAim = isAim;
-        //        currentWeapons.ChangeAim(isAim);
-        //    }
-        //    else
-        //    {
-        //        isAim = false;
-        //    }
-        //}
-
-        //public bool WeaponsCanAttack()
-        //{
-        //    if (currentWeapons)
-        //    {
-        //        var r = currentWeapons.RemainBullet != 0;
-        //        return r;
-        //    }
-        //    else
-        //    {
-        //        return false;
-        //    }
-        //}
-
-        //public bool CanPick()
-        //{
-        //    return tempBackpack.PickNumber > 0;
-        //}
-
         public void PickObject()
         {
             var p = tempBackpack.GetPickUp();
-            var info = p.Pick();
-
-            var parseInfo = ParseGoods.ParseID(info.id);
-            if (parseInfo.pickType == PickType.weapons)
-            {
-                //GameObject mid = Resources.Load<GameObject>(parseInfo.objPath);
-                //GameObject obj = Instantiate(mid, rightHand);
-                //GetWeapons(obj);
-            }
-            else if (parseInfo.pickType == PickType.health)
-            {
-                Health += 10;
-            }
-            lastPickup = parseInfo;
+            p.Pick();
         }
-        
-
-
-
-
-
     }
-
-
-
 }

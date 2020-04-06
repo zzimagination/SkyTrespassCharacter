@@ -10,7 +10,7 @@ namespace SkyTrespass.Goods
         public int ID;
 
 
-        public PickUpInfomation Pick()
+        public virtual PickUpInfomation Pick()
         {
             PickUpInfomation infomation = new PickUpInfomation();
             infomation.id = ID;

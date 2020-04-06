@@ -1,4 +1,6 @@
-﻿Shader "Test/TestImage"
+﻿// Upgrade NOTE: replaced 'defined DD' with 'defined (DD)'
+
+Shader "Test/TestImage"
 {
     Properties
     {
@@ -14,7 +16,7 @@
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-
+			#pragma multi_compile Color Gray
             #include "UnityCG.cginc"
 
             struct appdata
@@ -41,10 +43,14 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.uv);
+                fixed3 col = tex2D(_MainTex, i.uv).rgb;
                 // just invert the colors
+#if defined (Gray)
                 float v= (col.r+col.g+col.b)/3;
-                return fixed4(v,v,v,1);
+				col = fixed3(v, v, v);
+#endif
+		
+                return fixed4(col,1);
             }
             ENDCG
         }
